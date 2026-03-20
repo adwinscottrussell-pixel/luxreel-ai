@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>LuxReel AI — Short-Form Video, Elevated</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -744,9 +745,40 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
   .auth-right{padding:32px 20px}
   .auth-logo{margin-bottom:32px}
 }
+/* ── Supabase config banner ── */
+.sb-config-banner{
+  background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.25);
+  border-radius:8px;padding:14px 18px;margin-bottom:16px;
+  font-size:.82rem;line-height:1.6;color:var(--gold);
+}
+.sb-config-banner strong{display:block;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.sb-config-banner code{background:rgba(212,168,83,.12);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.78rem;color:var(--gold2)}
+
+/* ── Full-page loading screen ── */
+#app-loading{
+  position:fixed;inset:0;z-index:9999;background:var(--noir);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+}
+#app-loading .load-logo{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--gold2)}
+#app-loading .load-logo span{color:var(--text);font-style:italic}
+#app-loading .load-ring{width:32px;height:32px;border-radius:50%;border:2px solid rgba(212,168,83,.2);border-top-color:var(--gold);animation:spin .7s linear infinite}
+#app-loading .load-text{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ── Auth error message ── */
+.auth-error{
+  background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.3);
+  border-radius:6px;padding:10px 14px;font-size:.82rem;color:var(--red);display:none;
+}
+.auth-error.show{display:block}
 </style>
 </head>
 <body>
+
+<div id="app-loading">
+  <div class="load-logo">Lux<span>Reel</span></div>
+  <div class="load-ring"></div>
+  <div class="load-text">Loading…</div>
+</div>
 
 <!-- ══════════════════════════════
      LANDING PAGE
@@ -949,6 +981,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="auth-email" placeholder="you@brand.com" /></div>
         <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="auth-password" placeholder="••••••••" /></div>
         <button class="btn btn-gold btn-md btn-block" style="margin-top:4px" id="auth-submit-btn" onclick="handleAuth()">Create Free Account →</button>
+        <div class="auth-error" id="auth-error"></div>
         <div class="auth-divider"><span>or</span></div>
         <button class="social-btn" onclick="handleAuth()">
           <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
@@ -987,6 +1020,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
             <div class="user-plan">Free Plan · 3 videos left</div>
           </div>
         </div>
+        <button onclick="handleSignOut()" style="width:100%;margin-top:8px;padding:8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s" onmouseover="this.style.color='var(--red)';this.style.borderColor='rgba(224,85,85,.3)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">Sign out</button>
       </div>
     </aside>
 
@@ -1239,6 +1273,26 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           <div class="settings-section" id="settings-api">
             <div class="settings-h">API Keys</div>
             <div class="settings-sub">Connect your API keys to enable AI caption generation and future integrations.</div>
+
+            <div class="sb-config-banner">
+              <strong>Supabase connection</strong>
+              Paste your Supabase Project URL and Anon Key below. Find these at <code>supabase.com → Project → Settings → API</code>.
+            </div>
+            <div class="settings-card" style="margin-bottom:12px">
+              <div class="settings-card-title">Supabase Project URL</div>
+              <div class="api-key-field">
+                <input class="api-key-input-big" id="sb-url-input" type="text" placeholder="https://xyzxyz.supabase.co" />
+                <button class="btn btn-outline btn-sm" onclick="saveSupabaseConfig()">Save</button>
+              </div>
+            </div>
+            <div class="settings-card" style="margin-bottom:20px">
+              <div class="settings-card-title">Supabase Anon Key</div>
+              <div class="api-key-field">
+                <input class="api-key-input-big" id="sb-key-input" type="password" placeholder="eyJhbGci…" />
+                <button class="btn btn-outline btn-sm" onclick="saveSupabaseConfig()">Save</button>
+              </div>
+            </div>
+
             <div class="settings-card">
               <div class="settings-card-title">OpenAI API Key</div>
               <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6;font-weight:300">Required for AI caption generation. Get your key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--gold)">platform.openai.com</a></div>
@@ -1346,17 +1400,64 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
 <script>
 // ══════════════════════════════
-// ROUTER
+// SUPABASE INIT
 // ══════════════════════════════
-const pages=['landing','auth','dashboard','pricing','settings'];
-function go(page){
-  pages.forEach(p=>{
-    const el=document.getElementById('page-'+p);
-    if(el) el.classList.remove('active');
+const SB_URL_KEY='lr_sb_url';
+const SB_ANON_KEY='lr_sb_anon';
+
+let sb=null; // our Supabase client — named 'sb' to avoid clashing with window.supabase
+
+function initSupabase(){
+  const url=localStorage.getItem(SB_URL_KEY);
+  const key=localStorage.getItem(SB_ANON_KEY);
+  if(url&&key&&window.supabase){
+    sb=window.supabase.createClient(url,key);
+    return true;
+  }
+  return false;
+}
+
+// ══════════════════════════════
+// APP BOOT — check session
+// ══════════════════════════════
+async function bootApp(){
+  const configured=initSupabase();
+
+  if(!configured){
+    // No Supabase config yet — show landing, hide loader
+    hideLo();
+    go('landing');
+    return;
+  }
+
+  // Check for existing session
+  const {data:{session}}=await sb.auth.getSession();
+  hideLo();
+  if(session){
+    currentUser=session.user;
+    updateUserUI();
+    await loadVideos();
+    go('dashboard');
+  } else {
+    go('landing');
+  }
+
+  // Listen for auth state changes (login/logout)
+  sb.auth.onAuthStateChange(async(_event,session)=>{
+    if(session){
+      currentUser=session.user;
+      updateUserUI();
+      await loadVideos();
+    } else {
+      currentUser=null;
+      videos=[];
+    }
   });
-  const target=document.getElementById('page-'+page);
-  if(target){target.classList.add('active');window.scrollTo(0,0)}
-  if(page==='dashboard'){renderGrid();updateStats()}
+}
+
+function hideLo(){
+  const el=document.getElementById('app-loading');
+  if(el){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),300)}
 }
 
 // ══════════════════════════════
@@ -1364,7 +1465,8 @@ function go(page){
 // ══════════════════════════════
 const SAMPLE_VIDEO='https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 const MAX_FREE=3;
-let videos=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+let videos=[];
+let currentUser=null;
 let selectedTone='luxury';
 let generating=false;
 let currentFilter='all';
@@ -1379,9 +1481,24 @@ const TONES={
 };
 
 // ══════════════════════════════
+// ROUTER
+// ══════════════════════════════
+const pages=['landing','auth','dashboard','pricing','settings'];
+function go(page){
+  pages.forEach(p=>{
+    const el=document.getElementById('page-'+p);
+    if(el)el.classList.remove('active');
+  });
+  const target=document.getElementById('page-'+page);
+  if(target){target.classList.add('active');window.scrollTo(0,0)}
+  if(page==='dashboard'){renderGrid();updateStats()}
+}
+
+// ══════════════════════════════
 // AUTH
 // ══════════════════════════════
 let authMode='signup';
+
 function switchAuth(mode){
   authMode=mode;
   const tabs=document.querySelectorAll('.auth-tab');
@@ -1392,26 +1509,163 @@ function switchAuth(mode){
   document.getElementById('auth-switch-text').innerHTML=mode==='signup'
     ?'Already have an account? <a onclick="switchAuth(\'signin\')">Sign in</a>'
     :'Don\'t have an account? <a onclick="switchAuth(\'signup\')">Sign up</a>';
+  setAuthError('');
 }
-function handleAuth(){
+
+function setAuthError(msg){
+  const el=document.getElementById('auth-error');
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.toggle('show',!!msg);
+}
+
+async function handleAuth(){
+  if(!sb){
+    toast('Configure Supabase in Settings → API first','error');
+    go('settings');
+    return;
+  }
   const email=document.getElementById('auth-email').value.trim();
-  if(!email){toast('Please enter your email','error');return}
-  const name=email.split('@')[0];
-  localStorage.setItem('lr_user',JSON.stringify({name,email,firstName:name.charAt(0).toUpperCase()+name.slice(1)}));
-  updateUserUI();
-  go('dashboard');
-  toast(authMode==='signup'?'Welcome to LuxReel! ✦':'Welcome back! ✦','success');
+  const password=document.getElementById('auth-password').value;
+  if(!email||!password){setAuthError('Please enter your email and password.');return}
+
+  const btn=document.getElementById('auth-submit-btn');
+  btn.disabled=true;
+  btn.textContent='Please wait…';
+  setAuthError('');
+
+  try{
+    let result;
+    if(authMode==='signup'){
+      result=await sb.auth.signUp({email,password});
+    } else {
+      result=await sb.auth.signInWithPassword({email,password});
+    }
+
+    if(result.error){
+      setAuthError(result.error.message);
+      btn.disabled=false;
+      btn.textContent=authMode==='signup'?'Create Free Account →':'Sign In →';
+      return;
+    }
+
+    currentUser=result.data.user||result.data.session?.user;
+
+    if(authMode==='signup'&&result.data.user&&!result.data.session){
+      // Email confirmation required
+      setAuthError('');
+      btn.disabled=false;
+      btn.textContent='Create Free Account →';
+      toast('Check your email to confirm your account ✦','info');
+      return;
+    }
+
+    updateUserUI();
+    await loadVideos();
+    go('dashboard');
+    toast(authMode==='signup'?'Welcome to LuxReel! ✦':'Welcome back! ✦','success');
+  }catch(e){
+    setAuthError('Something went wrong. Please try again.');
+    btn.disabled=false;
+    btn.textContent=authMode==='signup'?'Create Free Account →':'Sign In →';
+  }
+}
+
+async function handleSignOut(){
+  if(sb)await sb.auth.signOut();
+  currentUser=null;
+  videos=[];
+  renderGrid();
+  go('landing');
+  toast('Signed out','info');
 }
 
 function updateUserUI(){
-  const user=JSON.parse(localStorage.getItem('lr_user')||'{"firstName":"Alex","name":"Alex"}');
-  const fn=user.firstName||user.name||'Alex';
+  const email=currentUser?.email||'';
+  const name=email.split('@')[0]||'User';
+  const fn=name.charAt(0).toUpperCase()+name.slice(1);
   const initial=fn.charAt(0).toUpperCase();
   ['sidebar-avatar','settings-avatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=initial});
-  ['sidebar-name','settings-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fn+' Smith'});
+  ['sidebar-name','settings-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fn});
   const df=document.getElementById('dash-first-name');if(df)df.textContent=fn;
+  const sf=document.getElementById('s-first');if(sf&&!sf.value)sf.value=fn;
 }
-updateUserUI();
+
+// ══════════════════════════════
+// DATABASE — Videos
+// ══════════════════════════════
+
+async function loadVideos(){
+  if(!sb||!currentUser){videos=[];renderGrid();updateStats();return}
+  try{
+    const{data,error}=await sb
+      .from('videos')
+      .select('*')
+      .eq('user_id',currentUser.id)
+      .order('created_at',{ascending:false});
+    if(error)throw error;
+    videos=(data||[]).map(r=>({
+      id:r.id,
+      prompt:r.prompt,
+      tone:r.tone||'luxury',
+      video_url:r.video_url||SAMPLE_VIDEO,
+      caption:r.caption||'',
+      status:r.status||'done',
+      created:r.created_at,
+    }));
+  }catch(e){
+    console.warn('loadVideos failed, using local fallback',e);
+    videos=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+  }
+  renderGrid();updateStats();
+}
+
+async function saveVideo(video){
+  if(!sb||!currentUser){
+    // Fallback to localStorage if Supabase not configured
+    const local=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+    const idx=local.findIndex(v=>v.id===video.id);
+    if(idx>=0)local[idx]=video; else local.unshift(video);
+    localStorage.setItem('lr_videos',JSON.stringify(local));
+    return video.id;
+  }
+  try{
+    const row={
+      user_id:currentUser.id,
+      prompt:video.prompt,
+      tone:video.tone,
+      video_url:video.video_url,
+      caption:video.caption,
+      status:video.status,
+    };
+    // If id is a timestamp (local temp), insert fresh; otherwise update
+    if(typeof video.id==='number'){
+      const{data,error}=await sb.from('videos').insert(row).select().single();
+      if(error)throw error;
+      video.id=data.id; // swap temp id for DB uuid
+      return data.id;
+    } else {
+      const{error}=await sb.from('videos').update(row).eq('id',video.id);
+      if(error)throw error;
+      return video.id;
+    }
+  }catch(e){
+    console.warn('saveVideo DB failed, local fallback',e);
+    const local=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+    local.unshift(video);
+    localStorage.setItem('lr_videos',JSON.stringify(local));
+    return video.id;
+  }
+}
+
+async function deleteVideoFromDB(id){
+  if(sb&&currentUser&&typeof id!=='number'){
+    await sb.from('videos').delete().eq('id',id).eq('user_id',currentUser.id);
+  } else {
+    const local=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+    localStorage.setItem('lr_videos',JSON.stringify(local.filter(v=>v.id!==id)));
+  }
+}
 
 // ══════════════════════════════
 // TONE SELECTOR
@@ -1430,22 +1684,24 @@ document.querySelectorAll('.tone-btn').forEach(btn=>{
 async function handleGenerate(){
   const prompt=document.getElementById('dash-prompt').value.trim();
   if(!prompt){toast('Enter a video prompt first','error');return}
-  if(generating){return}
-  const done=videos.filter(v=>v.status==='done').length;
-  if(videos.length>=MAX_FREE){
-    showUpgradeModal();return;
-  }
+  if(generating)return;
+
+  // Enforce free plan limit
+  if(videos.length>=MAX_FREE){showUpgradeModal();return}
+
   generating=true;
   const btn=document.getElementById('gen-btn');
   btn.disabled=true;btn.textContent='Generating…';
 
   const video={
-    id:Date.now(),prompt,tone:selectedTone,
+    id:Date.now(), // temp id until DB assigns uuid
+    prompt,tone:selectedTone,
     video_url:SAMPLE_VIDEO,caption:'',status:'pending',
     created:new Date().toISOString(),
   };
-  videos.unshift(video);saveVideos();renderGrid();updateStats();
+  videos.unshift(video);renderGrid();updateStats();
 
+  // Generate caption
   try{
     const apiKey=localStorage.getItem('lr_openai_key')||'';
     if(apiKey){
@@ -1467,7 +1723,12 @@ async function handleGenerate(){
       video.caption=fallbackCaption();
     }
   }catch(e){video.caption=fallbackCaption()}
-  video.status='done';saveVideos();renderGrid();updateStats();
+
+  video.status='done';
+
+  // Persist to Supabase (or localStorage fallback)
+  await saveVideo(video);
+  renderGrid();updateStats();
   btn.disabled=false;btn.textContent='Generate Video';
   generating=false;
   document.getElementById('dash-prompt').value='';
@@ -1493,7 +1754,7 @@ function renderGrid(){
   const filtered=currentFilter==='all'?videos:videos.filter(v=>v.status===currentFilter);
   updateUsageBar();
   if(filtered.length===0){
-    grid.innerHTML=`<div class="library-empty"><div class="empty-icon-big">◈</div><div class="empty-h">${currentFilter==='all'?'No videos yet':'No '+(currentFilter)+' videos'}</div><div class="empty-p">${currentFilter==='all'?'Enter a prompt above to generate your first reel':''}</div></div>`;
+    grid.innerHTML=`<div class="library-empty"><div class="empty-icon-big">◈</div><div class="empty-h">${currentFilter==='all'?'No videos yet':'No '+currentFilter+' videos'}</div><div class="empty-p">${currentFilter==='all'?'Enter a prompt above to generate your first reel':''}</div></div>`;
     return;
   }
   grid.innerHTML=filtered.map((v,i)=>`
@@ -1512,9 +1773,9 @@ function renderGrid(){
         <div class="card-prompt-text" title="${esc(v.prompt)}">${esc(v.prompt)}</div>
         <div class="card-caption-text ${v.status==='pending'?'loading-pulse':''}">${v.status==='done'?esc(v.caption):''}</div>
         <div class="card-actions-row">
-          <button class="card-act-btn" onclick="copyCaption(${v.id})">Copy ⧉</button>
+          <button class="card-act-btn" onclick="copyCaption('${v.id}')">Copy ⧉</button>
           <button class="card-act-btn" onclick="toast('Instagram posting available on Pro','info')">Post 📤</button>
-          <button class="card-act-btn delete" onclick="deleteVideo(${v.id})">Delete ✕</button>
+          <button class="card-act-btn delete" onclick="deleteVideo('${v.id}')">Delete ✕</button>
         </div>
       </div>
     </div>`).join('');
@@ -1534,7 +1795,6 @@ function updateUsageBar(){
   if(fill)fill.style.width=pct+'%';
   if(txt)txt.textContent=`${videos.length} / ${MAX_FREE} used`;
 }
-
 function filterVideos(f,el){
   currentFilter=f;
   document.querySelectorAll('.filter-pill').forEach(p=>p.classList.remove('active'));
@@ -1546,20 +1806,25 @@ function filterVideos(f,el){
 // ACTIONS
 // ══════════════════════════════
 function copyCaption(id){
-  const v=videos.find(v=>v.id===id);
+  const v=videos.find(v=>String(v.id)===String(id));
   if(!v||!v.caption)return;
   navigator.clipboard.writeText(v.caption).then(()=>toast('Caption copied!','success'));
 }
-function deleteVideo(id){
-  videos=videos.filter(v=>v.id!==id);
-  saveVideos();renderGrid();updateStats();
+async function deleteVideo(id){
+  await deleteVideoFromDB(id);
+  videos=videos.filter(v=>String(v.id)!==String(id));
+  renderGrid();updateStats();
 }
-function clearLibrary(){
+async function clearLibrary(){
   if(videos.length===0){toast('Library is already empty','info');return}
-  videos=[];saveVideos();renderGrid();updateStats();
+  if(sb&&currentUser){
+    await sb.from('videos').delete().eq('user_id',currentUser.id);
+  } else {
+    localStorage.removeItem('lr_videos');
+  }
+  videos=[];renderGrid();updateStats();
   toast('Library cleared','success');
 }
-function saveVideos(){localStorage.setItem('lr_videos',JSON.stringify(videos))}
 
 // ══════════════════════════════
 // SETTINGS
@@ -1570,6 +1835,22 @@ function switchSettings(section,el){
   document.getElementById('settings-'+section).classList.add('active');
   el.classList.add('active');
 }
+
+function saveSupabaseConfig(){
+  const url=document.getElementById('sb-url-input').value.trim();
+  const key=document.getElementById('sb-key-input').value.trim();
+  if(!url||!key){toast('Enter both Supabase URL and Anon Key','error');return}
+  localStorage.setItem(SB_URL_KEY,url);
+  localStorage.setItem(SB_ANON_KEY,key);
+  const ok=initSupabase();
+  if(ok){
+    toast('Supabase connected ✦ — please sign in','success');
+    setTimeout(()=>go('auth'),1200);
+  } else {
+    toast('Could not connect — check your keys','error');
+  }
+}
+
 function saveApiKey(){
   const key=document.getElementById('settings-api-key').value.trim();
   if(!key){toast('Paste your API key first','error');return}
@@ -1578,15 +1859,9 @@ function saveApiKey(){
 }
 function saveProfile(){
   const fn=document.getElementById('s-first').value.trim();
-  const ln=document.getElementById('s-last').value.trim();
-  const user=JSON.parse(localStorage.getItem('lr_user')||'{}');
-  user.firstName=fn;user.name=fn;user.lastName=ln;
-  localStorage.setItem('lr_user',JSON.stringify(user));
-  updateUserUI();
   toast('Profile saved ✦','success');
 }
 function toggleSwitch(el){el.classList.toggle('on')}
-
 function setNavActive(el){
   document.querySelectorAll('#page-dashboard .nav-item').forEach(n=>n.classList.remove('active'));
   el.classList.add('active');
@@ -1639,21 +1914,26 @@ function toast(msg,type='success'){
 // ══════════════════════════════
 function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-// Sticky nav
 window.addEventListener('scroll',()=>{
   const nav=document.getElementById('l-nav');
   if(nav)nav.classList.toggle('scrolled',window.scrollY>40);
 });
 
-// Init
-renderGrid();updateStats();
-
-// Preload api key into settings input if saved
+// Preload saved keys into settings inputs
 window.addEventListener('load',()=>{
-  const saved=localStorage.getItem('lr_openai_key');
+  const apiKey=localStorage.getItem('lr_openai_key');
   const el=document.getElementById('settings-api-key');
-  if(saved&&el)el.value=saved;
+  if(apiKey&&el)el.value=apiKey;
+  const sbUrl=localStorage.getItem(SB_URL_KEY);
+  const sbKey=localStorage.getItem(SB_ANON_KEY);
+  const urlEl=document.getElementById('sb-url-input');
+  const keyEl=document.getElementById('sb-key-input');
+  if(sbUrl&&urlEl)urlEl.value=sbUrl;
+  if(sbKey&&keyEl)keyEl.value=sbKey;
 });
+
+// ── BOOT ──
+bootApp();
 </script>
 </body>
 </html>
