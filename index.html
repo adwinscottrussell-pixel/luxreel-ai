@@ -167,9 +167,9 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 .mockup-body{
   background:var(--noir2);border:1px solid var(--border);border-top:none;
   border-radius:0 0 12px 12px;padding:20px;
-  display:grid;grid-template-columns:220px 1fr;gap:16px;min-height:300px;
+  display:flex;flex-direction:column;gap:16px;min-height:auto;
 }
-.mockup-sidebar{display:flex;flex-direction:column;gap:10px;min-width:0}
+.mockup-sidebar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end}
 .mock-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted2);margin-bottom:4px}
 .mock-textarea{
   background:var(--panel);border:1px solid var(--border);border-radius:6px;
@@ -182,10 +182,11 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 .mock-btn{
   background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0a0800;
   border-radius:6px;padding:9px;text-align:center;font-size:.75rem;font-weight:600;
+  align-self:end;
 }
-.mockup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-content:start}
+.mockup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .mock-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden;min-width:0}
-.mock-thumb{aspect-ratio:3/4;background:linear-gradient(160deg,var(--noir3),var(--panel));position:relative}
+.mock-thumb{aspect-ratio:16/9;background:linear-gradient(160deg,var(--noir3),var(--panel));position:relative}
 .mock-thumb-badge{
   position:absolute;top:5px;right:5px;
   background:rgba(212,168,83,.2);border:1px solid var(--gold3);
