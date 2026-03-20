@@ -166,33 +166,33 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 }
 .mockup-body{
   background:var(--noir2);border:1px solid var(--border);border-top:none;
-  border-radius:0 0 12px 12px;padding:24px;
-  display:grid;grid-template-columns:300px 1fr;gap:20px;min-height:340px;
+  border-radius:0 0 12px 12px;padding:20px;
+  display:grid;grid-template-columns:220px 1fr;gap:16px;min-height:300px;
 }
-.mockup-sidebar{display:flex;flex-direction:column;gap:12px}
+.mockup-sidebar{display:flex;flex-direction:column;gap:10px;min-width:0}
 .mock-label{font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted2);margin-bottom:4px}
 .mock-textarea{
   background:var(--panel);border:1px solid var(--border);border-radius:6px;
-  padding:12px;font-size:.8rem;color:var(--muted);height:90px;
+  padding:10px;font-size:.75rem;color:var(--muted);height:80px;
   line-height:1.5;
 }
-.mock-tones{display:flex;gap:6px;flex-wrap:wrap}
-.mock-tone{padding:4px 10px;border-radius:4px;border:1px solid var(--border);font-size:.65rem;color:var(--muted2)}
+.mock-tones{display:flex;gap:5px;flex-wrap:wrap}
+.mock-tone{padding:3px 8px;border-radius:4px;border:1px solid var(--border);font-size:.6rem;color:var(--muted2)}
 .mock-tone.a{border-color:var(--gold3);color:var(--gold);background:rgba(212,168,83,.08)}
 .mock-btn{
   background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0a0800;
-  border-radius:6px;padding:10px;text-align:center;font-size:.8rem;font-weight:600;
+  border-radius:6px;padding:9px;text-align:center;font-size:.75rem;font-weight:600;
 }
-.mockup-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.mock-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.mock-thumb{aspect-ratio:9/16;background:linear-gradient(160deg,var(--noir3),var(--panel));position:relative}
+.mockup-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-content:start}
+.mock-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden;min-width:0}
+.mock-thumb{aspect-ratio:3/4;background:linear-gradient(160deg,var(--noir3),var(--panel));position:relative}
 .mock-thumb-badge{
-  position:absolute;top:6px;right:6px;
+  position:absolute;top:5px;right:5px;
   background:rgba(212,168,83,.2);border:1px solid var(--gold3);
-  border-radius:3px;padding:2px 6px;font-size:.5rem;letter-spacing:.1em;color:var(--gold);
+  border-radius:3px;padding:2px 5px;font-size:.45rem;letter-spacing:.08em;color:var(--gold);
 }
-.mock-card-body{padding:8px 10px}
-.mock-card-line{height:5px;background:var(--border2);border-radius:3px;margin-bottom:5px}
+.mock-card-body{padding:6px 8px}
+.mock-card-line{height:4px;background:var(--border2);border-radius:3px;margin-bottom:4px}
 .mock-card-line.short{width:60%}
 .mock-card-line.gold{background:rgba(212,168,83,.2);width:80%}
 
@@ -724,8 +724,8 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
 /* Responsive tweaks */
 @media(max-width:900px){
-  .mockup-body{grid-template-columns:1fr}
-  .mockup-grid{grid-template-columns:1fr 1fr}
+  .mockup-body{grid-template-columns:1fr;gap:12px}
+  .mockup-grid{grid-template-columns:repeat(3,1fr)}
   .features-grid{grid-template-columns:1fr}
   .steps-grid{grid-template-columns:1fr 1fr}
   .plans-grid{grid-template-columns:1fr}
