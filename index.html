@@ -1688,7 +1688,6 @@ async function handleGenerate(){
   const btn=document.getElementById('gen-btn');
   btn.disabled=true;
 
-  // Animated button states during generation
   const states=['Generating video…','Processing with Runway…','Almost ready…'];
   let stateIdx=0;
   btn.textContent=states[0];
@@ -1706,21 +1705,48 @@ async function handleGenerate(){
   videos.unshift(video);renderGrid();updateStats();
 
   try{
-    // Call unified Edge Function — generates video + caption in one go
-    const res=await fetch(`${SB_URL}/functions/v1/generate-video`,{
+    // Step 1 — Start the Runway task, get caption + taskId back immediately
+    const startRes=await fetch(`${SB_URL}/functions/v1/generate-video`,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
         'Authorization':`Bearer ${SB_ANON}`,
       },
-      body:JSON.stringify({prompt,tone:selectedTone}),
+      body:JSON.stringify({prompt,tone:selectedTone,action:'start'}),
     });
-    const data=await res.json();
-    video.caption=data.caption||fallbackCaption();
-    video.video_url=data.videoUrl||SAMPLE_VIDEO;
+    const startData=await startRes.json();
+    video.caption=startData.caption||fallbackCaption();
+    const taskId=startData.taskId||'';
+
+    if(taskId){
+      // Step 2 — Poll for the video URL every 5 seconds
+      let videoUrl='';
+      for(let i=0;i<30;i++){
+        await new Promise(r=>setTimeout(r,5000));
+        try{
+          const pollRes=await fetch(`${SB_URL}/functions/v1/generate-video`,{
+            method:'POST',
+            headers:{
+              'Content-Type':'application/json',
+              'Authorization':`Bearer ${SB_ANON}`,
+            },
+            body:JSON.stringify({action:'poll',taskId}),
+          });
+          const pollData=await pollRes.json();
+          if(pollData.status==='done'&&pollData.videoUrl){
+            videoUrl=pollData.videoUrl;
+            break;
+          }
+          if(pollData.status==='failed'){break}
+        }catch(e){console.warn('Poll error',e)}
+      }
+      video.video_url=videoUrl||SAMPLE_VIDEO;
+    } else {
+      video.video_url=SAMPLE_VIDEO;
+    }
   }catch(e){
-    console.warn('generate-video failed, using fallbacks',e);
-    video.caption=fallbackCaption();
+    console.warn('generate-video failed',e);
+    video.caption=video.caption||fallbackCaption();
     video.video_url=SAMPLE_VIDEO;
   }
 
