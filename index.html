@@ -1102,7 +1102,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
               <div class="generate-row">
                 <button class="btn btn-gold btn-md" id="gen-btn" style="flex:1" onclick="handleGenerate()">Generate Video</button>
               </div>
-              <div style="font-size:.72rem;color:var(--muted2);">Paste your OpenAI key in <span style="color:var(--gold);cursor:pointer" onclick="go('settings')">Settings → API</span> to enable real captions.</div>
+              <div style="font-size:.72rem;color:var(--muted2);">AI captions powered by OpenAI via secure server.</div>
             </div>
           </div>
         </div>
@@ -1272,42 +1272,24 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
 
           <div class="settings-section" id="settings-api">
-            <div class="settings-h">API Keys</div>
-            <div class="settings-sub">Connect your API keys to enable AI caption generation and future integrations.</div>
-
-            <div class="sb-config-banner">
-              <strong>Supabase connection</strong>
-              Paste your Supabase Project URL and Anon Key below. Find these at <code>supabase.com → Project → Settings → API</code>.
-            </div>
-            <div class="settings-card" style="margin-bottom:12px">
-              <div class="settings-card-title">Supabase Project URL</div>
-              <div class="api-key-field">
-                <input class="api-key-input-big" id="sb-url-input" type="text" placeholder="https://xyzxyz.supabase.co" />
-                <button class="btn btn-outline btn-sm" onclick="saveSupabaseConfig()">Save</button>
-              </div>
-            </div>
-            <div class="settings-card" style="margin-bottom:20px">
-              <div class="settings-card-title">Supabase Anon Key</div>
-              <div class="api-key-field">
-                <input class="api-key-input-big" id="sb-key-input" type="password" placeholder="eyJhbGci…" />
-                <button class="btn btn-outline btn-sm" onclick="saveSupabaseConfig()">Save</button>
-              </div>
-            </div>
-
+            <div class="settings-h">Integrations</div>
+            <div class="settings-sub">Connected services powering your LuxReel account.</div>
             <div class="settings-card">
-              <div class="settings-card-title">OpenAI API Key</div>
-              <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6;font-weight:300">Required for AI caption generation. Get your key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--gold)">platform.openai.com</a></div>
-              <div class="api-key-field">
-                <input class="api-key-input-big" id="settings-api-key" type="password" placeholder="sk-..." />
-                <button class="btn btn-outline btn-sm" onclick="saveApiKey()">Save</button>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Supabase</div><div class="settings-row-desc">Database &amp; authentication</div></div>
+                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--green)">Connected</span>
               </div>
-            </div>
-            <div class="settings-card" style="margin-top:12px">
-              <div class="settings-card-title">Buffer API Key <span style="font-size:.7rem;color:var(--muted);font-weight:400;margin-left:8px">Pro feature</span></div>
-              <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;font-weight:300">Connect Buffer to enable one-click Instagram posting.</div>
-              <div class="api-key-field">
-                <input class="api-key-input-big" type="password" placeholder="buff-..." disabled style="opacity:.4"/>
-                <button class="btn btn-outline btn-sm" onclick="go('pricing')" style="opacity:.6">Upgrade</button>
+              <div class="settings-row">
+                <div><div class="settings-row-label">OpenAI</div><div class="settings-row-desc">AI caption generation</div></div>
+                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--green)">Connected</span>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Buffer</div><div class="settings-row-desc">Instagram posting</div></div>
+                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(212,168,83,.08);border:1px solid var(--gold3);color:var(--gold)">Pro feature</span>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Runway</div><div class="settings-row-desc">AI video generation</div></div>
+                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(212,168,83,.08);border:1px solid var(--gold3);color:var(--gold)">Pro feature</span>
               </div>
             </div>
           </div>
@@ -1403,16 +1385,14 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 // ══════════════════════════════
 // SUPABASE INIT
 // ══════════════════════════════
-const SB_URL_KEY='lr_sb_url';
-const SB_ANON_KEY='lr_sb_anon';
+const SB_URL='https://tvshyswdwgwunzzrsqca.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwMzM3MDcsImV4cCI6MjA4OTYwOTcwN30.TaLB-ws45-iYYTkHT-iEbhCUZBiSU2C7gO3210Q27qs';
 
-let sb=null; // our Supabase client — named 'sb' to avoid clashing with window.supabase
+let sb=null;
 
 function initSupabase(){
-  const url=localStorage.getItem(SB_URL_KEY);
-  const key=localStorage.getItem(SB_ANON_KEY);
-  if(url&&key&&window.supabase){
-    sb=window.supabase.createClient(url,key);
+  if(window.supabase){
+    sb=window.supabase.createClient(SB_URL,SB_ANON);
     return true;
   }
   return false;
@@ -1422,10 +1402,9 @@ function initSupabase(){
 // APP BOOT — check session
 // ══════════════════════════════
 async function bootApp(){
-  const configured=initSupabase();
+  initSupabase();
 
-  if(!configured){
-    // No Supabase config yet — show landing, hide loader
+  if(!sb){
     hideLo();
     go('landing');
     return;
@@ -1702,27 +1681,18 @@ async function handleGenerate(){
   };
   videos.unshift(video);renderGrid();updateStats();
 
-  // Generate caption
+  // Generate caption via Edge Function (keeps OpenAI key server-side)
   try{
-    const apiKey=localStorage.getItem('lr_openai_key')||'';
-    if(apiKey){
-      const res=await fetch('https://api.openai.com/v1/chat/completions',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
-        body:JSON.stringify({
-          model:'gpt-4o-mini',
-          messages:[
-            {role:'system',content:TONES[selectedTone].system},
-            {role:'user',content:'Video concept: "'+prompt+'"'}
-          ],
-          max_tokens:160,temperature:.85
-        })
-      });
-      const data=await res.json();
-      video.caption=data.choices?.[0]?.message?.content?.trim()||fallbackCaption();
-    } else {
-      video.caption=fallbackCaption();
-    }
+    const res=await fetch(`${SB_URL}/functions/v1/generate-caption`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${SB_ANON}`,
+      },
+      body:JSON.stringify({prompt,tone:selectedTone}),
+    });
+    const data=await res.json();
+    video.caption=data.caption||fallbackCaption();
   }catch(e){video.caption=fallbackCaption()}
 
   video.status='done';
@@ -1837,27 +1807,6 @@ function switchSettings(section,el){
   el.classList.add('active');
 }
 
-function saveSupabaseConfig(){
-  const url=document.getElementById('sb-url-input').value.trim();
-  const key=document.getElementById('sb-key-input').value.trim();
-  if(!url||!key){toast('Enter both Supabase URL and Anon Key','error');return}
-  localStorage.setItem(SB_URL_KEY,url);
-  localStorage.setItem(SB_ANON_KEY,key);
-  const ok=initSupabase();
-  if(ok){
-    toast('Supabase connected ✦ — please sign in','success');
-    setTimeout(()=>go('auth'),1200);
-  } else {
-    toast('Could not connect — check your keys','error');
-  }
-}
-
-function saveApiKey(){
-  const key=document.getElementById('settings-api-key').value.trim();
-  if(!key){toast('Paste your API key first','error');return}
-  localStorage.setItem('lr_openai_key',key);
-  toast('API key saved ✦','success');
-}
 function saveProfile(){
   const fn=document.getElementById('s-first').value.trim();
   toast('Profile saved ✦','success');
@@ -1918,19 +1867,6 @@ function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').
 window.addEventListener('scroll',()=>{
   const nav=document.getElementById('l-nav');
   if(nav)nav.classList.toggle('scrolled',window.scrollY>40);
-});
-
-// Preload saved keys into settings inputs
-window.addEventListener('load',()=>{
-  const apiKey=localStorage.getItem('lr_openai_key');
-  const el=document.getElementById('settings-api-key');
-  if(apiKey&&el)el.value=apiKey;
-  const sbUrl=localStorage.getItem(SB_URL_KEY);
-  const sbKey=localStorage.getItem(SB_ANON_KEY);
-  const urlEl=document.getElementById('sb-url-input');
-  const keyEl=document.getElementById('sb-key-input');
-  if(sbUrl&&urlEl)urlEl.value=sbUrl;
-  if(sbKey&&keyEl)keyEl.value=sbKey;
 });
 
 // ── BOOT ──
