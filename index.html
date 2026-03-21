@@ -1102,7 +1102,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
               <div class="generate-row">
                 <button class="btn btn-gold btn-md" id="gen-btn" style="flex:1" onclick="handleGenerate()">Generate Video</button>
               </div>
-              <div style="font-size:.72rem;color:var(--muted2);">AI captions powered by OpenAI via secure server.</div>
+              <div style="font-size:.72rem;color:var(--muted2);">Video by <a href="https://runwayml.com" target="_blank" style="color:var(--gold-dim);text-decoration:none">Runway Gen-4</a> · Captions by OpenAI</div>
             </div>
           </div>
         </div>
@@ -1674,25 +1674,32 @@ async function handleGenerate(){
   const prompt=document.getElementById('dash-prompt').value.trim();
   if(!prompt){toast('Enter a video prompt first','error');return}
   if(generating)return;
-
-  // Enforce free plan limit
   if(videos.length>=MAX_FREE){showUpgradeModal();return}
 
   generating=true;
   const btn=document.getElementById('gen-btn');
-  btn.disabled=true;btn.textContent='Generating…';
+  btn.disabled=true;
+
+  // Animated button states during generation
+  const states=['Generating video…','Processing with Runway…','Almost ready…'];
+  let stateIdx=0;
+  btn.textContent=states[0];
+  const stateInterval=setInterval(()=>{
+    stateIdx=(stateIdx+1)%states.length;
+    btn.textContent=states[stateIdx];
+  },8000);
 
   const video={
-    id:Date.now(), // temp id until DB assigns uuid
+    id:Date.now(),
     prompt,tone:selectedTone,
-    video_url:SAMPLE_VIDEO,caption:'',status:'pending',
+    video_url:'',caption:'',status:'pending',
     created:new Date().toISOString(),
   };
   videos.unshift(video);renderGrid();updateStats();
 
-  // Generate caption via Edge Function (keeps OpenAI key server-side)
   try{
-    const res=await fetch(`${SB_URL}/functions/v1/generate-caption`,{
+    // Call unified Edge Function — generates video + caption in one go
+    const res=await fetch(`${SB_URL}/functions/v1/generate-video`,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
@@ -1702,11 +1709,15 @@ async function handleGenerate(){
     });
     const data=await res.json();
     video.caption=data.caption||fallbackCaption();
-  }catch(e){video.caption=fallbackCaption()}
+    video.video_url=data.videoUrl||SAMPLE_VIDEO;
+  }catch(e){
+    console.warn('generate-video failed, using fallbacks',e);
+    video.caption=fallbackCaption();
+    video.video_url=SAMPLE_VIDEO;
+  }
 
+  clearInterval(stateInterval);
   video.status='done';
-
-  // Persist to Supabase (or localStorage fallback)
   await saveVideo(video);
   renderGrid();updateStats();
   btn.disabled=false;btn.textContent='Generate Video';
@@ -1745,9 +1756,12 @@ function renderGrid(){
               onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>`
           :`<div class="card-thumb-bg">◈</div>`}
         <div class="gen-overlay" id="ov-${v.id}" style="${v.status==='done'?'display:none':''}">
-          <div class="spin-ring"></div><div class="gen-label">Generating</div>
+          <div class="spin-ring"></div>
+          <div class="gen-label">Runway generating…</div>
+          <div style="font-size:.55rem;color:var(--gold-dim);letter-spacing:.08em;margin-top:4px">30–60 seconds</div>
         </div>
         <div class="card-badge ${v.status==='done'?'badge-done':'badge-pending'}">${v.status==='done'?'✦ Done':'Pending'}</div>
+        ${v.status==='done'?`<a href="https://runwayml.com" target="_blank" style="position:absolute;bottom:6px;left:6px;font-size:.5rem;color:rgba(255,255,255,0.35);text-decoration:none;letter-spacing:.06em;background:rgba(0,0,0,.4);padding:2px 6px;border-radius:3px;">Powered by Runway</a>`:''}
       </div>
       <div class="card-body">
         <div class="card-prompt-text" title="${esc(v.prompt)}">${esc(v.prompt)}</div>
