@@ -784,7 +784,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 <!-- ══════════════════════════════
      LANDING PAGE
 ══════════════════════════════ -->
-<div class="page active" id="page-landing">
+<div class="page" id="page-landing">
   <nav class="l-nav" id="l-nav">
     <div class="wordmark" onclick="go('landing')">Lux<span>Reel</span></div>
     <div class="l-nav-links">
@@ -1467,10 +1467,17 @@ const pages=['landing','auth','dashboard','pricing','settings'];
 function go(page){
   pages.forEach(p=>{
     const el=document.getElementById('page-'+p);
-    if(el)el.classList.remove('active');
+    if(el){
+      el.classList.remove('active');
+      el.style.display='none';
+    }
   });
   const target=document.getElementById('page-'+page);
-  if(target){target.classList.add('active');window.scrollTo(0,0)}
+  if(target){
+    target.classList.add('active');
+    target.style.display='block';
+    window.scrollTo(0,0);
+  }
   if(page==='dashboard'){renderGrid();updateStats()}
 }
 
@@ -1562,8 +1569,10 @@ async function handleSignOut(){
 
 function updateUserUI(){
   const email=currentUser?.email||'';
-  const name=email.split('@')[0]||'User';
-  const fn=name.charAt(0).toUpperCase()+name.slice(1);
+  const raw=email.split('@')[0]||'User';
+  // Clean up dots and underscores, capitalise first word only
+  const name=raw.split(/[._]/)[0];
+  const fn=name.charAt(0).toUpperCase()+name.slice(1).toLowerCase();
   const initial=fn.charAt(0).toUpperCase();
   ['sidebar-avatar','settings-avatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=initial});
   ['sidebar-name','settings-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fn});
