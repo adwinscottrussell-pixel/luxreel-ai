@@ -1508,8 +1508,7 @@ function setAuthError(msg){
 
 async function handleAuth(){
   if(!sb){
-    toast('Configure Supabase in Settings → API first','error');
-    go('settings');
+    toast('Supabase not connected','error');
     return;
   }
   const email=document.getElementById('auth-email').value.trim();
@@ -1524,7 +1523,7 @@ async function handleAuth(){
   try{
     let result;
     if(authMode==='signup'){
-      result=await sb.auth.signUp({email,password});
+      result=await sb.auth.signUp({email,password,options:{emailRedirectTo:null}});
     } else {
       result=await sb.auth.signInWithPassword({email,password});
     }
@@ -1536,10 +1535,19 @@ async function handleAuth(){
       return;
     }
 
-    currentUser=result.data.user||result.data.session?.user;
+    // Manually grab session in case onAuthStateChange doesn't fire
+    const{data:{session}}=await sb.auth.getSession();
+    if(session){
+      currentUser=session.user;
+      updateUserUI();
+      await loadVideos();
+      go('dashboard');
+      toast(authMode==='signup'?'Welcome to LuxReel! ✦':'Welcome back! ✦','success');
+      return;
+    }
 
-    if(authMode==='signup'&&result.data.user&&!result.data.session){
-      // Email confirmation required
+    // Sign up with email confirmation pending
+    if(authMode==='signup'&&result.data.user&&!session){
       setAuthError('');
       btn.disabled=false;
       btn.textContent='Create Free Account →';
@@ -1547,10 +1555,10 @@ async function handleAuth(){
       return;
     }
 
-    updateUserUI();
-    await loadVideos();
-    go('dashboard');
-    toast(authMode==='signup'?'Welcome to LuxReel! ✦':'Welcome back! ✦','success');
+    setAuthError('Could not sign in. Please try again.');
+    btn.disabled=false;
+    btn.textContent=authMode==='signup'?'Create Free Account →':'Sign In →';
+
   }catch(e){
     setAuthError('Something went wrong. Please try again.');
     btn.disabled=false;
