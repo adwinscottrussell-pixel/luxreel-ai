@@ -1444,7 +1444,7 @@ function hideLo(){
 // STATE
 // ══════════════════════════════
 const SAMPLE_VIDEO='https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
-const MAX_FREE=3;
+const MAX_FREE=10;
 let videos=[];
 let currentUser=null;
 let selectedTone='luxury';
@@ -1689,13 +1689,13 @@ async function handleGenerate(){
   const btn=document.getElementById('gen-btn');
   btn.disabled=true;
 
-  const states=['Generating video…','Processing with Runway…','Almost ready…'];
+  const states=['Generating video…','Processing with Runway…','Almost ready…','Finalising…','Nearly done…'];
   let stateIdx=0;
   btn.textContent=states[0];
   const stateInterval=setInterval(()=>{
     stateIdx=(stateIdx+1)%states.length;
     btn.textContent=states[stateIdx];
-  },8000);
+  },20000);
 
   const video={
     id:Date.now(),
@@ -1707,95 +1707,32 @@ async function handleGenerate(){
   videos.unshift(video);renderGrid();updateStats();
 
   try{
-    // Step 1 — Start the Runway task
-    const startRes=await fetch(`${SB_URL}/functions/v1/generate-video`,{
+    const res=await fetch(`${SB_URL}/functions/v1/generate-video`,{
       method:'POST',
       headers:{
         'Content-Type':'application/json',
         'Authorization':`Bearer ${SB_ANON}`,
       },
-      body:JSON.stringify({prompt,tone:selectedTone,action:'start'}),
+      body:JSON.stringify({prompt,tone:selectedTone}),
+      keepalive:true,
     });
-    const startData=await startRes.json();
-    video.caption=startData.caption||fallbackCaption();
-    video.task_id=startData.taskId||'';
-    video.status='pending';
-
-    // Save to DB with pending status and task_id
-    await saveVideo(video);
-    renderGrid();
-
-    // Release the button immediately
-    clearInterval(stateInterval);
-    btn.disabled=false;btn.textContent='Generate Video';
-    generating=false;
-    document.getElementById('dash-prompt').value='';
-    toast('Video generating — check back in 60 seconds ✦','info');
-
-    // Step 2 — Poll in background without blocking the UI
-    if(video.task_id){
-      pollForVideo(video);
-    }
-
+    const data=await res.json();
+    video.caption=data.caption||fallbackCaption();
+    video.video_url=data.videoUrl||SAMPLE_VIDEO;
   }catch(e){
-    console.warn('generate-video failed',e);
+    console.warn('generate-video error:',e);
     video.caption=fallbackCaption();
     video.video_url=SAMPLE_VIDEO;
-    video.status='done';
-    clearInterval(stateInterval);
-    await saveVideo(video);
-    renderGrid();updateStats();
-    btn.disabled=false;btn.textContent='Generate Video';
-    generating=false;
-    document.getElementById('dash-prompt').value='';
   }
-}
 
-// Poll for video URL in the background
-async function pollForVideo(video){
-  for(let i=0;i<30;i++){
-    await new Promise(r=>setTimeout(r,6000));
-    try{
-      const pollRes=await fetch(`${SB_URL}/functions/v1/generate-video`,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization':`Bearer ${SB_ANON}`,
-        },
-        body:JSON.stringify({action:'poll',taskId:video.task_id}),
-      });
-      const pollData=await pollRes.json();
-      console.log('Poll',i+1,':',pollData.status,pollData.videoUrl);
-
-      if(pollData.status==='done'&&pollData.videoUrl){
-        video.video_url=pollData.videoUrl;
-        video.status='done';
-        await saveVideo(video);
-        // Update in local array
-        const idx=videos.findIndex(v=>v.id===video.id);
-        if(idx>=0)videos[idx]=video;
-        renderGrid();updateStats();
-        toast('Your video is ready! ✦','success');
-        return;
-      }
-      if(pollData.status==='failed'){
-        video.video_url=SAMPLE_VIDEO;
-        video.status='done';
-        await saveVideo(video);
-        const idx=videos.findIndex(v=>v.id===video.id);
-        if(idx>=0)videos[idx]=video;
-        renderGrid();
-        return;
-      }
-    }catch(e){console.warn('Poll error',e)}
-  }
-  // Timed out — save with fallback
-  video.video_url=SAMPLE_VIDEO;
+  clearInterval(stateInterval);
   video.status='done';
   await saveVideo(video);
-  const idx=videos.findIndex(v=>v.id===video.id);
-  if(idx>=0)videos[idx]=video;
-  renderGrid();
+  renderGrid();updateStats();
+  btn.disabled=false;btn.textContent='Generate Video';
+  generating=false;
+  document.getElementById('dash-prompt').value='';
+  toast('Video created ✦','success');
 }
 
 function fallbackCaption(){
