@@ -2153,12 +2153,14 @@ window.addEventListener('scroll',()=>{
 // ── Keep Edge Functions warm ──
 function warmFunctions(){
   fetch(`${SB_URL}/functions/v1/start-video`,{
-    method:'OPTIONS',
-    headers:{'Authorization':`Bearer ${SB_ANON}`},
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+    body:JSON.stringify({warm:true}),
   }).catch(()=>{});
   fetch(`${SB_URL}/functions/v1/check-video`,{
-    method:'OPTIONS',
-    headers:{'Authorization':`Bearer ${SB_ANON}`},
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+    body:JSON.stringify({warm:true}),
   }).catch(()=>{});
 }
 
@@ -2166,7 +2168,7 @@ function warmFunctions(){
 bootApp();
 renderPromptLibrary();
 warmFunctions();
-setInterval(warmFunctions, 60000); // ping every 60 seconds
+setInterval(warmFunctions, 50000); // ping every 50 seconds
 </script>
 </body>
 </html>
