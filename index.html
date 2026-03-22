@@ -746,7 +746,26 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
   .auth-right{padding:32px 20px}
   .auth-logo{margin-bottom:32px}
 }
-/* ── Supabase config banner ── */
+/* ── Prompt library cards ── */
+.prompt-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  padding:14px;cursor:pointer;transition:all .18s;position:relative;
+}
+.prompt-card:hover{border-color:var(--gold3);background:rgba(212,168,83,.05);transform:translateY(-1px)}
+.prompt-card-cat{
+  font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:6px;font-weight:600;
+}
+.prompt-card-title{font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:4px}
+.prompt-card-preview{font-size:.75rem;color:var(--muted);line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prompt-card-use{
+  position:absolute;top:10px;right:10px;
+  font-size:.6rem;padding:3px 8px;border-radius:4px;
+  background:rgba(212,168,83,.1);border:1px solid var(--gold3);color:var(--gold);
+  opacity:0;transition:opacity .15s;
+}
+.prompt-card:hover .prompt-card-use{opacity:1}
 .sb-config-banner{
   background:rgba(212,168,83,.08);border:1px solid rgba(212,168,83,.25);
   border-radius:8px;padding:14px 18px;margin-bottom:16px;
@@ -1078,6 +1097,22 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
             <p>LuxReel Pro — from $29/mo. Cancel anytime.</p>
           </div>
           <button class="btn btn-gold btn-sm" onclick="go('pricing')">Upgrade to Pro →</button>
+        </div>
+
+        <!-- Prompt Library -->
+        <div class="create-section" style="margin-bottom:16px">
+          <div class="create-header">
+            <div class="create-title">✦ Prompt Library</div>
+            <div style="display:flex;gap:6px" id="prompt-cats">
+              <button class="filter-pill active" onclick="filterPrompts('all',this)">All</button>
+              <button class="filter-pill" onclick="filterPrompts('fashion',this)">Fashion</button>
+              <button class="filter-pill" onclick="filterPrompts('product',this)">Product</button>
+              <button class="filter-pill" onclick="filterPrompts('lifestyle',this)">Lifestyle</button>
+              <button class="filter-pill" onclick="filterPrompts('food',this)">Food</button>
+              <button class="filter-pill" onclick="filterPrompts('nature',this)">Nature</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:16px" id="prompt-library-grid"></div>
         </div>
 
         <!-- Create -->
@@ -1684,8 +1719,71 @@ async function deleteVideoFromDB(id){
 }
 
 // ══════════════════════════════
-// TONE / DURATION / RATIO
+// PROMPT LIBRARY
 // ══════════════════════════════
+const PROMPTS=[
+  // Fashion
+  {cat:'fashion',title:'Silk dress flow',prompt:'A flowing silk luxury dress in champagne gold, slow motion fabric movement, soft studio lighting, white seamless background, editorial fashion aesthetic, extreme close-up of fabric texture'},
+  {cat:'fashion',title:'Leather handbag',prompt:'A premium Italian leather handbag on a marble pedestal, slow cinematic orbit, warm golden hour lighting from the left, shallow depth of field, luxury fashion editorial style'},
+  {cat:'fashion',title:'Watch reveal',prompt:'A luxury watch sliding into frame on a dark reflective surface, slow push in, dramatic side lighting, lens flare, cinematic anamorphic look, extreme close-up of dial'},
+  {cat:'fashion',title:'Sunglasses drop',prompt:'Premium sunglasses falling in slow motion onto white marble, soft bounce, studio lighting, clean white background, editorial product shot, 4K detail'},
+  {cat:'fashion',title:'Shoe close-up',prompt:'A luxury designer shoe on polished black marble, slow dolly in, dramatic spotlight from above, deep shadows, high contrast editorial fashion look'},
+  // Product
+  {cat:'product',title:'Perfume golden hour',prompt:'A luxury perfume bottle on Italian white marble, golden hour sunlight from the left, slow cinematic zoom in, warm amber tones, soft bokeh background, condensation on glass'},
+  {cat:'product',title:'Skincare minimal',prompt:'Luxury skincare cream jar on frosted glass surface, slow reveal from below, clean minimal white studio, soft diffused lighting, product commercial aesthetic'},
+  {cat:'product',title:'Jewellery sparkle',prompt:'Diamond jewellery necklace laid on black velvet, slow rotation, dramatic spotlight creating prismatic sparkle, macro close-up, deep rich blacks'},
+  {cat:'product',title:'Candle ambience',prompt:'A luxury scented candle with soft flame on dark wood surface, slow zoom in on flame, warm candlelight glow, dark moody atmosphere, smoke curling upward'},
+  {cat:'product',title:'Champagne pour',prompt:'Champagne being poured into a crystal flute in slow motion, golden bubbles rising, dark elegant background, dramatic side lighting, luxury celebration aesthetic'},
+  // Lifestyle
+  {cat:'lifestyle',title:'Morning coffee ritual',prompt:'A luxury ceramic coffee cup on a marble counter, steam rising in morning light, slow dolly in, warm golden morning tones, editorial lifestyle aesthetic'},
+  {cat:'lifestyle',title:'Rooftop city view',prompt:'A luxury penthouse rooftop at blue hour, city lights bokeh below, slow pan across the view, cool blue tones, cinematic wide shot'},
+  {cat:'lifestyle',title:'Private jet interior',prompt:'Interior of a private jet cabin, leather seats, soft cabin lighting, slow push through the aisle, warm luxury tones, cinematic travel aesthetic'},
+  {cat:'lifestyle',title:'Hotel suite reveal',prompt:'Luxury hotel suite reveal shot, slow push through doors, warm golden interior lighting, soft bed linen, city view through floor-to-ceiling windows'},
+  {cat:'lifestyle',title:'Spa serenity',prompt:'Luxury spa treatment room, white orchid, water surface with petals, slow drone-like rise, soft diffused natural light, peaceful minimal aesthetic'},
+  // Food
+  {cat:'food',title:'Chocolate pour',prompt:'Dark melted chocolate being poured slowly over a luxury dessert, extreme slow motion, warm studio lighting, dark moody background, editorial food photography style'},
+  {cat:'food',title:'Sushi artistry',prompt:'Chef plating premium sushi close-up, slow motion chopstick placement, dark slate surface, soft warm restaurant lighting, cinematic food documentary style'},
+  {cat:'food',title:'Wine swirl',prompt:'Deep red wine being swirled in a crystal glass, slow motion, warm candlelight behind, close-up of liquid movement, luxury restaurant ambience'},
+  {cat:'food',title:'Truffle shaving',prompt:'Black truffle being shaved over a luxury pasta dish in slow motion, steam rising, dark restaurant background, warm golden lighting, editorial food aesthetic'},
+  // Nature
+  {cat:'nature',title:'Ocean at dawn',prompt:'Luxury beachfront at golden sunrise, slow motion gentle waves on white sand, warm pink and gold tones, aerial perspective descending, cinematic travel aesthetic'},
+  {cat:'nature',title:'Forest mist',prompt:'Misty luxury forest at dawn, soft light filtering through trees, slow push forward through the mist, cool blue-green tones, cinematic nature documentary style'},
+  {cat:'nature',title:'Mountain snow',prompt:'Snow-capped mountain peak at sunrise, golden light on white snow, slow pan across the landscape, crisp cold atmosphere, cinematic wide shot'},
+  {cat:'nature',title:'Desert dunes',prompt:'Luxury desert landscape at golden hour, slow aerial drift over sand dunes, warm amber and gold tones, long shadows, cinematic travel film aesthetic'},
+];
+
+let currentPromptCat='all';
+
+function renderPromptLibrary(){
+  const grid=document.getElementById('prompt-library-grid');
+  if(!grid)return;
+  const filtered=currentPromptCat==='all'?PROMPTS:PROMPTS.filter(p=>p.cat===currentPromptCat);
+  grid.innerHTML=filtered.map(p=>`
+    <div class="prompt-card" onclick="usePrompt(${JSON.stringify(p.prompt).replace(/"/g,'&quot;')})">
+      <div class="prompt-card-use">Use ✦</div>
+      <div class="prompt-card-cat">${p.cat}</div>
+      <div class="prompt-card-title">${p.title}</div>
+      <div class="prompt-card-preview">${p.prompt}</div>
+    </div>`).join('');
+}
+
+function filterPrompts(cat,el){
+  currentPromptCat=cat;
+  document.querySelectorAll('#prompt-cats .filter-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderPromptLibrary();
+}
+
+function usePrompt(prompt){
+  const ta=document.getElementById('dash-prompt');
+  if(ta){
+    ta.value=prompt;
+    ta.focus();
+    // Scroll to create section
+    ta.scrollIntoView({behavior:'smooth',block:'center'});
+    toast('Prompt loaded — customise and generate ✦','info');
+  }
+}
 document.querySelectorAll('.tone-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     if(btn.dataset.tone){
@@ -1967,6 +2065,7 @@ window.addEventListener('scroll',()=>{
 
 // ── BOOT ──
 bootApp();
+renderPromptLibrary();
 </script>
 </body>
 </html>
