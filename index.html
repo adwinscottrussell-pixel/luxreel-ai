@@ -746,6 +746,19 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
   .auth-right{padding:32px 20px}
   .auth-logo{margin-bottom:32px}
 }
+/* ── Image Upload Area ── */
+.upload-area{
+  border:2px dashed var(--border);border-radius:10px;
+  padding:24px;text-align:center;cursor:pointer;
+  transition:all .2s;margin-bottom:16px;
+  background:var(--panel);
+}
+.upload-area:hover{border-color:var(--gold3);background:rgba(212,168,83,.04)}
+.upload-area.has-image{border-style:solid;border-color:var(--gold3)}
+.upload-icon{font-size:1.8rem;margin-bottom:8px;opacity:.5}
+.upload-title{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:4px}
+.upload-sub{font-size:.72rem;color:var(--muted)}
+
 /* ── Prompt library cards ── */
 .prompt-card{
   background:var(--panel);border:1px solid var(--border);border-radius:8px;
@@ -1120,6 +1133,22 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           <div class="create-header">
             <div class="create-title">✦ Create New Video</div>
           </div>
+
+          <!-- Image Upload -->
+          <div class="upload-area" id="upload-area" onclick="document.getElementById('product-image-input').click()">
+            <input type="file" id="product-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleImageUpload(this)">
+            <div id="upload-placeholder">
+              <div class="upload-icon">⬆</div>
+              <div class="upload-title">Upload Product Photo</div>
+              <div class="upload-sub">JPG, PNG or WebP · Max 10MB · Optional</div>
+            </div>
+            <div id="upload-preview" style="display:none">
+              <img id="upload-img" style="max-height:120px;max-width:100%;border-radius:6px;object-fit:contain">
+              <div style="margin-top:8px;font-size:.75rem;color:var(--gold)" id="upload-filename"></div>
+              <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="clearImage(event)">Remove ✕</button>
+            </div>
+          </div>
+
           <div class="create-grid">
             <div class="prompt-area">
               <div class="prompt-label">Video Prompt</div>
@@ -1504,6 +1533,8 @@ let selectedRatio='1280:720';
 let generating=false;
 let currentFilter='all';
 let pricingPeriod='monthly';
+let uploadedImageBase64='';
+let uploadedImageType='';
 
 const TONES={
   luxury:{label:'Luxury',system:'Write a sophisticated Instagram caption (2-3 lines, max 180 chars) for a luxury brand. End with 3–4 premium hashtags. No emojis. Refined, elegant, aspirational.'},
@@ -1779,11 +1810,43 @@ function usePrompt(prompt){
   if(ta){
     ta.value=prompt;
     ta.focus();
-    // Scroll to create section
     ta.scrollIntoView({behavior:'smooth',block:'center'});
     toast('Prompt loaded — customise and generate ✦','info');
   }
 }
+
+// ══════════════════════════════
+// IMAGE UPLOAD
+// ══════════════════════════════
+function handleImageUpload(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size>10*1024*1024){toast('Image too large — max 10MB','error');return;}
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    const result=e.target.result;
+    uploadedImageBase64=result.split(',')[1];
+    uploadedImageType=file.type;
+    document.getElementById('upload-placeholder').style.display='none';
+    document.getElementById('upload-preview').style.display='block';
+    document.getElementById('upload-img').src=result;
+    document.getElementById('upload-filename').textContent=file.name;
+    document.getElementById('upload-area').classList.add('has-image');
+    toast('Product photo ready ✦','success');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearImage(e){
+  e.stopPropagation();
+  uploadedImageBase64='';
+  uploadedImageType='';
+  document.getElementById('upload-placeholder').style.display='block';
+  document.getElementById('upload-preview').style.display='none';
+  document.getElementById('upload-area').classList.remove('has-image');
+  document.getElementById('product-image-input').value='';
+}
+
 document.querySelectorAll('.tone-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     if(btn.dataset.tone){
@@ -1833,7 +1896,7 @@ async function handleGenerate(){
     const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-      body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio}),
+      body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio,imageBase64:uploadedImageBase64,imageType:uploadedImageType}),
     });
     const startData=await startRes.json();
     video.caption=startData.caption||fallbackCaption();
@@ -1847,7 +1910,7 @@ async function handleGenerate(){
         const retryRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-          body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio}),
+          body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio,imageBase64:uploadedImageBase64,imageType:uploadedImageType}),
         });
         const retryData=await retryRes.json();
         if(retryData.taskId)video.task_id=retryData.taskId;
