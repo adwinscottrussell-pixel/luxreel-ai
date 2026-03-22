@@ -1688,14 +1688,7 @@ async function handleGenerate(){
   generating=true;
   const btn=document.getElementById('gen-btn');
   btn.disabled=true;
-
-  const states=['Generating video…','Processing with Runway…','Almost ready…','Finalising…','Nearly done…'];
-  let stateIdx=0;
-  btn.textContent=states[0];
-  const stateInterval=setInterval(()=>{
-    stateIdx=(stateIdx+1)%states.length;
-    btn.textContent=states[stateIdx];
-  },20000);
+  btn.textContent='Starting…';
 
   const video={
     id:Date.now(),
@@ -1707,32 +1700,71 @@ async function handleGenerate(){
   videos.unshift(video);renderGrid();updateStats();
 
   try{
-    const res=await fetch(`${SB_URL}/functions/v1/generate-video`,{
+    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':`Bearer ${SB_ANON}`,
-      },
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
       body:JSON.stringify({prompt,tone:selectedTone}),
-      keepalive:true,
     });
-    const data=await res.json();
-    video.caption=data.caption||fallbackCaption();
-    video.video_url=data.videoUrl||SAMPLE_VIDEO;
+    const startData=await startRes.json();
+    video.caption=startData.caption||fallbackCaption();
+    video.task_id=startData.taskId||'';
+    console.log('Task started:',video.task_id);
+    await saveVideo(video);
+    renderGrid();
+    btn.disabled=false;btn.textContent='Generate Video';
+    generating=false;
+    document.getElementById('dash-prompt').value='';
+    toast('Video generating — ready in ~2 mins ✦','info');
+    if(video.task_id)pollVideoStatus(video);
   }catch(e){
-    console.warn('generate-video error:',e);
+    console.warn('Start failed',e);
     video.caption=fallbackCaption();
-    video.video_url=SAMPLE_VIDEO;
+    video.status='done';
+    await saveVideo(video);
+    renderGrid();updateStats();
+    btn.disabled=false;btn.textContent='Generate Video';
+    generating=false;
+    document.getElementById('dash-prompt').value='';
   }
+}
 
-  clearInterval(stateInterval);
+async function pollVideoStatus(video){
+  console.log('Polling task:',video.task_id);
+  for(let i=0;i<40;i++){
+    await new Promise(r=>setTimeout(r,8000));
+    try{
+      const res=await fetch(`${SB_URL}/functions/v1/check-video`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+        body:JSON.stringify({taskId:video.task_id}),
+      });
+      const data=await res.json();
+      console.log(`Poll ${i+1}:`,data.status,data.videoUrl||'');
+      if(data.status==='done'&&data.videoUrl){
+        video.video_url=data.videoUrl;
+        video.status='done';
+        await saveVideo(video);
+        const idx=videos.findIndex(v=>String(v.id)===String(video.id));
+        if(idx>=0)videos[idx]=video;
+        renderGrid();updateStats();
+        toast('Your video is ready! ✦','success');
+        return;
+      }
+      if(data.status==='failed'){
+        video.status='done';
+        await saveVideo(video);
+        const idx=videos.findIndex(v=>String(v.id)===String(video.id));
+        if(idx>=0)videos[idx]=video;
+        renderGrid();
+        return;
+      }
+    }catch(e){console.warn('Poll error',e)}
+  }
   video.status='done';
   await saveVideo(video);
-  renderGrid();updateStats();
-  btn.disabled=false;btn.textContent='Generate Video';
-  generating=false;
-  document.getElementById('dash-prompt').value='';
-  toast('Video created ✦','success');
+  const idx=videos.findIndex(v=>String(v.id)===String(video.id));
+  if(idx>=0)videos[idx]=video;
+  renderGrid();
 }
 
 function fallbackCaption(){
