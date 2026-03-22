@@ -1838,6 +1838,23 @@ async function handleGenerate(){
     const startData=await startRes.json();
     video.caption=startData.caption||fallbackCaption();
     video.task_id=startData.taskId||'';
+
+    // If no taskId, retry once after 3 seconds
+    if(!video.task_id){
+      console.warn('No taskId — retrying once...');
+      await new Promise(r=>setTimeout(r,3000));
+      try{
+        const retryRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+          body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio}),
+        });
+        const retryData=await retryRes.json();
+        if(retryData.taskId)video.task_id=retryData.taskId;
+        if(retryData.caption&&!video.caption)video.caption=retryData.caption;
+      }catch(e){console.warn('Retry failed',e)}
+    }
+
     console.log('Task started:',video.task_id);
     await saveVideo(video);
     renderGrid();
@@ -2063,9 +2080,23 @@ window.addEventListener('scroll',()=>{
   if(nav)nav.classList.toggle('scrolled',window.scrollY>40);
 });
 
+// ── Keep Edge Functions warm ──
+function warmFunctions(){
+  fetch(`${SB_URL}/functions/v1/start-video`,{
+    method:'OPTIONS',
+    headers:{'Authorization':`Bearer ${SB_ANON}`},
+  }).catch(()=>{});
+  fetch(`${SB_URL}/functions/v1/check-video`,{
+    method:'OPTIONS',
+    headers:{'Authorization':`Bearer ${SB_ANON}`},
+  }).catch(()=>{});
+}
+
 // ── BOOT ──
 bootApp();
 renderPromptLibrary();
+warmFunctions();
+setInterval(warmFunctions, 120000); // ping every 2 minutes
 </script>
 </body>
 </html>
