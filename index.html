@@ -1099,6 +1099,22 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
                 <button class="tone-btn" data-tone="playful"><span class="tone-emoji">🎉</span>Playful</button>
                 <button class="tone-btn" data-tone="cinematic"><span class="tone-emoji">🎬</span>Cinematic</button>
               </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+                <div>
+                  <div class="prompt-label" style="margin-bottom:6px">Duration</div>
+                  <div style="display:flex;gap:6px">
+                    <button class="tone-btn active" data-dur="5" id="dur-5" onclick="setDuration(5,this)" style="flex:1;justify-content:center">5s</button>
+                    <button class="tone-btn" data-dur="10" id="dur-10" onclick="setDuration(10,this)" style="flex:1;justify-content:center">10s</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="prompt-label" style="margin-bottom:6px">Format</div>
+                  <div style="display:flex;gap:6px">
+                    <button class="tone-btn active" data-ratio="1280:720" id="ratio-land" onclick="setRatio('1280:720',this)" style="flex:1;justify-content:center;font-size:.65rem">16:9</button>
+                    <button class="tone-btn" data-ratio="720:1280" id="ratio-port" onclick="setRatio('720:1280',this)" style="flex:1;justify-content:center;font-size:.65rem">9:16</button>
+                  </div>
+                </div>
+              </div>
               <div class="generate-row">
                 <button class="btn btn-gold btn-md" id="gen-btn" style="flex:1" onclick="handleGenerate()">Generate Video</button>
               </div>
@@ -1448,6 +1464,8 @@ const MAX_FREE=10;
 let videos=[];
 let currentUser=null;
 let selectedTone='luxury';
+let selectedDuration=5;
+let selectedRatio='1280:720';
 let generating=false;
 let currentFilter='all';
 let pricingPeriod='monthly';
@@ -1666,15 +1684,29 @@ async function deleteVideoFromDB(id){
 }
 
 // ══════════════════════════════
-// TONE SELECTOR
+// TONE / DURATION / RATIO
 // ══════════════════════════════
 document.querySelectorAll('.tone-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tone-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    selectedTone=btn.dataset.tone;
+    if(btn.dataset.tone){
+      document.querySelectorAll('.tone-btn[data-tone]').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedTone=btn.dataset.tone;
+    }
   });
 });
+
+function setDuration(dur,el){
+  selectedDuration=dur;
+  document.querySelectorAll('[data-dur]').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setRatio(ratio,el){
+  selectedRatio=ratio;
+  document.querySelectorAll('[data-ratio]').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
 
 // ══════════════════════════════
 // GENERATE
@@ -1703,7 +1735,7 @@ async function handleGenerate(){
     const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-      body:JSON.stringify({prompt,tone:selectedTone}),
+      body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio}),
     });
     const startData=await startRes.json();
     video.caption=startData.caption||fallbackCaption();
