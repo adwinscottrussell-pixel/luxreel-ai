@@ -1182,7 +1182,8 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
               <div class="generate-row">
                 <button class="btn btn-gold btn-md" id="gen-btn" style="flex:1" onclick="handleGenerate()">Generate Video</button>
               </div>
-              <div style="font-size:.72rem;color:var(--muted2);">Video by <a href="https://runwayml.com" target="_blank" style="color:var(--gold-dim);text-decoration:none">Runway Gen-4</a> · Captions by OpenAI</div>
+              <div id="enhanced-prompt-preview" style="display:none;margin-top:10px;padding:10px;background:rgba(212,168,83,.06);border:1px solid var(--gold3);border-radius:6px;font-size:.7rem;color:var(--muted);line-height:1.5;font-style:italic"></div>
+              <div style="font-size:.72rem;color:var(--muted2);margin-top:8px">✦ AI-enhanced prompt · Video by <a href="https://runwayml.com" target="_blank" style="color:var(--gold-dim);text-decoration:none">Runway Gen-4</a> · Captions by OpenAI</div>
             </div>
           </div>
         </div>
@@ -1901,6 +1902,12 @@ async function handleGenerate(){
     const startData=await startRes.json();
     video.caption=startData.caption||fallbackCaption();
     video.task_id=startData.taskId||'';
+    if(startData.enhancedPrompt){
+      console.log('Enhanced prompt:', startData.enhancedPrompt);
+      // Show enhanced prompt to user briefly
+      const ep=document.getElementById('enhanced-prompt-preview');
+      if(ep){ep.textContent=startData.enhancedPrompt;ep.style.display='block';}
+    }
 
     // If no taskId, retry once after 3 seconds
     if(!video.task_id){
