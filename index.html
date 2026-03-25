@@ -786,7 +786,18 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
   background:rgba(76,175,125,.2);color:var(--green);font-weight:600;
 }
 
-/* ── Onboarding modal ── */
+/* ── Onboarding mode buttons ── */
+.ob-mode-btn{
+  display:flex;align-items:center;gap:16px;
+  background:var(--noir3);border:1px solid var(--border);border-radius:10px;
+  padding:16px 20px;cursor:pointer;transition:all .18s;text-align:left;width:100%;
+}
+.ob-mode-btn:hover{border-color:var(--gold3);background:rgba(212,168,83,.05)}
+.ob-mode-btn.selected{border-color:var(--gold);background:rgba(212,168,83,.08)}
+.ob-mode-icon{font-size:1.6rem;flex-shrink:0}
+.ob-mode-title{font-size:.95rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.ob-mode-desc{font-size:.78rem;color:var(--muted)}
+.ob-mode-arrow{margin-left:auto;color:var(--gold);font-size:1.1rem;flex-shrink:0}
 #onboarding-modal.open{display:flex!important}
 .prompt-card{
   background:var(--panel);border:1px solid var(--border);border-radius:8px;
@@ -1209,38 +1220,140 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 <!-- ══════════════════════════════
      ONBOARDING MODAL
 ══════════════════════════════ -->
-<div id="onboarding-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:var(--panel);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:520px;padding:40px;position:relative">
-    <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Your Content Strategy</div>
-    <div style="font-size:.85rem;color:var(--muted);margin-bottom:32px">Answer 3 questions and we'll generate a 14-day Instagram content plan with videos ready to post.</div>
+<!-- ══════════════════════════════
+     ONBOARDING MODAL — 3 SCREENS
+══════════════════════════════ -->
+<div id="onboarding-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--panel);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:560px;padding:40px;position:relative">
 
-    <div style="margin-bottom:20px">
-      <div class="prompt-label" style="margin-bottom:8px">What's your niche?</div>
-      <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:12px 16px;font-size:.9rem" placeholder="e.g. luxury fashion, real estate, fitness, skincare, food…">
+    <!-- Progress bar -->
+    <div style="display:flex;gap:6px;margin-bottom:32px">
+      <div id="ob-prog-1" style="height:3px;flex:1;border-radius:2px;background:var(--gold);transition:all .3s"></div>
+      <div id="ob-prog-2" style="height:3px;flex:1;border-radius:2px;background:var(--border2);transition:all .3s"></div>
+      <div id="ob-prog-3" style="height:3px;flex:1;border-radius:2px;background:var(--border2);transition:all .3s"></div>
     </div>
 
-    <div style="margin-bottom:20px">
-      <div class="prompt-label" style="margin-bottom:8px">What's your goal?</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <button class="tone-btn" data-goal="grow" onclick="selectGoal(this)">📈 Grow</button>
-        <button class="tone-btn" data-goal="sell" onclick="selectGoal(this)">💰 Sell</button>
-        <button class="tone-btn" data-goal="educate" onclick="selectGoal(this)">🎓 Educate</button>
+    <!-- SCREEN 1 — What do you want to grow? -->
+    <div id="ob-screen-1">
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">What do you want to grow?</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:32px">Choose your mode and we'll tailor your content strategy.</div>
+
+      <div style="display:grid;gap:12px">
+        <button class="ob-mode-btn" onclick="selectMode('personal')" id="mode-personal">
+          <div class="ob-mode-icon">📈</div>
+          <div>
+            <div class="ob-mode-title">Personal Brand</div>
+            <div class="ob-mode-desc">Coaches, creators, consultants & thought leaders</div>
+          </div>
+          <div class="ob-mode-arrow">→</div>
+        </button>
+        <button class="ob-mode-btn" onclick="selectMode('local')" id="mode-local">
+          <div class="ob-mode-icon">📍</div>
+          <div>
+            <div class="ob-mode-title">Local Business</div>
+            <div class="ob-mode-desc">Restaurants, salons, gyms & service businesses</div>
+          </div>
+          <div class="ob-mode-arrow">→</div>
+        </button>
+        <button class="ob-mode-btn" onclick="selectMode('product')" id="mode-product">
+          <div class="ob-mode-icon">🛒</div>
+          <div>
+            <div class="ob-mode-title">Sell a Product</div>
+            <div class="ob-mode-desc">E-commerce, dropshipping & product brands</div>
+          </div>
+          <div class="ob-mode-arrow">→</div>
+        </button>
       </div>
     </div>
 
-    <div style="margin-bottom:32px">
-      <div class="prompt-label" style="margin-bottom:8px">What's your tone?</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px">
-        <button class="tone-btn" data-tone="luxury" onclick="selectObTone(this)">💎 Luxury</button>
-        <button class="tone-btn" data-tone="bold" onclick="selectObTone(this)">⚡ Bold</button>
-        <button class="tone-btn" data-tone="minimal" onclick="selectObTone(this)">◻ Minimal</button>
-        <button class="tone-btn" data-tone="playful" onclick="selectObTone(this)">🎉 Playful</button>
-        <button class="tone-btn" data-tone="cinematic" onclick="selectObTone(this)">🎬 Cinematic</button>
+    <!-- SCREEN 2 — Tell us about your brand -->
+    <div id="ob-screen-2" style="display:none">
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px" id="ob-screen2-title">Tell us about your brand</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:28px">We use this to craft your content angles, hook styles and CTAs.</div>
+
+      <div style="margin-bottom:18px">
+        <div class="prompt-label" style="margin-bottom:8px" id="ob-niche-label">Your niche</div>
+        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:12px 16px;font-size:.9rem" placeholder="e.g. fitness coaching, mindset, business strategy…">
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div class="prompt-label" style="margin-bottom:8px">Target audience</div>
+        <input id="ob-audience" class="prompt-textarea" style="height:auto;padding:12px 16px;font-size:.9rem" placeholder="e.g. beginners, CEOs, busy moms, entrepreneurs…">
+      </div>
+
+      <div style="margin-bottom:18px">
+        <div class="prompt-label" style="margin-bottom:8px">Your goal</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="ob-goals">
+          <button class="tone-btn" data-goal="followers" onclick="selectGoal(this)">📈 Grow followers</button>
+          <button class="tone-btn" data-goal="clients" onclick="selectGoal(this)">🤝 Get clients</button>
+          <button class="tone-btn" data-goal="authority" onclick="selectGoal(this)">👑 Build authority</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:28px">
+        <div class="prompt-label" style="margin-bottom:8px">Content tone</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <button class="tone-btn" data-tone="educational" onclick="selectObTone(this)">🎓 Educational</button>
+          <button class="tone-btn" data-tone="motivational" onclick="selectObTone(this)">🔥 Motivational</button>
+          <button class="tone-btn" data-tone="bold" onclick="selectObTone(this)">⚡ Bold</button>
+          <button class="tone-btn" data-tone="luxury" onclick="selectObTone(this)">💎 Luxury</button>
+          <button class="tone-btn" data-tone="playful" onclick="selectObTone(this)">🎉 Playful</button>
+          <button class="tone-btn" data-tone="minimal" onclick="selectObTone(this)">◻ Minimal</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline btn-md" onclick="goObScreen(1)">← Back</button>
+        <button class="btn btn-gold btn-md" style="flex:1" onclick="goObScreen(3)">Next → Review Profile</button>
+      </div>
+      <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
+    </div>
+
+    <!-- SCREEN 3 — Your Content Profile -->
+    <div id="ob-screen-3" style="display:none">
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Your Content Profile ✦</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:24px">Here's what we've built for you. We'll use this to generate your 14-day plan.</div>
+
+      <div style="background:var(--noir3);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px">
+        <div style="display:grid;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Mode</span>
+            <span style="font-size:.85rem;font-weight:600;color:var(--text)" id="profile-mode"></span>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Niche</span>
+            <span style="font-size:.85rem;font-weight:600;color:var(--text)" id="profile-niche"></span>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Audience</span>
+            <span style="font-size:.85rem;font-weight:600;color:var(--text)" id="profile-audience"></span>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Goal</span>
+            <span style="font-size:.85rem;font-weight:600;color:var(--gold)" id="profile-goal"></span>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Tone</span>
+            <span style="font-size:.85rem;font-weight:600;color:var(--gold)" id="profile-tone"></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(212,168,83,.06);border:1px solid var(--gold3);border-radius:8px;padding:14px;margin-bottom:24px">
+        <div style="font-size:.75rem;color:var(--gold);font-weight:600;margin-bottom:6px">✦ What we'll create for you</div>
+        <div style="font-size:.8rem;color:var(--muted);line-height:1.6" id="profile-summary"></div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline btn-md" onclick="goObScreen(2)">← Edit</button>
+        <button class="btn btn-gold btn-lg" style="flex:1" onclick="generateContentPlan()">Generate My 14-Day Plan →</button>
       </div>
     </div>
 
-    <button class="btn btn-gold btn-lg" style="width:100%" onclick="generateContentPlan()">Generate My 14-Day Plan →</button>
-    <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
   </div>
 </div>
 
@@ -1795,14 +1908,26 @@ async function deleteVideoFromDB(id){
 // CONTENT PLAN SYSTEM
 // ══════════════════════════════
 let contentPlan=[];
-let selectedGoal='grow';
-let selectedObTone='luxury';
+let selectedGoal='followers';
+let selectedObTone='educational';
+let selectedMode='personal';
+let selectedAudience='';
 let activeCalDay=null;
+let currentObScreen=1;
+
+const MODE_LABELS={personal:'📈 Personal Brand',local:'📍 Local Business',product:'🛒 Product Brand'}
+const MODE_NICHE_HINTS={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. restaurant, hair salon, gym…',product:'e.g. skincare, fashion, supplements…'}
+const MODE_GOAL_OPTIONS={
+  personal:[{val:'followers',label:'📈 Grow followers'},{val:'clients',label:'🤝 Get clients'},{val:'authority',label:'👑 Build authority'}],
+  local:[{val:'footfall',label:'📍 Drive foot traffic'},{val:'bookings',label:'📅 Get bookings'},{val:'awareness',label:'📢 Build awareness'}],
+  product:[{val:'sales',label:'💰 Drive sales'},{val:'brand',label:'✨ Build brand'},{val:'viral',label:'🚀 Go viral'}],
+}
 
 function showOnboarding(){
   const modal=document.getElementById('onboarding-modal');
   modal.classList.add('open');
   modal.style.display='flex';
+  goObScreen(1);
 }
 
 function hideOnboarding(){
@@ -1811,8 +1936,50 @@ function hideOnboarding(){
   modal.style.display='none';
 }
 
+function goObScreen(n){
+  currentObScreen=n;
+  document.getElementById('ob-screen-1').style.display=n===1?'block':'none';
+  document.getElementById('ob-screen-2').style.display=n===2?'block':'none';
+  document.getElementById('ob-screen-3').style.display=n===3?'block':'none';
+
+  // Update progress bar
+  for(let i=1;i<=3;i++){
+    const bar=document.getElementById('ob-prog-'+i);
+    if(bar)bar.style.background=i<=n?'var(--gold)':'var(--border2)';
+  }
+
+  if(n===3) buildProfileSummary();
+}
+
+function selectMode(mode){
+  selectedMode=mode;
+  document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('mode-'+mode).classList.add('selected');
+
+  // Update screen 2 for the mode
+  document.getElementById('ob-screen2-title').textContent=
+    mode==='personal'?'Tell us about your brand':
+    mode==='local'?'Tell us about your business':
+    'Tell us about your product';
+
+  document.getElementById('ob-niche-label').textContent=
+    mode==='personal'?'Your niche':
+    mode==='local'?'Your business type':
+    'Your product category';
+
+  document.getElementById('ob-niche').placeholder=MODE_NICHE_HINTS[mode];
+
+  // Update goal buttons for mode
+  const goals=MODE_GOAL_OPTIONS[mode];
+  const goalsEl=document.getElementById('ob-goals');
+  goalsEl.innerHTML=goals.map(g=>`<button class="tone-btn" data-goal="${g.val}" onclick="selectGoal(this)">${g.label}</button>`).join('');
+  selectedGoal=goals[0].val;
+
+  setTimeout(()=>goObScreen(2),150);
+}
+
 function selectGoal(btn){
-  document.querySelectorAll('[data-goal]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#ob-goals .tone-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   selectedGoal=btn.dataset.goal;
 }
@@ -1824,15 +1991,40 @@ function selectObTone(btn){
   selectedTone=btn.dataset.tone;
 }
 
+function buildProfileSummary(){
+  const niche=document.getElementById('ob-niche').value.trim();
+  const audience=document.getElementById('ob-audience').value.trim();
+  selectedAudience=audience;
+
+  document.getElementById('profile-mode').textContent=MODE_LABELS[selectedMode]||selectedMode;
+  document.getElementById('profile-niche').textContent=niche||'—';
+  document.getElementById('profile-audience').textContent=audience||'—';
+  document.getElementById('profile-goal').textContent=selectedGoal;
+  document.getElementById('profile-tone').textContent=selectedObTone;
+
+  const summaries={
+    personal:`We'll create ${selectedObTone} content designed to attract ${audience||'your audience'} in the ${niche||'your'} space. Hooks will be crafted to build authority and ${selectedGoal==='clients'?'convert followers into clients':'grow your following'}.`,
+    local:`We'll create content that showcases your ${niche||'business'} to local customers. Each post will be designed to ${selectedGoal==='footfall'?'drive foot traffic':'generate bookings'} with a ${selectedObTone} tone.`,
+    product:`We'll create product-focused content targeting ${audience||'potential buyers'}. Videos will highlight your ${niche||'product'} with a ${selectedObTone} aesthetic to drive ${selectedGoal==='sales'?'conversions':'brand awareness'}.`,
+  };
+  document.getElementById('profile-summary').textContent=summaries[selectedMode]||'';
+}
+
 async function generateContentPlan(){
   const niche=document.getElementById('ob-niche').value.trim();
   const errEl=document.getElementById('ob-error');
-  if(!niche){errEl.textContent='Please enter your niche';errEl.style.display='block';return}
+  if(!niche){errEl.textContent='Please enter your niche';errEl.style.display='block';goObScreen(2);return}
   errEl.style.display='none';
 
-  // Use defaults if not selected
-  if(!selectedGoal)selectedGoal='grow';
-  if(!selectedObTone)selectedObTone='luxury';
+  if(!selectedGoal)selectedGoal='followers';
+  if(!selectedObTone)selectedObTone='educational';
+
+  // Save content profile to localStorage
+  const profile={mode:selectedMode,niche,audience:selectedAudience,goal:selectedGoal,tone:selectedObTone};
+  localStorage.setItem('lx_profile',JSON.stringify(profile));
+  localStorage.setItem('lx_niche',niche);
+  localStorage.setItem('lx_goal',selectedGoal);
+  localStorage.setItem('lx_tone',selectedObTone);
 
   hideOnboarding();
   document.getElementById('calendar-empty').style.display='none';
@@ -1849,6 +2041,8 @@ async function generateContentPlan(){
           body:JSON.stringify({
             action:'plan',
             niche,
+            audience:selectedAudience,
+            mode:selectedMode,
             goal:selectedGoal,
             tone:selectedObTone,
             today:new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})
@@ -1888,8 +2082,7 @@ async function generateContentPlan(){
     document.getElementById('plan-niche-label').textContent=`${niche} · ${selectedGoal} · ${selectedObTone}`;
     console.log('Rendering calendar with', plan.length, 'days');
     renderCalendar(plan);
-    console.log('Calendar rendered');
-  }catch(e){
+    console.log('Calendar rendered');  }catch(e){
     console.error('Plan generation error:',e);
     toast('Could not generate plan — please try again','error');
     document.getElementById('calendar-empty').style.display='block';
