@@ -1829,8 +1829,11 @@ async function generateContentPlan(){
   const niche=document.getElementById('ob-niche').value.trim();
   const errEl=document.getElementById('ob-error');
   if(!niche){errEl.textContent='Please enter your niche';errEl.style.display='block';return}
-  if(!selectedGoal){errEl.textContent='Please select a goal';errEl.style.display='block';return}
   errEl.style.display='none';
+
+  // Use defaults if not selected
+  if(!selectedGoal)selectedGoal='grow';
+  if(!selectedObTone)selectedObTone='luxury';
 
   hideOnboarding();
   document.getElementById('calendar-empty').style.display='none';
@@ -1884,7 +1887,9 @@ async function generateContentPlan(){
     localStorage.setItem('lx_tone',selectedObTone);
 
     document.getElementById('plan-niche-label').textContent=`${niche} · ${selectedGoal} · ${selectedObTone}`;
+    console.log('Rendering calendar with', plan.length, 'days');
     renderCalendar(plan);
+    console.log('Calendar rendered');
   }catch(e){
     console.error('Plan generation error:',e);
     toast('Could not generate plan — please try again','error');
