@@ -1965,9 +1965,8 @@ async function handleQuickGenerate(){
       video.video_url=startData.videoUrl;
       video.status='done';
       await saveVideo(video);
-      const idx=videos.findIndex(v=>String(v.id)===String(video.id));
-      if(idx>=0)videos[idx]=video;
-      renderGrid();updateStats();
+      // Reload videos from DB to get fresh data with correct IDs
+      await loadVideos();
 
       // Mark calendar day as done
       if(activeCalDay){
@@ -2214,9 +2213,7 @@ async function handleGenerate(){
       video.video_url=startData.videoUrl;
       video.status='done';
       await saveVideo(video);
-      const idx=videos.findIndex(v=>String(v.id)===String(video.id));
-      if(idx>=0)videos[idx]=video;
-      renderGrid();updateStats();
+      await loadVideos();
       btn.disabled=false;btn.textContent='Generate Video';
       generating=false;
       document.getElementById('dash-prompt').value='';
