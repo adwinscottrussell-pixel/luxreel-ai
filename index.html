@@ -2330,7 +2330,8 @@ function renderGrid(){
         <div class="card-caption-text ${v.status==='pending'?'loading-pulse':''}">${v.status==='done'?esc(v.caption):''}</div>
         <div class="card-actions-row">
           <button class="card-act-btn" onclick="copyCaption('${v.id}')">Copy ⧉</button>
-          <button class="card-act-btn" onclick="toast('Instagram posting available on Pro','info')">Post 📤</button>
+          <button class="card-act-btn" onclick="downloadVideo('${v.id}','${v.video_url}')">Download ↓</button>
+          <button class="card-act-btn" onclick="toast('Instagram posting coming soon','info')">Post 📤</button>
           <button class="card-act-btn delete" onclick="deleteVideo('${v.id}')">Delete ✕</button>
         </div>
       </div>
@@ -2361,6 +2362,24 @@ function filterVideos(f,el){
 // ══════════════════════════════
 // ACTIONS
 // ══════════════════════════════
+async function downloadVideo(id, url){
+  if(!url||url.includes('commondatastorage')){toast('No video to download yet','error');return;}
+  try{
+    toast('Downloading…','info');
+    const res=await fetch(url);
+    const blob=await res.blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=`luxreel-${id}.mp4`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('Video downloaded ✦','success');
+  }catch(e){
+    // Fallback — open in new tab
+    window.open(url,'_blank');
+  }
+}
+
 function copyCaption(id){
   const v=videos.find(v=>String(v.id)===String(id));
   if(!v||!v.caption)return;
