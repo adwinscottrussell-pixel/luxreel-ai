@@ -2119,11 +2119,25 @@ function handleImageUpload(input){
     const result=e.target.result;
     uploadedImageBase64=result.split(',')[1];
     uploadedImageType=file.type;
-    document.getElementById('upload-placeholder').style.display='none';
-    document.getElementById('upload-preview').style.display='block';
-    document.getElementById('upload-img').src=result;
-    document.getElementById('upload-filename').textContent=file.name;
-    document.getElementById('upload-area').classList.add('has-image');
+
+    // Check which upload area triggered this
+    const isQuick=input.id==='quick-image-input';
+    const prefix=isQuick?'quick-':'';
+
+    const placeholder=document.getElementById(prefix+'upload-placeholder');
+    const preview=document.getElementById(prefix+'upload-preview');
+    const img=document.getElementById(prefix+'upload-img');
+    const area=document.getElementById(prefix+'upload-area');
+
+    if(placeholder)placeholder.style.display='none';
+    if(preview)preview.style.display='block';
+    if(img)img.src=result;
+    if(area)area.classList.add('has-image');
+
+    // Also update filename if exists
+    const fn=document.getElementById('upload-filename');
+    if(fn)fn.textContent=file.name;
+
     toast('Product photo ready ✦','success');
   };
   reader.readAsDataURL(file);
