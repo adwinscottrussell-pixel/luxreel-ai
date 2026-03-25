@@ -1050,7 +1050,9 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
         </div>
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="auth-email" placeholder="you@brand.com" /></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="auth-password" placeholder="••••••••" /></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="auth-password" placeholder="••••••••" />
+          <div style="text-align:right;margin-top:4px"><a onclick="handleForgotPassword()" style="font-size:.75rem;color:var(--gold);cursor:pointer">Forgot password?</a></div>
+        </div>
         <button class="btn btn-gold btn-md btn-block" style="margin-top:4px" id="auth-submit-btn" onclick="handleAuth()">Create Free Account →</button>
         <div class="auth-error" id="auth-error"></div>
         <div class="auth-divider"><span>or</span></div>
@@ -1743,6 +1745,20 @@ function setAuthError(msg){
   if(!el)return;
   el.textContent=msg;
   el.classList.toggle('show',!!msg);
+}
+
+async function handleForgotPassword(){
+  const email=document.getElementById('auth-email').value.trim();
+  if(!email){setAuthError('Enter your email first');return}
+  try{
+    const{error}=await sb.auth.resetPasswordForEmail(email,{
+      redirectTo:window.location.origin
+    });
+    if(error)throw error;
+    toast('Password reset email sent ✦','success');
+  }catch(e){
+    setAuthError('Could not send reset email — please try again');
+  }
 }
 
 async function handleAuth(){
