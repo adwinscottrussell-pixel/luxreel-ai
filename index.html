@@ -1838,17 +1838,27 @@ async function generateContentPlan(){
   document.getElementById('calendar-grid').innerHTML='';
 
   try{
-    const res=await fetch(`${SB_URL}/functions/v1/start-video`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-      body:JSON.stringify({
-        action:'plan',
-        niche,
-        goal:selectedGoal,
-        tone:selectedObTone,
-        today:new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})
-      })
-    });
+    let res, attempts = 0;
+    while(attempts < 3){
+      try{
+        res=await fetch(`${SB_URL}/functions/v1/start-video`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+          body:JSON.stringify({
+            action:'plan',
+            niche,
+            goal:selectedGoal,
+            tone:selectedObTone,
+            today:new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})
+          })
+        });
+        break;
+      }catch(err){
+        attempts++;
+        if(attempts>=3)throw err;
+        await new Promise(r=>setTimeout(r,3000));
+      }
+    }
     const data=await res.json();
     const plan=data.plan||[];
     contentPlan=plan;
@@ -2000,6 +2010,13 @@ async function handleQuickGenerate(){
 
 async function loadContentPlan(){
   if(!sb||!currentUser)return;
+
+  // Pre-warm the function
+  fetch(`${SB_URL}/functions/v1/start-video`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+    body:JSON.stringify({action:'warm'}),
+  }).catch(()=>{});
   try{
     const{data}=await sb.from('content_plans')
       .select('*')
