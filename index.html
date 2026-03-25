@@ -759,7 +759,35 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 .upload-title{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:4px}
 .upload-sub{font-size:.72rem;color:var(--muted)}
 
-/* ── Prompt library cards ── */
+/* ── Calendar cards ── */
+.cal-card{
+  background:var(--panel);border:1px solid var(--border);border-radius:10px;
+  padding:14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;
+}
+.cal-card:hover{border-color:var(--gold3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.cal-card.has-video{border-color:var(--green)}
+.cal-day-num{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.cal-day-date{font-size:.75rem;color:var(--gold);font-weight:600;margin-bottom:8px}
+.cal-post-type{display:inline-block;font-size:.6rem;padding:2px 8px;border-radius:20px;font-weight:600;letter-spacing:.06em;margin-bottom:8px}
+.cal-post-type.reel{background:rgba(212,168,83,.15);color:var(--gold)}
+.cal-post-type.carousel{background:rgba(76,175,125,.15);color:var(--green)}
+.cal-post-type.hook{background:rgba(138,106,42,.3);color:var(--gold2)}
+.cal-hook{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.3}
+.cal-topic{font-size:.72rem;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cal-gen-btn{
+  margin-top:10px;width:100%;padding:7px;border-radius:6px;font-size:.72rem;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));color:#0a0800;
+  font-weight:600;border:none;cursor:pointer;transition:all .15s;
+}
+.cal-gen-btn:hover{opacity:.9}
+.cal-done-badge{
+  position:absolute;top:8px;right:8px;
+  font-size:.55rem;padding:2px 6px;border-radius:4px;
+  background:rgba(76,175,125,.2);color:var(--green);font-weight:600;
+}
+
+/* ── Onboarding modal ── */
+#onboarding-modal.open{display:flex!important}
 .prompt-card{
   background:var(--panel);border:1px solid var(--border);border-radius:8px;
   padding:14px;cursor:pointer;transition:all .18s;position:relative;
@@ -1112,78 +1140,54 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           <button class="btn btn-gold btn-sm" onclick="go('pricing')">Upgrade to Pro →</button>
         </div>
 
-        <!-- Prompt Library -->
-        <div class="create-section" style="margin-bottom:16px">
+        <!-- Smart Calendar -->
+        <div class="create-section" style="margin-bottom:16px" id="calendar-section">
           <div class="create-header">
-            <div class="create-title">✦ Prompt Library</div>
-            <div style="display:flex;gap:6px" id="prompt-cats">
-              <button class="filter-pill active" onclick="filterPrompts('all',this)">All</button>
-              <button class="filter-pill" onclick="filterPrompts('fashion',this)">Fashion</button>
-              <button class="filter-pill" onclick="filterPrompts('product',this)">Product</button>
-              <button class="filter-pill" onclick="filterPrompts('lifestyle',this)">Lifestyle</button>
-              <button class="filter-pill" onclick="filterPrompts('food',this)">Food</button>
-              <button class="filter-pill" onclick="filterPrompts('nature',this)">Nature</button>
+            <div>
+              <div class="create-title">✦ Your 14-Day Content Plan</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:2px" id="plan-niche-label"></div>
             </div>
+            <button class="btn btn-outline btn-sm" onclick="showOnboarding()">↺ New Plan</button>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:16px" id="prompt-library-grid"></div>
+          <div id="calendar-empty" style="text-align:center;padding:48px 20px;display:none">
+            <div style="font-size:2rem;margin-bottom:12px">📅</div>
+            <div style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:8px">No content plan yet</div>
+            <div style="font-size:.8rem;color:var(--muted);margin-bottom:20px">Tell us about your niche and we'll generate a 14-day Instagram strategy</div>
+            <button class="btn btn-gold btn-md" onclick="showOnboarding()">Generate My Content Plan →</button>
+          </div>
+          <div id="calendar-loading" style="text-align:center;padding:48px 20px;display:none">
+            <div class="spin-ring" style="margin:0 auto 16px"></div>
+            <div style="font-size:.85rem;color:var(--gold)">Generating your 14-day content strategy…</div>
+            <div style="font-size:.75rem;color:var(--muted);margin-top:6px">This takes about 15 seconds</div>
+          </div>
+          <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px"></div>
         </div>
 
-        <!-- Create -->
-        <div class="create-section">
+        <!-- Quick Generate (collapsed by default, shown when calendar day clicked) -->
+        <div class="create-section" id="quick-generate-section" style="display:none;margin-bottom:16px">
           <div class="create-header">
-            <div class="create-title">✦ Create New Video</div>
+            <div>
+              <div class="create-title" id="quick-gen-title">✦ Generate Reel</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:2px" id="quick-gen-subtitle"></div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="hideQuickGenerate()">✕ Close</button>
           </div>
-
-          <!-- Image Upload -->
-          <div class="upload-area" id="upload-area" onclick="document.getElementById('product-image-input').click()">
-            <input type="file" id="product-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleImageUpload(this)">
-            <div id="upload-placeholder">
-              <div class="upload-icon">⬆</div>
-              <div class="upload-title">Upload Product Photo</div>
-              <div class="upload-sub">JPG, PNG or WebP · Max 10MB · Optional</div>
-            </div>
-            <div id="upload-preview" style="display:none">
-              <img id="upload-img" style="max-height:120px;max-width:100%;border-radius:6px;object-fit:contain">
-              <div style="margin-top:8px;font-size:.75rem;color:var(--gold)" id="upload-filename"></div>
-              <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="clearImage(event)">Remove ✕</button>
-            </div>
-          </div>
-
-          <div class="create-grid">
-            <div class="prompt-area">
-              <div class="prompt-label">Video Prompt</div>
-              <textarea class="prompt-textarea" id="dash-prompt" placeholder="Describe your video idea…&#10;&#10;e.g. A luxury watch on marble, golden hour, close-up shot"></textarea>
-            </div>
-            <div class="options-area">
-              <div class="prompt-label">Caption Tone</div>
-              <div class="tone-grid" id="dash-tones">
-                <button class="tone-btn active" data-tone="luxury"><span class="tone-emoji">💎</span>Luxury</button>
-                <button class="tone-btn" data-tone="bold"><span class="tone-emoji">⚡</span>Bold</button>
-                <button class="tone-btn" data-tone="minimal"><span class="tone-emoji">◻</span>Minimal</button>
-                <button class="tone-btn" data-tone="playful"><span class="tone-emoji">🎉</span>Playful</button>
-                <button class="tone-btn" data-tone="cinematic"><span class="tone-emoji">🎬</span>Cinematic</button>
+          <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+            <div class="upload-area" id="quick-upload-area" onclick="document.getElementById('quick-image-input').click()" style="flex:1;min-width:200px;margin-bottom:0;padding:16px">
+              <input type="file" id="quick-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleImageUpload(this)">
+              <div id="quick-upload-placeholder">
+                <div class="upload-icon" style="font-size:1.2rem">⬆</div>
+                <div class="upload-title" style="font-size:.8rem">Add Product Photo</div>
+                <div class="upload-sub">Optional</div>
               </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
-                <div>
-                  <div class="prompt-label" style="margin-bottom:6px">Duration</div>
-                  <div style="display:flex;gap:6px">
-                    <button class="tone-btn active" data-dur="5" id="dur-5" onclick="setDuration(5,this)" style="flex:1;justify-content:center">5s</button>
-                    <button class="tone-btn" data-dur="10" id="dur-10" onclick="setDuration(10,this)" style="flex:1;justify-content:center">10s</button>
-                  </div>
-                </div>
-                <div>
-                  <div class="prompt-label" style="margin-bottom:6px">Format</div>
-                  <div style="display:flex;gap:6px">
-                    <button class="tone-btn active" data-ratio="1280:720" id="ratio-land" onclick="setRatio('1280:720',this)" style="flex:1;justify-content:center;font-size:.65rem">16:9</button>
-                    <button class="tone-btn" data-ratio="720:1280" id="ratio-port" onclick="setRatio('720:1280',this)" style="flex:1;justify-content:center;font-size:.65rem">9:16</button>
-                  </div>
-                </div>
+              <div id="quick-upload-preview" style="display:none">
+                <img id="quick-upload-img" style="max-height:80px;max-width:100%;border-radius:6px;object-fit:contain">
+                <button class="btn btn-ghost btn-sm" style="margin-top:4px;font-size:.65rem" onclick="clearImage(event)">Remove ✕</button>
               </div>
-              <div class="generate-row">
-                <button class="btn btn-gold btn-md" id="gen-btn" style="flex:1" onclick="handleGenerate()">Generate Video</button>
-              </div>
-              <div id="enhanced-prompt-preview" style="display:none;margin-top:10px;padding:10px;background:rgba(212,168,83,.06);border:1px solid var(--gold3);border-radius:6px;font-size:.7rem;color:var(--muted);line-height:1.5;font-style:italic"></div>
-              <div style="font-size:.72rem;color:var(--muted2);margin-top:8px">✦ AI-enhanced prompt · Video by <a href="https://runwayml.com" target="_blank" style="color:var(--gold-dim);text-decoration:none">Runway Gen-4</a> · Captions by OpenAI</div>
+            </div>
+            <div style="flex:2;min-width:200px">
+              <textarea class="prompt-textarea" id="quick-prompt" style="height:80px;margin-bottom:10px" placeholder="Add extra details or leave as is…"></textarea>
+              <button class="btn btn-gold btn-md" id="quick-gen-btn" style="width:100%" onclick="handleQuickGenerate()">🎬 Generate Reel</button>
             </div>
           </div>
         </div>
@@ -1200,6 +1204,44 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <div class="video-grid" id="video-grid"></div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     ONBOARDING MODAL
+══════════════════════════════ -->
+<div id="onboarding-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--panel);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:520px;padding:40px;position:relative">
+    <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Your Content Strategy</div>
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:32px">Answer 3 questions and we'll generate a 14-day Instagram content plan with videos ready to post.</div>
+
+    <div style="margin-bottom:20px">
+      <div class="prompt-label" style="margin-bottom:8px">What's your niche?</div>
+      <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:12px 16px;font-size:.9rem" placeholder="e.g. luxury fashion, real estate, fitness, skincare, food…">
+    </div>
+
+    <div style="margin-bottom:20px">
+      <div class="prompt-label" style="margin-bottom:8px">What's your goal?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <button class="tone-btn" data-goal="grow" onclick="selectGoal(this)">📈 Grow</button>
+        <button class="tone-btn" data-goal="sell" onclick="selectGoal(this)">💰 Sell</button>
+        <button class="tone-btn" data-goal="educate" onclick="selectGoal(this)">🎓 Educate</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:32px">
+      <div class="prompt-label" style="margin-bottom:8px">What's your tone?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px">
+        <button class="tone-btn" data-tone="luxury" onclick="selectObTone(this)">💎 Luxury</button>
+        <button class="tone-btn" data-tone="bold" onclick="selectObTone(this)">⚡ Bold</button>
+        <button class="tone-btn" data-tone="minimal" onclick="selectObTone(this)">◻ Minimal</button>
+        <button class="tone-btn" data-tone="playful" onclick="selectObTone(this)">🎉 Playful</button>
+        <button class="tone-btn" data-tone="cinematic" onclick="selectObTone(this)">🎬 Cinematic</button>
+      </div>
+    </div>
+
+    <button class="btn btn-gold btn-lg" style="width:100%" onclick="generateContentPlan()">Generate My 14-Day Plan →</button>
+    <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
   </div>
 </div>
 
@@ -1563,7 +1605,7 @@ function go(page){
     target.style.display='block';
     window.scrollTo(0,0);
   }
-  if(page==='dashboard'){renderGrid();updateStats();renderPromptLibrary()}
+  if(page==='dashboard'){renderGrid();updateStats();loadContentPlan();}
 }
 
 // ══════════════════════════════
@@ -1751,8 +1793,240 @@ async function deleteVideoFromDB(id){
 }
 
 // ══════════════════════════════
-// PROMPT LIBRARY
+// CONTENT PLAN SYSTEM
 // ══════════════════════════════
+let contentPlan=[];
+let selectedGoal='grow';
+let selectedObTone='luxury';
+let activeCalDay=null;
+
+function showOnboarding(){
+  const modal=document.getElementById('onboarding-modal');
+  modal.classList.add('open');
+  modal.style.display='flex';
+}
+
+function hideOnboarding(){
+  const modal=document.getElementById('onboarding-modal');
+  modal.classList.remove('open');
+  modal.style.display='none';
+}
+
+function selectGoal(btn){
+  document.querySelectorAll('[data-goal]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedGoal=btn.dataset.goal;
+}
+
+function selectObTone(btn){
+  document.querySelectorAll('[data-tone]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedObTone=btn.dataset.tone;
+  selectedTone=btn.dataset.tone;
+}
+
+async function generateContentPlan(){
+  const niche=document.getElementById('ob-niche').value.trim();
+  const errEl=document.getElementById('ob-error');
+  if(!niche){errEl.textContent='Please enter your niche';errEl.style.display='block';return}
+  if(!selectedGoal){errEl.textContent='Please select a goal';errEl.style.display='block';return}
+  errEl.style.display='none';
+
+  hideOnboarding();
+  document.getElementById('calendar-empty').style.display='none';
+  document.getElementById('calendar-loading').style.display='block';
+  document.getElementById('calendar-grid').innerHTML='';
+
+  try{
+    const res=await fetch(`${SB_URL}/functions/v1/start-video`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+      body:JSON.stringify({
+        action:'plan',
+        niche,
+        goal:selectedGoal,
+        tone:selectedObTone,
+        today:new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})
+      })
+    });
+    const data=await res.json();
+    const plan=data.plan||[];
+    contentPlan=plan;
+
+    // Save to Supabase
+    if(sb&&currentUser){
+      await sb.from('content_plans').delete().eq('user_id',currentUser.id);
+      const rows=plan.map(p=>({
+        user_id:currentUser.id,
+        day:p.day,
+        post_type:p.postType,
+        hook:p.hook,
+        topic:p.topic,
+        tone:selectedObTone,
+        status:'pending',
+      }));
+      await sb.from('content_plans').insert(rows);
+    }
+
+    // Store niche in localStorage
+    localStorage.setItem('lx_niche',niche);
+    localStorage.setItem('lx_goal',selectedGoal);
+    localStorage.setItem('lx_tone',selectedObTone);
+
+    document.getElementById('plan-niche-label').textContent=`${niche} · ${selectedGoal} · ${selectedObTone}`;
+    renderCalendar(plan);
+  }catch(e){
+    console.error('Plan generation error:',e);
+    toast('Could not generate plan — please try again','error');
+    document.getElementById('calendar-empty').style.display='block';
+  }
+
+  document.getElementById('calendar-loading').style.display='none';
+}
+
+function renderCalendar(plan){
+  const grid=document.getElementById('calendar-grid');
+  if(!plan||plan.length===0){
+    document.getElementById('calendar-empty').style.display='block';
+    return;
+  }
+  document.getElementById('calendar-empty').style.display='none';
+  grid.innerHTML=plan.map(p=>`
+    <div class="cal-card ${p.video_id?'has-video':''}" onclick="openCalDay(${p.day})">
+      ${p.video_id?'<div class="cal-done-badge">✦ Done</div>':''}
+      <div class="cal-day-num">Day ${p.day}</div>
+      <div class="cal-day-date">${p.date||''}</div>
+      <span class="cal-post-type ${(p.postType||p.post_type||'reel').toLowerCase()}">${p.postType||p.post_type||'Reel'}</span>
+      <div class="cal-hook">${esc(p.hook||'')}</div>
+      <div class="cal-topic">${esc(p.topic||'')}</div>
+      ${!p.video_id?`<button class="cal-gen-btn" onclick="event.stopPropagation();openCalDay(${p.day})">🎬 Generate Reel</button>`:''}
+    </div>`).join('');
+}
+
+function openCalDay(day){
+  const plan=contentPlan.find(p=>p.day===day);
+  if(!plan)return;
+  activeCalDay=plan;
+
+  document.getElementById('quick-gen-title').textContent=`✦ Day ${day} — ${plan.postType||plan.post_type}`;
+  document.getElementById('quick-gen-subtitle').textContent=plan.hook;
+  document.getElementById('quick-prompt').value=plan.videoPrompt||plan.topic||'';
+  document.getElementById('quick-generate-section').style.display='block';
+  document.getElementById('quick-generate-section').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function hideQuickGenerate(){
+  document.getElementById('quick-generate-section').style.display='none';
+  activeCalDay=null;
+}
+
+async function handleQuickGenerate(){
+  if(generating){toast('Already generating — please wait','info');return}
+  const prompt=document.getElementById('quick-prompt').value.trim();
+  if(!prompt){toast('Enter a prompt first','error');return}
+
+  generating=true;
+  const btn=document.getElementById('quick-gen-btn');
+  btn.disabled=true;
+  btn.textContent='Generating…';
+
+  const tone=selectedObTone||selectedTone||'luxury';
+  const video={
+    id:Date.now(),
+    prompt,tone,
+    video_url:SAMPLE_VIDEO,caption:'',status:'pending',
+    task_id:'',
+    created:new Date().toISOString(),
+  };
+  videos.unshift(video);renderGrid();updateStats();
+
+  try{
+    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+      body:JSON.stringify({prompt,tone,duration:6,imageBase64:uploadedImageBase64,imageType:uploadedImageType}),
+    });
+    const startData=await startRes.json();
+    console.log('Start response:',JSON.stringify(startData));
+    video.caption=startData.caption||fallbackCaption();
+    video.task_id=startData.taskId||'';
+
+    if(startData.videoUrl){
+      video.video_url=startData.videoUrl;
+      video.status='done';
+      await saveVideo(video);
+      const idx=videos.findIndex(v=>String(v.id)===String(video.id));
+      if(idx>=0)videos[idx]=video;
+      renderGrid();updateStats();
+
+      // Mark calendar day as done
+      if(activeCalDay){
+        activeCalDay.video_id=String(video.id);
+        if(sb&&currentUser){
+          await sb.from('content_plans')
+            .update({video_id:String(video.id),status:'done'})
+            .eq('user_id',currentUser.id)
+            .eq('day',activeCalDay.day);
+        }
+        renderCalendar(contentPlan);
+      }
+
+      btn.disabled=false;btn.textContent='🎬 Generate Reel';
+      generating=false;
+      toast('Reel created ✦','success');
+      hideQuickGenerate();
+      return;
+    }
+
+    await saveVideo(video);
+    renderGrid();
+    btn.disabled=false;btn.textContent='🎬 Generate Reel';
+    generating=false;
+    if(video.task_id){
+      toast('Reel generating — ready in ~60 seconds ✦','info');
+      pollVideoStatus(video);
+    }else{
+      toast('Could not start generation — please try again','error');
+    }
+  }catch(e){
+    console.warn('Quick generate failed',e);
+    video.status='done';
+    await saveVideo(video);
+    renderGrid();updateStats();
+    btn.disabled=false;btn.textContent='🎬 Generate Reel';
+    generating=false;
+  }
+}
+
+async function loadContentPlan(){
+  if(!sb||!currentUser)return;
+  try{
+    const{data}=await sb.from('content_plans')
+      .select('*')
+      .eq('user_id',currentUser.id)
+      .order('day');
+    if(data&&data.length>0){
+      contentPlan=data.map(p=>({
+        day:p.day,
+        date:'',
+        postType:p.post_type,
+        hook:p.hook,
+        topic:p.topic,
+        videoPrompt:p.topic,
+        video_id:p.video_id,
+      }));
+      const niche=localStorage.getItem('lx_niche')||'';
+      const goal=localStorage.getItem('lx_goal')||'';
+      const tone=localStorage.getItem('lx_tone')||'';
+      if(niche)document.getElementById('plan-niche-label').textContent=`${niche} · ${goal} · ${tone}`;
+      renderCalendar(contentPlan);
+    }else{
+      document.getElementById('calendar-empty').style.display='block';
+    }
+  }catch(e){
+    document.getElementById('calendar-empty').style.display='block';
+  }
+}
 const PROMPTS=[
   // Fashion
   {cat:'fashion',title:'Silk dress flow',prompt:'A flowing silk luxury dress in champagne gold, slow motion fabric movement, soft studio lighting, white seamless background, editorial fashion aesthetic, extreme close-up of fabric texture'},
@@ -1876,13 +2150,13 @@ function setRatio(ratio,el){
 async function handleGenerate(){
   const prompt=document.getElementById('dash-prompt').value.trim();
   if(!prompt){toast('Enter a video prompt first','error');return}
-  if(generating)return;
+  if(generating){toast('Already generating — please wait','info');return}
   if(videos.length>=MAX_FREE){showUpgradeModal();return}
 
   generating=true;
   const btn=document.getElementById('gen-btn');
   btn.disabled=true;
-  btn.textContent='Starting…';
+  btn.textContent='Generating…';
 
   const video={
     id:Date.now(),
@@ -1900,39 +2174,38 @@ async function handleGenerate(){
       body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio,imageBase64:uploadedImageBase64,imageType:uploadedImageType}),
     });
     const startData=await startRes.json();
+    console.log('Start response:', JSON.stringify(startData));
     video.caption=startData.caption||fallbackCaption();
     video.task_id=startData.taskId||'';
-    if(startData.enhancedPrompt){
-      console.log('Enhanced prompt:', startData.enhancedPrompt);
-      // Show enhanced prompt to user briefly
-      const ep=document.getElementById('enhanced-prompt-preview');
-      if(ep){ep.textContent=startData.enhancedPrompt;ep.style.display='block';}
-    }
 
-    // If no taskId, retry once after 3 seconds
-    if(!video.task_id){
-      console.warn('No taskId — retrying once...');
-      await new Promise(r=>setTimeout(r,3000));
-      try{
-        const retryRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-          body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio,imageBase64:uploadedImageBase64,imageType:uploadedImageType}),
-        });
-        const retryData=await retryRes.json();
-        if(retryData.taskId)video.task_id=retryData.taskId;
-        if(retryData.caption&&!video.caption)video.caption=retryData.caption;
-      }catch(e){console.warn('Retry failed',e)}
+    // fal.ai sometimes returns video URL immediately (sync)
+    if(startData.videoUrl){
+      video.video_url=startData.videoUrl;
+      video.status='done';
+      await saveVideo(video);
+      const idx=videos.findIndex(v=>String(v.id)===String(video.id));
+      if(idx>=0)videos[idx]=video;
+      renderGrid();updateStats();
+      btn.disabled=false;btn.textContent='Generate Video';
+      generating=false;
+      document.getElementById('dash-prompt').value='';
+      toast('Video created ✦','success');
+      return;
     }
+    console.log('Task ID:', video.task_id);
 
-    console.log('Task started:',video.task_id);
     await saveVideo(video);
     renderGrid();
     btn.disabled=false;btn.textContent='Generate Video';
     generating=false;
     document.getElementById('dash-prompt').value='';
-    toast('Video generating — ready in ~2 mins ✦','info');
-    if(video.task_id)pollVideoStatus(video);
+
+    if(video.task_id){
+      toast('Video generating — ready in ~2 mins ✦','info');
+      pollVideoStatus(video);
+    } else {
+      toast('Could not start video — please try again','error');
+    }
   }catch(e){
     console.warn('Start failed',e);
     video.caption=fallbackCaption();
@@ -2010,16 +2283,16 @@ function renderGrid(){
     <div class="video-card" style="animation-delay:${i*.05}s">
       <div class="card-thumb">
         ${v.status==='done'
-          ?`<video src="${v.video_url}" muted loop playsinline style="cursor:pointer"
+          ?`<video src="${v.video_url}" muted loop playsinline autoplay crossorigin="anonymous" style="cursor:pointer"
               onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>`
           :`<div class="card-thumb-bg">◈</div>`}
         <div class="gen-overlay" id="ov-${v.id}" style="${v.status==='done'?'display:none':''}">
           <div class="spin-ring"></div>
-          <div class="gen-label">Runway generating…</div>
+          <div class="gen-label">AI video generating…</div>
           <div style="font-size:.55rem;color:var(--gold-dim);letter-spacing:.08em;margin-top:4px">30–60 seconds</div>
         </div>
         <div class="card-badge ${v.status==='done'?'badge-done':'badge-pending'}">${v.status==='done'?'✦ Done':'Pending'}</div>
-        ${v.status==='done'?`<a href="https://runwayml.com" target="_blank" style="position:absolute;bottom:6px;left:6px;font-size:.5rem;color:rgba(255,255,255,0.35);text-decoration:none;letter-spacing:.06em;background:rgba(0,0,0,.4);padding:2px 6px;border-radius:3px;">Powered by Runway</a>`:''}
+        ${v.status==='done'?`<a href="https://fal.ai" target="_blank" style="position:absolute;bottom:6px;left:6px;font-size:.5rem;color:rgba(255,255,255,0.35);text-decoration:none;letter-spacing:.06em;background:rgba(0,0,0,.4);padding:2px 6px;border-radius:3px;">Powered by fal.ai</a>`:''}
       </div>
       <div class="card-body">
         <div class="card-prompt-text" title="${esc(v.prompt)}">${esc(v.prompt)}</div>
@@ -2150,25 +2423,8 @@ window.addEventListener('scroll',()=>{
   if(nav)nav.classList.toggle('scrolled',window.scrollY>40);
 });
 
-// ── Keep Edge Functions warm ──
-function warmFunctions(){
-  fetch(`${SB_URL}/functions/v1/start-video`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-    body:JSON.stringify({warm:true}),
-  }).catch(()=>{});
-  fetch(`${SB_URL}/functions/v1/check-video`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-    body:JSON.stringify({warm:true}),
-  }).catch(()=>{});
-}
-
 // ── BOOT ──
 bootApp();
-renderPromptLibrary();
-warmFunctions();
-setInterval(warmFunctions, 50000); // ping every 50 seconds
 </script>
 </body>
 </html>
