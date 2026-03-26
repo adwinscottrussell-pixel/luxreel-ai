@@ -2098,7 +2098,8 @@ async function generateContentPlan(){
     document.getElementById('plan-niche-label').textContent=`${niche} · ${selectedGoal} · ${selectedObTone}`;
     console.log('Rendering calendar with', plan.length, 'days');
     renderCalendar(plan);
-    console.log('Calendar rendered');  }catch(e){
+    console.log('Calendar rendered');
+  }catch(e){
     console.error('Plan generation error:',e);
     toast('Could not generate plan — please try again','error');
     document.getElementById('calendar-empty').style.display='block';
@@ -2250,10 +2251,13 @@ async function loadContentPlan(){
       if(niche)document.getElementById('plan-niche-label').textContent=`${niche} · ${goal} · ${tone}`;
       renderCalendar(contentPlan);
     }else{
+      // No plan yet — show onboarding automatically
       document.getElementById('calendar-empty').style.display='block';
+      setTimeout(()=>showOnboarding(), 600);
     }
   }catch(e){
     document.getElementById('calendar-empty').style.display='block';
+    setTimeout(()=>showOnboarding(), 600);
   }
 }
 const PROMPTS=[
