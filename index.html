@@ -2664,13 +2664,106 @@ async function generateAdBackground(){
 }
 
 async function downloadAdComposite(){
-  // Use html2canvas to capture the preview
   const wrap = document.getElementById('ad-preview-wrap');
-  if(!wrap)return;
+  const bgImg = document.getElementById('ad-bg-img');
+  if(!wrap || !bgImg || !bgImg.src) return;
+
   try{
-    // Fallback — open background image and let user screenshot
-    toast('Right-click the preview and Save Image, or use a screenshot tool ✦','info');
-  }catch(e){}
+    toast('Preparing download…','info');
+
+    const canvas = document.createElement('canvas');
+    const size = 1080;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+
+    const img = new Image();
+    img.onload = () => {
+      // Draw background
+      ctx.drawImage(img, 0, 0, size, size);
+
+      // Dark gradient overlay
+      const grad = ctx.createLinearGradient(0, 0, 0, size);
+      grad.addColorStop(0, 'rgba(0,0,0,0.4)');
+      grad.addColorStop(0.4, 'rgba(0,0,0,0.05)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.5)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+
+      const wrapRect = wrap.getBoundingClientRect();
+
+      // Draw headline
+      const hEl = document.getElementById('ad-preview-headline');
+      const hSize = parseInt(document.getElementById('ad-headline-size')?.value || 18);
+      if(hEl && hEl.textContent){
+        const hRect = hEl.getBoundingClientRect();
+        const hY = ((hRect.top - wrapRect.top) / wrapRect.height) * size;
+        ctx.font = `900 ${hSize * 3}px Arial`;
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = 'rgba(0,0,0,0.9)';
+        ctx.shadowBlur = 15;
+        ctx.fillText(hEl.textContent, size/2, hY + (hSize * 3));
+      }
+
+      // Draw subheadline
+      const sEl = document.getElementById('ad-preview-sub');
+      const sSize = parseInt(document.getElementById('ad-sub-size')?.value || 12);
+      if(sEl && sEl.textContent){
+        const sRect = sEl.getBoundingClientRect();
+        const sY = ((sRect.top - wrapRect.top) / wrapRect.height) * size;
+        ctx.font = `400 ${sSize * 3}px Arial`;
+        ctx.fillStyle = 'rgba(255,255,255,0.95)';
+        ctx.shadowBlur = 8;
+        ctx.fillText(sEl.textContent, size/2, sY + (sSize * 3));
+      }
+
+      // Draw CTA button
+      const cEl = document.getElementById('ad-preview-cta');
+      const cSize = parseInt(document.getElementById('ad-cta-size')?.value || 14);
+      if(cEl && cEl.textContent){
+        const cRect = cEl.getBoundingClientRect();
+        const cY = ((cRect.top - wrapRect.top) / wrapRect.height) * size;
+        const btnW = size * 0.7;
+        const btnH = cSize * 5;
+        const btnX = (size - btnW) / 2;
+
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 20;
+        const btnGrad = ctx.createLinearGradient(btnX, 0, btnX + btnW, 0);
+        if(adCtaColor.includes('f7971e')){ btnGrad.addColorStop(0,'#f7971e'); btnGrad.addColorStop(1,'#ffd200'); }
+        else if(adCtaColor.includes('e6683c')){ btnGrad.addColorStop(0,'#e6683c'); btnGrad.addColorStop(1,'#dc2743'); }
+        else if(adCtaColor.includes('11998e')){ btnGrad.addColorStop(0,'#11998e'); btnGrad.addColorStop(1,'#38ef7d'); }
+        else { btnGrad.addColorStop(0,'#4776e6'); btnGrad.addColorStop(1,'#8e54e9'); }
+
+        ctx.fillStyle = btnGrad;
+        ctx.beginPath();
+        ctx.roundRect(btnX, cY, btnW, btnH, btnH/2);
+        ctx.fill();
+
+        ctx.font = `900 ${cSize * 3}px Arial`;
+        ctx.fillStyle = 'white';
+        ctx.shadowBlur = 4;
+        ctx.fillText(cEl.textContent, size/2, cY + btnH * 0.65);
+      }
+
+      // Download as PNG
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'luxreel-ad.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      toast('Ad downloaded ✦','success');
+    };
+
+    // Use src directly — base64 images load without CORS issues
+    img.src = bgImg.src;
+
+  }catch(e){
+    console.error('Download error:', e);
+    toast('Download failed — please try again','error');
+  }
 }
 
 async function downloadAdImage(){
