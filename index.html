@@ -872,7 +872,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
   <section class="hero">
     <div class="hero-badge"><span class="hero-badge-dot"></span> Your AI Instagram Content Team</div>
     <h1 class="hero-title">
-      14 days of content.<br>
+      7 days of content.<br>
       <em>Generated in seconds.</em>
       <span class="line2">Ready to post.</span>
     </h1>
@@ -931,7 +931,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       <div class="feature-tile">
         <div class="feature-icon">📅</div>
         <div class="feature-name">14-Day Content Strategy</div>
-        <div class="feature-desc">Answer 3 questions about your niche, goal and tone. GPT-4o builds a full 14-day posting calendar with hooks, topics and video concepts.</div>
+        <div class="feature-desc">Answer 3 questions about your niche, goal and tone. GPT-4o builds a full 7-day posting calendar with hooks, topics and video concepts.</div>
       </div>
       <div class="feature-tile">
         <div class="feature-icon">🎬</div>
@@ -963,7 +963,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
   <section class="section" style="padding-top:0">
     <div class="section-tag">How it Works</div>
-    <h2 class="section-title">From zero to 14 days of content <em>in 2 minutes</em></h2>
+    <h2 class="section-title">From zero to 7 days of content <em>in 2 minutes</em></h2>
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num">01</div>
@@ -972,7 +972,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       </div>
       <div class="step-card">
         <div class="step-num">02</div>
-        <div class="step-title">Get your 14-day plan</div>
+        <div class="step-title">Get your 7-day plan</div>
         <div class="step-desc">AI generates a full content calendar with hooks, topics and video prompts for every single day.</div>
       </div>
       <div class="step-card">
@@ -1164,12 +1164,12 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           <div id="calendar-empty" style="text-align:center;padding:48px 20px;display:none">
             <div style="font-size:2rem;margin-bottom:12px">📅</div>
             <div style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:8px">No content plan yet</div>
-            <div style="font-size:.8rem;color:var(--muted);margin-bottom:20px">Tell us about your niche and we'll generate a 14-day Instagram strategy</div>
+            <div style="font-size:.8rem;color:var(--muted);margin-bottom:20px">Tell us about your niche and we'll generate a 7-day Instagram strategy</div>
             <button class="btn btn-gold btn-md" onclick="showOnboarding()">Generate My Content Plan →</button>
           </div>
           <div id="calendar-loading" style="text-align:center;padding:48px 20px;display:none">
             <div class="spin-ring" style="margin:0 auto 16px"></div>
-            <div style="font-size:.85rem;color:var(--gold)">Generating your 14-day content strategy…</div>
+            <div style="font-size:.85rem;color:var(--gold)">Generating your 7-day content strategy…</div>
             <div style="font-size:.75rem;color:var(--muted);margin-top:6px">This takes about 15 seconds</div>
           </div>
           <div id="calendar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:16px"></div>
@@ -1336,7 +1336,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <!-- SCREEN 3 — Your Content Profile -->
     <div id="ob-screen-3" style="display:none">
       <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Your Content Profile ✦</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:24px">Here's what we've built for you. We'll use this to generate your 14-day plan.</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:24px">Here's what we've built for you. We'll use this to generate your 7-day plan.</div>
 
       <div style="background:var(--noir3);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px">
         <div style="display:grid;gap:12px">
@@ -2191,14 +2191,15 @@ function renderCalendar(plan){
   }
   document.getElementById('calendar-empty').style.display='none';
   grid.innerHTML=plan.map(p=>`
-    <div class="cal-card ${p.video_id?'has-video':''}" onclick="openCalDay(${p.day})">
+    <div class="cal-card ${p.video_id?'has-video':''}" id="cal-card-${p.day}">
       ${p.video_id?'<div class="cal-done-badge">✦ Done</div>':''}
       <div class="cal-day-num">Day ${p.day}</div>
       <div class="cal-day-date">${p.date||''}</div>
       <span class="cal-post-type ${(p.postType||p.post_type||'reel').toLowerCase()}">${p.postType||p.post_type||'Reel'}</span>
       <div class="cal-hook">${esc(p.hook||'')}</div>
-      <div class="cal-topic">${esc(p.topic||'')}</div>
-      ${!p.video_id?`<button class="cal-gen-btn" onclick="event.stopPropagation();openCalDay(${p.day})">🎬 Generate Reel</button>`:''}
+      <div class="cal-topic" style="margin-bottom:8px">${esc(p.topic||'')}</div>
+      <div style="font-size:.68rem;color:var(--gold-dim);font-style:italic;margin-bottom:10px;padding:6px 8px;background:rgba(212,168,83,.05);border-radius:4px;border-left:2px solid var(--gold3)">🎬 ${esc(p.videoPrompt||p.topic||'')}</div>
+      ${!p.video_id?`<button class="cal-gen-btn" onclick="openCalDay(${p.day})">🎬 Generate Reel</button>`:'<div style="font-size:.7rem;color:var(--green);text-align:center;padding:6px">✦ Video Created</div>'}
     </div>`).join('');
 }
 
@@ -2210,6 +2211,10 @@ function openCalDay(day){
   document.getElementById('quick-gen-title').textContent=`✦ Day ${day} — ${plan.postType||plan.post_type}`;
   document.getElementById('quick-gen-subtitle').textContent=plan.hook;
   document.getElementById('quick-prompt').value=plan.videoPrompt||plan.topic||'';
+
+  // Pre-fill image generator with the video prompt
+  const imgPromptEl=document.getElementById('img-gen-prompt');
+  if(imgPromptEl) imgPromptEl.value=plan.videoPrompt||plan.topic||'';
   document.getElementById('quick-generate-section').style.display='block';
   document.getElementById('quick-generate-section').scrollIntoView({behavior:'smooth',block:'center'});
 }
