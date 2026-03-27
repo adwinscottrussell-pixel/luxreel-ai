@@ -2817,11 +2817,12 @@ async function downloadAdImage(){
 }
 
 function showDashSection(section){
-  // Hide all sections
-  document.getElementById('dash-section-main').style.display = section==='main' ? 'block' : 'none';
-  document.getElementById('dash-section-image-library').style.display = section==='image-library' ? 'block' : 'none';
-  document.getElementById('dash-section-video-library').style.display = section==='video-library' ? 'block' : 'none';
-
+  const main = document.getElementById('dash-section-main');
+  const imgLib = document.getElementById('dash-section-image-library');
+  const vidLib = document.getElementById('dash-section-video-library');
+  if(main) main.style.display = section==='main' ? 'block' : 'none';
+  if(imgLib) imgLib.style.display = section==='image-library' ? 'block' : 'none';
+  if(vidLib) vidLib.style.display = section==='video-library' ? 'block' : 'none';
   if(section==='image-library') renderAdLibraryPage();
   if(section==='video-library') renderVideoLibraryPage();
 }
@@ -2946,6 +2947,7 @@ function clearAdLibrary(){
   toast('Library cleared','info');
 }
 
+function useAdAsVideoImage(){
   if(!generatedAdUrl)return;
   fetch(generatedAdUrl).then(r=>r.blob()).then(blob=>{
     const reader = new FileReader();
@@ -2960,80 +2962,8 @@ function clearAdLibrary(){
 }
 
 // ══════════════════════════════
-// AI IMAGE GENERATOR
+// IMAGE UPLOAD
 // ══════════════════════════════
-let generatedImageUrl = '';
-let generatedImageBase64 = '';
-
-async function generateAIImage(){
-  const prompt = document.getElementById('img-gen-prompt').value.trim();
-  if(!prompt){ toast('Enter an image description first','error'); return; }
-
-  const btn = document.getElementById('img-gen-btn');
-  const loading = document.getElementById('img-gen-loading');
-  const result = document.getElementById('img-gen-result');
-  const error = document.getElementById('img-gen-error');
-
-  btn.disabled = true;
-  btn.textContent = 'Generating…';
-  loading.style.display = 'block';
-  result.style.display = 'none';
-  error.style.display = 'none';
-
-  try{
-    const res = await fetch(`${SB_URL}/functions/v1/start-video`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_ANON}` },
-      body: JSON.stringify({ action: 'image', prompt })
-    });
-    const data = await res.json();
-    if(data.imageUrl){
-      generatedImageUrl = data.imageUrl;
-      document.getElementById('img-gen-preview').src = data.imageUrl;
-      result.style.display = 'block';
-      toast('Image generated ✦','success');
-    } else {
-      throw new Error('No image returned');
-    }
-  }catch(e){
-    error.textContent = 'Could not generate image — please try again';
-    error.style.display = 'block';
-  }
-
-  btn.disabled = false;
-  btn.textContent = '✨ Generate Image';
-  loading.style.display = 'none';
-}
-
-async function useGeneratedImage(){
-  if(!generatedImageUrl){ return; }
-
-  // Fetch image and convert to base64
-  try{
-    const res = await fetch(generatedImageUrl);
-    const blob = await res.blob();
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target.result;
-      uploadedImageBase64 = result.split(',')[1];
-      uploadedImageType = blob.type || 'image/png';
-
-      // Show in upload preview
-      document.getElementById('quick-upload-placeholder').style.display = 'none';
-      document.getElementById('quick-upload-preview').style.display = 'block';
-      document.getElementById('quick-upload-img').src = result;
-      document.getElementById('quick-upload-area').classList.add('has-image');
-      toast('AI image loaded — ready to generate reel ✦','success');
-    };
-    reader.readAsDataURL(blob);
-  }catch(e){
-    // If CORS blocks, use URL directly
-    uploadedImageBase64 = '';
-    uploadedImageType = 'image/png';
-    toast('Image ready — generating reel with AI image ✦','success');
-  }
-}
-
 function handleImageUpload(input){
   const file=input.files[0];
   if(!file)return;
