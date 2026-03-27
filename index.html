@@ -1289,16 +1289,34 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
               <!-- Controls -->
               <div style="display:flex;flex-direction:column;gap:12px">
                 <div>
-                  <div class="prompt-label" style="margin-bottom:6px">Headline</div>
-                  <input id="ad-headline" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem;text-transform:uppercase" placeholder="YOUR HEADLINE HERE" oninput="updateAdPreview()">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <div class="prompt-label">Headline</div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="font-size:.7rem;color:var(--muted)">Size</span>
+                      <input type="range" id="ad-headline-size" min="10" max="40" value="18" style="width:70px;accent-color:var(--gold)" oninput="updateAdPreview()">
+                    </div>
+                  </div>
+                  <input id="ad-headline" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="YOUR HEADLINE HERE" oninput="updateAdPreview()">
                 </div>
                 <div>
-                  <div class="prompt-label" style="margin-bottom:6px">Subheadline</div>
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <div class="prompt-label">Subheadline <span style="font-size:.65rem;color:var(--gold)">(drag on preview)</span></div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="font-size:.7rem;color:var(--muted)">Size</span>
+                      <input type="range" id="ad-sub-size" min="8" max="28" value="12" style="width:70px;accent-color:var(--gold)" oninput="updateAdPreview()">
+                    </div>
+                  </div>
                   <input id="ad-sub" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="Supporting text (optional)" oninput="updateAdPreview()">
                 </div>
                 <div>
-                  <div class="prompt-label" style="margin-bottom:6px">CTA Button</div>
-                  <input id="ad-cta" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem;text-transform:uppercase" placeholder="CLICK HERE" oninput="updateAdPreview()">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <div class="prompt-label">CTA Button <span style="font-size:.65rem;color:var(--gold)">(drag on preview)</span></div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <span style="font-size:.7rem;color:var(--muted)">Size</span>
+                      <input type="range" id="ad-cta-size" min="8" max="28" value="14" style="width:70px;accent-color:var(--gold)" oninput="updateAdPreview()">
+                    </div>
+                  </div>
+                  <input id="ad-cta" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="CLICK HERE" oninput="updateAdPreview()">
                 </div>
                 <div>
                   <div class="prompt-label" style="margin-bottom:6px">CTA Color</div>
@@ -1318,17 +1336,13 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
               <!-- Live Preview -->
               <div>
-                <div class="prompt-label" style="margin-bottom:6px">Live Preview</div>
-                <div id="ad-preview-wrap" style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border2);aspect-ratio:1/1">
+                <div class="prompt-label" style="margin-bottom:6px">Live Preview <span style="font-size:.65rem;color:var(--muted)">(drag text to reposition)</span></div>
+                <div id="ad-preview-wrap" style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border2);aspect-ratio:1/1;cursor:default">
                   <img id="ad-bg-img" style="width:100%;height:100%;object-fit:cover;display:block">
-                  <!-- Dark overlay -->
-                  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.5) 100%)"></div>
-                  <!-- Headline -->
-                  <div id="ad-preview-headline" style="position:absolute;top:12%;left:0;right:0;text-align:center;padding:0 16px;font-size:1.1rem;font-weight:900;color:white;text-shadow:2px 2px 8px rgba(0,0,0,.8);text-transform:uppercase;line-height:1.2;letter-spacing:.02em"></div>
-                  <!-- Sub -->
-                  <div id="ad-preview-sub" style="position:absolute;top:42%;left:0;right:0;text-align:center;padding:0 16px;font-size:.75rem;color:rgba(255,255,255,.9);text-shadow:1px 1px 4px rgba(0,0,0,.8);line-height:1.4"></div>
-                  <!-- CTA -->
-                  <div id="ad-preview-cta" style="position:absolute;bottom:10%;left:10%;right:10%;text-align:center;padding:14px 20px;border-radius:50px;font-weight:900;font-size:.9rem;color:white;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 4px 20px rgba(0,0,0,.4);background:linear-gradient(135deg,#f7971e,#ffd200);text-shadow:1px 1px 3px rgba(0,0,0,.4)"></div>
+                  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35) 0%,rgba(0,0,0,.05) 40%,rgba(0,0,0,.45) 100%)"></div>
+                  <div id="ad-preview-headline" draggable="false" style="position:absolute;top:10%;left:0;right:0;text-align:center;padding:0 12px;font-size:1.1rem;font-weight:900;color:white;text-shadow:2px 2px 8px rgba(0,0,0,.9);text-transform:uppercase;line-height:1.2;letter-spacing:.02em;cursor:grab;user-select:none"></div>
+                  <div id="ad-preview-sub" style="position:absolute;top:40%;left:0;right:0;text-align:center;padding:0 12px;font-size:.75rem;color:rgba(255,255,255,.95);text-shadow:1px 1px 4px rgba(0,0,0,.9);line-height:1.4;cursor:grab;user-select:none"></div>
+                  <div id="ad-preview-cta" style="position:absolute;bottom:8%;left:8%;right:8%;text-align:center;padding:12px 16px;border-radius:50px;font-weight:900;font-size:.9rem;color:white;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 4px 20px rgba(0,0,0,.5);background:linear-gradient(135deg,#f7971e,#ffd200);text-shadow:1px 1px 3px rgba(0,0,0,.4);cursor:grab;user-select:none"></div>
                 </div>
               </div>
 
@@ -2540,18 +2554,91 @@ function updateAdPreview(){
   const headline = document.getElementById('ad-headline')?.value || '';
   const sub = document.getElementById('ad-sub')?.value || '';
   const cta = document.getElementById('ad-cta')?.value || '';
+  const hSize = document.getElementById('ad-headline-size')?.value || 18;
+  const sSize = document.getElementById('ad-sub-size')?.value || 12;
+  const cSize = document.getElementById('ad-cta-size')?.value || 14;
 
   const h = document.getElementById('ad-preview-headline');
   const s = document.getElementById('ad-preview-sub');
   const c = document.getElementById('ad-preview-cta');
 
-  if(h) h.textContent = headline.toUpperCase();
-  if(s) s.textContent = sub;
+  if(h){ h.textContent = headline.toUpperCase(); h.style.fontSize = hSize+'px'; }
+  if(s){ s.textContent = sub; s.style.fontSize = sSize+'px'; s.style.display = sub ? 'block' : 'none'; }
   if(c){
     c.textContent = cta.toUpperCase();
+    c.style.fontSize = cSize+'px';
     c.style.background = adCtaColor;
     c.style.display = cta ? 'block' : 'none';
   }
+}
+
+function initAdDrag(){
+  const wrap = document.getElementById('ad-preview-wrap');
+  if(!wrap) return;
+  const draggables = ['ad-preview-sub','ad-preview-cta','ad-preview-headline'];
+
+  draggables.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    let isDragging = false, startX, startY, startTop, startLeft;
+
+    el.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      const rect = wrap.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      startTop = (elRect.top - rect.top) / rect.height * 100;
+      startLeft = (elRect.left - rect.left) / rect.width * 100;
+      el.style.left = startLeft + '%';
+      el.style.right = 'auto';
+      el.style.top = startTop + '%';
+      el.style.bottom = 'auto';
+      el.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if(!isDragging) return;
+      const rect = wrap.getBoundingClientRect();
+      const dx = (e.clientX - startX) / rect.width * 100;
+      const dy = (e.clientY - startY) / rect.height * 100;
+      el.style.left = Math.max(0, Math.min(80, startLeft + dx)) + '%';
+      el.style.top = Math.max(0, Math.min(85, startTop + dy)) + '%';
+    });
+
+    document.addEventListener('mouseup', () => {
+      if(isDragging){ isDragging = false; el.style.cursor = 'grab'; }
+    });
+
+    // Touch support
+    el.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      isDragging = true;
+      const rect = wrap.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startTop = (elRect.top - rect.top) / rect.height * 100;
+      startLeft = (elRect.left - rect.left) / rect.width * 100;
+      el.style.left = startLeft + '%';
+      el.style.right = 'auto';
+      el.style.top = startTop + '%';
+      el.style.bottom = 'auto';
+    }, {passive:true});
+
+    document.addEventListener('touchmove', (e) => {
+      if(!isDragging) return;
+      const touch = e.touches[0];
+      const rect = wrap.getBoundingClientRect();
+      const dx = (touch.clientX - startX) / rect.width * 100;
+      const dy = (touch.clientY - startY) / rect.height * 100;
+      el.style.left = Math.max(0, Math.min(80, startLeft + dx)) + '%';
+      el.style.top = Math.max(0, Math.min(85, startTop + dy)) + '%';
+    }, {passive:true});
+
+    document.addEventListener('touchend', () => { isDragging = false; });
+  });
 }
 
 async function generateAdBackground(){
@@ -2584,6 +2671,7 @@ async function generateAdBackground(){
       document.getElementById('ad-bg-img').src = data.imageUrl;
       document.getElementById('ad-composer').style.display = 'block';
       updateAdPreview();
+      initAdDrag();
       toast('Background generated ✦','success');
     } else {
       throw new Error('No image');
