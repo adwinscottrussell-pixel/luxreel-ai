@@ -1184,28 +1184,6 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
             </div>
             <button class="btn btn-ghost btn-sm" onclick="hideQuickGenerate()">✕ Close</button>
           </div>
-
-          <!-- AI Image Generator -->
-          <div style="background:var(--noir3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
-            <div style="font-size:.75rem;font-weight:600;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">✦ AI Image Generator</div>
-            <div style="display:flex;gap:8px;align-items:center">
-              <input id="img-gen-prompt" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem;flex:1" placeholder="Describe your product or scene… e.g. luxury gold perfume bottle on marble">
-              <button class="btn btn-outline btn-sm" id="img-gen-btn" onclick="generateAIImage()" style="white-space:nowrap;flex-shrink:0">✨ Generate Image</button>
-            </div>
-            <div id="img-gen-result" style="display:none;margin-top:10px;text-align:center">
-              <img id="img-gen-preview" style="max-height:140px;border-radius:8px;object-fit:cover;border:1px solid var(--border2)">
-              <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
-                <button class="btn btn-gold btn-sm" onclick="useGeneratedImage()">Use This Image →</button>
-                <button class="btn btn-ghost btn-sm" onclick="generateAIImage()">Try Again ↺</button>
-              </div>
-            </div>
-            <div id="img-gen-loading" style="display:none;text-align:center;padding:16px">
-              <div class="spin-ring" style="margin:0 auto 8px"></div>
-              <div style="font-size:.75rem;color:var(--muted)">Generating image with DALL-E 3…</div>
-            </div>
-            <div id="img-gen-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:8px"></div>
-          </div>
-
           <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
             <div class="upload-area" id="quick-upload-area" onclick="document.getElementById('quick-image-input').click()" style="flex:1;min-width:200px;margin-bottom:0;padding:16px">
               <input type="file" id="quick-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleImageUpload(this)">
