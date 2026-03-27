@@ -1832,46 +1832,55 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       <div class="settings-layout">
         <div class="settings-nav">
           <div class="settings-nav-item active" onclick="switchSettings('profile',this)">Profile</div>
-          <div class="settings-nav-item" onclick="switchSettings('api',this)">API Keys</div>
+          <div class="settings-nav-item" onclick="switchSettings('api',this)">Connected Apps</div>
           <div class="settings-nav-item" onclick="switchSettings('notifications',this)">Notifications</div>
           <div class="settings-nav-item" onclick="switchSettings('billing',this)">Billing</div>
-          <div class="settings-nav-item" onclick="switchSettings('danger',this)">Danger Zone</div>
+          <div class="settings-nav-item" onclick="switchSettings('danger',this)">Account</div>
         </div>
         <div class="settings-content">
 
           <div class="settings-section active" id="settings-profile">
             <div class="settings-h">Profile</div>
-            <div class="settings-sub">Manage your account details and public information.</div>
+            <div class="settings-sub">Manage your account details.</div>
             <div class="settings-card">
               <div class="settings-card-title">Personal Information</div>
               <div class="form-row" style="margin-bottom:14px">
-                <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="s-first" value="Alex"/></div>
-                <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="s-last" value="Smith"/></div>
+                <div class="form-group"><label class="form-label">First Name</label><input class="form-input" id="s-first" placeholder="Your first name"/></div>
+                <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" id="s-last" placeholder="Your last name"/></div>
               </div>
-              <div class="form-group" style="margin-bottom:14px"><label class="form-label">Email</label><input class="form-input" value="alex@brand.com"/></div>
-              <div class="form-group"><label class="form-label">Brand / Company (optional)</label><input class="form-input" placeholder="Your brand name"/></div>
+              <div class="form-group" style="margin-bottom:14px"><label class="form-label">Email</label><input class="form-input" id="s-email" readonly style="opacity:.6;cursor:not-allowed"/></div>
+              <div class="form-group"><label class="form-label">Brand / Company (optional)</label><input class="form-input" id="s-brand" placeholder="Your brand name"/></div>
+            </div>
+            <div class="settings-card" style="margin-top:14px">
+              <div class="settings-card-title">Change Password</div>
+              <div class="form-group" style="margin-bottom:10px"><label class="form-label">New Password</label><input type="password" class="form-input" id="s-new-password" placeholder="••••••••"/></div>
+              <button class="btn btn-outline btn-sm" onclick="changePassword()">Update Password</button>
             </div>
             <button class="btn btn-gold btn-sm" style="margin-top:8px" onclick="saveProfile()">Save Changes</button>
           </div>
 
           <div class="settings-section" id="settings-api">
-            <div class="settings-h">Integrations</div>
-            <div class="settings-sub">Connected services powering your LuxReel account.</div>
+            <div class="settings-h">Connected Apps</div>
+            <div class="settings-sub">Services powering your LuxReel account.</div>
             <div class="settings-card">
               <div class="settings-row">
-                <div><div class="settings-row-label">Supabase</div><div class="settings-row-desc">Database &amp; authentication</div></div>
-                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--green)">Connected</span>
+                <div><div class="settings-row-label">AI Video Generation</div><div class="settings-row-desc">Cinematic video creation engine</div></div>
+                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--green)">✓ Active</span>
               </div>
               <div class="settings-row">
-                <div><div class="settings-row-label">OpenAI</div><div class="settings-row-desc">AI caption generation</div></div>
-                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--green)">Connected</span>
+                <div><div class="settings-row-label">AI Content Strategy</div><div class="settings-row-desc">7-day content plan & caption generation</div></div>
+                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--green)">✓ Active</span>
               </div>
               <div class="settings-row">
-                <div><div class="settings-row-label">Buffer</div><div class="settings-row-desc">Instagram posting</div></div>
+                <div><div class="settings-row-label">AI Image Generation</div><div class="settings-row-desc">Ad backgrounds & thumbnail creation</div></div>
+                <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(76,175,125,.12);border:1px solid rgba(76,175,125,.3);color:var(--green)">✓ Active</span>
+              </div>
+              <div class="settings-row">
+                <div><div class="settings-row-label">Instagram Posting</div><div class="settings-row-desc">Direct publish to your Instagram account</div></div>
                 <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(212,168,83,.08);border:1px solid var(--gold3);color:var(--gold)">Pro feature</span>
               </div>
               <div class="settings-row">
-                <div><div class="settings-row-label">Runway</div><div class="settings-row-desc">AI video generation</div></div>
+                <div><div class="settings-row-label">Analytics</div><div class="settings-row-desc">Track views, engagement and top content</div></div>
                 <span style="font-size:.75rem;padding:4px 10px;border-radius:4px;background:rgba(212,168,83,.08);border:1px solid var(--gold3);color:var(--gold)">Pro feature</span>
               </div>
             </div>
@@ -1879,7 +1888,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
           <div class="settings-section" id="settings-notifications">
             <div class="settings-h">Notifications</div>
-            <div class="settings-sub">Control what emails and alerts you receive from LuxReel.</div>
+            <div class="settings-sub">Control what emails and alerts you receive.</div>
             <div class="settings-card">
               <div class="settings-row">
                 <div><div class="settings-row-label">Video completed</div><div class="settings-row-desc">Get notified when your video finishes generating</div></div>
@@ -1902,34 +1911,40 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
           <div class="settings-section" id="settings-billing">
             <div class="settings-h">Billing</div>
-            <div class="settings-sub">Manage your subscription and payment methods.</div>
+            <div class="settings-sub">Manage your subscription and plan.</div>
             <div class="settings-card">
               <div class="settings-row">
-                <div><div class="settings-row-label">Current Plan</div><div class="settings-row-desc">Free — 3 videos/month</div></div>
+                <div><div class="settings-row-label">Current Plan</div><div class="settings-row-desc" id="s-plan-desc">Free — 3 videos/month</div></div>
                 <button class="btn btn-gold btn-sm" onclick="go('pricing')">Upgrade →</button>
               </div>
               <div class="settings-row">
                 <div><div class="settings-row-label">Payment Method</div><div class="settings-row-desc">No payment method on file</div></div>
-                <button class="btn btn-outline btn-sm" onclick="toast('Add a payment method when upgrading','info')">Add Card</button>
+                <button class="btn btn-outline btn-sm" onclick="go('pricing')">Add Card</button>
               </div>
               <div class="settings-row">
-                <div><div class="settings-row-label">Billing Period</div><div class="settings-row-desc">—</div></div>
-                <span style="font-size:.8rem;color:var(--muted2)">N/A</span>
+                <div><div class="settings-row-label">Need help?</div><div class="settings-row-desc">Contact support for billing questions</div></div>
+                <a href="mailto:support@luxclip.ai" class="btn btn-ghost btn-sm">Contact Support</a>
               </div>
             </div>
           </div>
 
           <div class="settings-section" id="settings-danger">
-            <div class="settings-h">Danger Zone</div>
-            <div class="settings-sub">Irreversible and destructive actions.</div>
-            <div class="settings-card" style="border-color:rgba(224,85,85,.2)">
+            <div class="settings-h">Account</div>
+            <div class="settings-sub">Manage your account data.</div>
+            <div class="settings-card">
               <div class="settings-row">
-                <div><div class="settings-row-label" style="color:var(--red)">Clear All Videos</div><div class="settings-row-desc">Permanently delete your content library</div></div>
-                <button class="btn btn-danger btn-sm" onclick="clearLibrary()">Clear Library</button>
+                <div><div class="settings-row-label">Content Profile</div><div class="settings-row-desc">Reset your niche, tone and content strategy</div></div>
+                <button class="btn btn-outline btn-sm" onclick="resetContentProfile()">Reset Profile</button>
               </div>
               <div class="settings-row">
-                <div><div class="settings-row-label" style="color:var(--red)">Delete Account</div><div class="settings-row-desc">Permanently delete your account and all data</div></div>
-                <button class="btn btn-danger btn-sm" onclick="toast('Account deletion requires email confirmation','error')">Delete Account</button>
+                <div><div class="settings-row-label">Clear Video Library</div><div class="settings-row-desc">Permanently delete all your generated videos</div></div>
+                <button class="btn btn-danger btn-sm" onclick="clearLibrary()">Clear Library</button>
+              </div>
+            </div>
+            <div class="settings-card" style="border-color:rgba(224,85,85,.2);margin-top:14px">
+              <div class="settings-row">
+                <div><div class="settings-row-label" style="color:var(--red)">Delete Account</div><div class="settings-row-desc">Permanently delete your account and all data. This cannot be undone.</div></div>
+                <button class="btn btn-danger btn-sm" onclick="requestAccountDeletion()">Delete Account</button>
               </div>
             </div>
           </div>
@@ -2050,7 +2065,7 @@ const TONES={
 // ══════════════════════════════
 // ROUTER
 // ══════════════════════════════
-const pages=['landing','auth','dashboard','pricing','settings'];
+const pages=['landing','auth','dashboard','pricing','settings','admin'];
 function go(page){
   pages.forEach(p=>{
     const el=document.getElementById('page-'+p);
@@ -2066,6 +2081,8 @@ function go(page){
     window.scrollTo(0,0);
   }
   if(page==='dashboard'){renderGrid();updateStats();loadContentPlan();renderAdLibrary();}
+  if(page==='admin'){loadAdminDashboard();}
+  if(page==='settings'){loadSettingsPage();}
 }
 
 // ══════════════════════════════
@@ -3281,6 +3298,162 @@ function clearThumbLibrary(){
 
 
 
+// ══════════════════════════════
+// ADMIN DASHBOARD
+// ══════════════════════════════
+const ADMIN_PASSWORD = 'luxreel-admin-2026';
+let adminAuthenticated = false;
+let allAdminUsers = [];
+let allAdminVideos = [];
+
+function checkAdminPassword(){
+  const pw = document.getElementById('admin-password-input')?.value;
+  if(pw === ADMIN_PASSWORD){
+    adminAuthenticated = true;
+    document.getElementById('admin-gate').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    loadAdminDashboard();
+  } else {
+    document.getElementById('admin-gate-error').style.display = 'block';
+  }
+}
+
+function adminLogout(){
+  adminAuthenticated = false;
+  document.getElementById('admin-gate').style.display = 'flex';
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-password-input').value = '';
+  document.getElementById('admin-gate-error').style.display = 'none';
+}
+
+async function loadAdminDashboard(){
+  if(!adminAuthenticated) return;
+  if(!sb) return;
+  try{
+    const { data: videoUsers } = await sb.from('videos').select('user_id, created_at').order('created_at',{ascending:false});
+    const { data: videos } = await sb.from('videos').select('*').order('created_at',{ascending:false}).limit(50);
+    const { data: plans } = await sb.from('content_plans').select('user_id, created_at').order('created_at',{ascending:false});
+    allAdminVideos = videos || [];
+    const userMap = {};
+    (videoUsers||[]).forEach(v => {
+      if(!userMap[v.user_id]) userMap[v.user_id] = {user_id:v.user_id,videos:0,plans:0,last_active:v.created_at,joined:v.created_at};
+      userMap[v.user_id].videos++;
+      if(v.created_at > userMap[v.user_id].last_active) userMap[v.user_id].last_active = v.created_at;
+    });
+    (plans||[]).forEach(p => {
+      if(!userMap[p.user_id]) userMap[p.user_id] = {user_id:p.user_id,videos:0,plans:0,last_active:p.created_at,joined:p.created_at};
+      userMap[p.user_id].plans++;
+    });
+    allAdminUsers = Object.values(userMap).map(u => ({
+      ...u,
+      email: u.user_id === currentUser?.id ? currentUser.email : u.user_id.slice(0,8)+'…',
+      plan: 'free'
+    }));
+    updateAdminStats(allAdminUsers, allAdminVideos, plans||[]);
+    renderAdminUsers(allAdminUsers);
+    renderAdminVideos(allAdminVideos);
+  }catch(e){ console.error('Admin load error:',e); toast('Failed to load admin data','error'); }
+}
+
+function updateAdminStats(users, videos, plans){
+  const oneWeekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString();
+  const newUsers = users.filter(u => u.joined > oneWeekAgo).length;
+  const proUsers = users.filter(u => u.plan === 'pro').length;
+  document.getElementById('admin-stat-users').textContent = users.length;
+  document.getElementById('admin-stat-videos').textContent = videos.length;
+  document.getElementById('admin-stat-new').textContent = newUsers;
+  document.getElementById('admin-stat-plans').textContent = plans.length;
+  document.getElementById('admin-stat-pro').textContent = proUsers;
+  document.getElementById('admin-stat-mrr').textContent = '$'+(proUsers*29);
+  document.getElementById('admin-user-count').textContent = users.length + ' users';
+}
+
+function renderAdminUsers(users){
+  const tbody = document.getElementById('admin-users-tbody');
+  if(!tbody) return;
+  if(users.length === 0){ tbody.innerHTML = `<tr><td colspan="7" style="padding:32px;text-align:center;color:var(--muted)">No users found</td></tr>`; return; }
+  tbody.innerHTML = users.map(u => `
+    <tr style="border-bottom:1px solid var(--border)" onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background='transparent'">
+      <td style="padding:12px 20px;font-size:.85rem">${u.email||u.user_id.slice(0,12)+'…'}</td>
+      <td style="padding:12px 16px;font-size:.8rem;color:var(--muted)">${u.joined?new Date(u.joined).toLocaleDateString():'—'}</td>
+      <td style="padding:12px 16px"><span style="font-size:.72rem;font-weight:600;padding:3px 10px;border-radius:20px;${u.plan==='pro'?'background:rgba(56,239,125,.1);color:#38ef7d;border:1px solid rgba(56,239,125,.3)':'background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)'}">${(u.plan||'free').toUpperCase()}</span></td>
+      <td style="padding:12px 16px;text-align:center;font-size:.85rem">${u.videos||0}</td>
+      <td style="padding:12px 16px;text-align:center;font-size:.85rem">${u.plans||0}</td>
+      <td style="padding:12px 16px;font-size:.8rem;color:var(--muted)">${u.last_active?new Date(u.last_active).toLocaleDateString():'—'}</td>
+      <td style="padding:12px 16px;text-align:center">
+        <div style="display:flex;gap:6px;justify-content:center">
+          <button class="btn btn-outline btn-sm" style="font-size:.7rem;padding:4px 10px" onclick="upgradeUser('${u.user_id}')">↑ Upgrade</button>
+          <button class="btn btn-ghost btn-sm" style="font-size:.7rem;padding:4px 10px;color:var(--red)" onclick="deleteUser('${u.user_id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function renderAdminVideos(videos){
+  const tbody = document.getElementById('admin-videos-tbody');
+  if(!tbody) return;
+  if(videos.length === 0){ tbody.innerHTML = `<tr><td colspan="5" style="padding:32px;text-align:center;color:var(--muted)">No videos yet</td></tr>`; return; }
+  tbody.innerHTML = videos.slice(0,20).map(v => `
+    <tr style="border-bottom:1px solid var(--border)" onmouseover="this.style.background='rgba(255,255,255,.02)'" onmouseout="this.style.background='transparent'">
+      <td style="padding:12px 20px;font-size:.8rem;color:var(--muted)">${v.user_id?.slice(0,8)||'—'}…</td>
+      <td style="padding:12px 16px;font-size:.82rem;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.prompt||'—'}</td>
+      <td style="padding:12px 16px"><span style="font-size:.72rem;padding:3px 8px;border-radius:20px;${v.status==='done'?'background:rgba(56,239,125,.1);color:#38ef7d':'background:rgba(212,168,83,.1);color:var(--gold)'}">${v.status||'pending'}</span></td>
+      <td style="padding:12px 16px;font-size:.8rem;color:var(--muted)">${v.created_at?new Date(v.created_at).toLocaleDateString():'—'}</td>
+      <td style="padding:12px 16px;text-align:center">
+        <div style="display:flex;gap:6px;justify-content:center">
+          ${v.video_url&&!v.video_url.includes('commondatastorage')?`<a href="${v.video_url}" target="_blank" class="btn btn-outline btn-sm" style="font-size:.7rem;padding:4px 10px">View</a>`:''}
+          <button class="btn btn-ghost btn-sm" style="font-size:.7rem;padding:4px 10px;color:var(--red)" onclick="deleteAdminVideo('${v.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterAdminUsers(){
+  const search = document.getElementById('admin-search')?.value.toLowerCase()||'';
+  const plan = document.getElementById('admin-filter-plan')?.value||'all';
+  const filtered = allAdminUsers.filter(u => {
+    const matchEmail = !search||(u.email||u.user_id).toLowerCase().includes(search);
+    const matchPlan = plan==='all'||u.plan===plan;
+    return matchEmail && matchPlan;
+  });
+  renderAdminUsers(filtered);
+  document.getElementById('admin-user-count').textContent = filtered.length + ' users';
+}
+
+async function upgradeUser(userId){
+  toast('Stripe integration coming soon — upgrade manually in Supabase for now','info');
+}
+
+async function deleteAdminVideo(videoId){
+  if(!confirm('Delete this video? This cannot be undone.')) return;
+  try{
+    await sb.from('videos').delete().eq('id',videoId);
+    allAdminVideos = allAdminVideos.filter(v=>v.id!==videoId);
+    renderAdminVideos(allAdminVideos);
+    toast('Video deleted','success');
+  }catch(e){ toast('Failed to delete','error'); }
+}
+
+function deleteUser(userId){
+  toast('Go to Supabase → Authentication → Users to delete a user account','info');
+}
+
+function exportUsersCSV(){
+  const headers = ['Email/ID','Joined','Plan','Videos','Plans','Last Active'];
+  const rows = allAdminUsers.map(u=>[u.email||u.user_id,u.joined?new Date(u.joined).toLocaleDateString():'',u.plan||'free',u.videos||0,u.plans||0,u.last_active?new Date(u.last_active).toLocaleDateString():'']);
+  const csv = [headers,...rows].map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download = 'luxreel-users-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('CSV exported ✦','success');
+}
+
+if(window.location.hash==='#admin'){ setTimeout(()=>go('admin'),500); }
+
+// ══════════════════════════════
+// IMAGE UPLOAD
+// ══════════════════════════════
 function handleImageUpload(input){
   const file=input.files[0];
   if(!file)return;
@@ -3639,8 +3812,66 @@ function switchSettings(section,el){
 }
 
 function saveProfile(){
-  const fn=document.getElementById('s-first').value.trim();
+  const firstName = document.getElementById('s-first')?.value.trim();
+  const lastName = document.getElementById('s-last')?.value.trim();
+  const brand = document.getElementById('s-brand')?.value.trim();
+  if(firstName) localStorage.setItem('lx_first_name', firstName);
+  if(brand) localStorage.setItem('lx_brand', brand);
+  // Update display name in dashboard
+  const fullName = [firstName, lastName].filter(Boolean).join(' ');
+  const firstNameEl = document.getElementById('dash-first-name');
+  if(firstNameEl && firstName) firstNameEl.textContent = firstName;
   toast('Profile saved ✦','success');
+}
+
+async function changePassword(){
+  const newPw = document.getElementById('s-new-password')?.value;
+  if(!newPw || newPw.length < 6){ toast('Password must be at least 6 characters','error'); return; }
+  try{
+    const { error } = await sb.auth.updateUser({ password: newPw });
+    if(error) throw error;
+    document.getElementById('s-new-password').value = '';
+    toast('Password updated ✦','success');
+  }catch(e){ toast('Failed to update password — please try again','error'); }
+}
+
+function resetContentProfile(){
+  if(!confirm('Reset your content profile? Your 7-day plan will be cleared and you\'ll need to complete onboarding again.')) return;
+  localStorage.removeItem('lx_profile');
+  localStorage.removeItem('lx_niche');
+  localStorage.removeItem('lx_goal');
+  localStorage.removeItem('lx_tone');
+  // Clear content plans from DB
+  if(sb && currentUser){
+    sb.from('content_plans').delete().eq('user_id', currentUser.id).then(()=>{});
+  }
+  toast('Content profile reset — redirecting to setup…','success');
+  setTimeout(()=>{ go('dashboard'); }, 1500);
+}
+
+async function requestAccountDeletion(){
+  if(!confirm('Are you sure you want to delete your account? All your videos, content plans and data will be permanently deleted. This cannot be undone.')) return;
+  try{
+    // Clear all user data
+    if(sb && currentUser){
+      await sb.from('videos').delete().eq('user_id', currentUser.id);
+      await sb.from('content_plans').delete().eq('user_id', currentUser.id);
+    }
+    localStorage.clear();
+    toast('Your data has been cleared. Contact support@luxclip.ai to complete account deletion.','info');
+    setTimeout(()=>signOut(), 2000);
+  }catch(e){ toast('Please contact support@luxclip.ai to delete your account','info'); }
+}
+
+// Load settings page with real user data
+function loadSettingsPage(){
+  if(!currentUser) return;
+  const email = document.getElementById('s-email');
+  if(email) email.value = currentUser.email || '';
+  const firstName = localStorage.getItem('lx_first_name') || currentUser.email?.split('@')[0] || '';
+  const brand = localStorage.getItem('lx_brand') || '';
+  if(document.getElementById('s-first')) document.getElementById('s-first').value = firstName;
+  if(document.getElementById('s-brand')) document.getElementById('s-brand').value = brand;
 }
 function toggleSwitch(el){el.classList.toggle('on')}
 function setNavActive(el){
@@ -3703,5 +3934,132 @@ window.addEventListener('scroll',()=>{
 // ── BOOT ──
 bootApp();
 </script>
+<!-- ══════════════════════════════
+     ADMIN DASHBOARD
+══════════════════════════════ -->
+<div class="page" id="page-admin" style="display:none;background:var(--noir);min-height:100vh">
+
+  <!-- Admin Login Gate -->
+  <div id="admin-gate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px">
+    <div style="background:var(--panel);border:1px solid var(--border2);border-radius:16px;padding:40px;width:100%;max-width:400px">
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:4px">⚙ Admin</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:28px">LuxReel AI Control Panel</div>
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">Admin Password</label>
+        <input type="password" id="admin-password-input" class="form-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPassword()">
+      </div>
+      <button class="btn btn-gold btn-md" style="width:100%" onclick="checkAdminPassword()">Enter Admin Panel →</button>
+      <div id="admin-gate-error" style="color:var(--red);font-size:.8rem;margin-top:10px;text-align:center;display:none">Incorrect password</div>
+      <div style="margin-top:16px;text-align:center">
+        <button class="btn btn-ghost btn-sm" onclick="go('dashboard')">← Back to Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" style="display:none">
+    <!-- Top Bar -->
+    <div style="background:var(--noir2);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700">Lux<span style="color:var(--gold2);font-style:italic">Reel</span> <span style="font-size:.75rem;color:var(--gold);background:rgba(212,168,83,.1);border:1px solid var(--gold3);border-radius:4px;padding:2px 8px;vertical-align:middle">ADMIN</span></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm" onclick="loadAdminDashboard()">↺ Refresh</button>
+        <button class="btn btn-ghost btn-sm" onclick="go('dashboard')">← Dashboard</button>
+        <button class="btn btn-ghost btn-sm" onclick="adminLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div style="padding:32px;max-width:1200px;margin:0 auto">
+
+      <!-- Stats Row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:32px">
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px">
+          <div style="font-size:2rem;font-weight:700;color:var(--gold)" id="admin-stat-users">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Total Users</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px">
+          <div style="font-size:2rem;font-weight:700;color:var(--gold)" id="admin-stat-videos">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Total Videos</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px">
+          <div style="font-size:2rem;font-weight:700;color:var(--gold)" id="admin-stat-new">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">New This Week</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px">
+          <div style="font-size:2rem;font-weight:700;color:var(--gold)" id="admin-stat-plans">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Content Plans</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px">
+          <div style="font-size:2rem;font-weight:700;color:#38ef7d" id="admin-stat-pro">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Pro Users</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px">
+          <div style="font-size:2rem;font-weight:700;color:#38ef7d" id="admin-stat-mrr">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:4px">Est. MRR</div>
+        </div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <input id="admin-search" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem;flex:1;min-width:200px" placeholder="Search by email…" oninput="filterAdminUsers()">
+        <select id="admin-filter-plan" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" onchange="filterAdminUsers()">
+          <option value="all">All Plans</option>
+          <option value="free">Free</option>
+          <option value="pro">Pro</option>
+          <option value="agency">Agency</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="exportUsersCSV()">Export CSV ↓</button>
+      </div>
+
+      <!-- Users Table -->
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:32px">
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-weight:600;font-size:.95rem">Users</div>
+          <div style="font-size:.8rem;color:var(--muted)" id="admin-user-count">Loading…</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse" id="admin-users-table">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border)">
+                <th style="padding:10px 20px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Email</th>
+                <th style="padding:10px 16px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Joined</th>
+                <th style="padding:10px 16px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Plan</th>
+                <th style="padding:10px 16px;text-align:center;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Videos</th>
+                <th style="padding:10px 16px;text-align:center;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Plans</th>
+                <th style="padding:10px 16px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Last Active</th>
+                <th style="padding:10px 16px;text-align:center;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Videos -->
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div style="font-weight:600;font-size:.95rem">Recent Videos Generated</div>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse">
+            <thead>
+              <tr style="border-bottom:1px solid var(--border)">
+                <th style="padding:10px 20px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">User</th>
+                <th style="padding:10px 16px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Prompt</th>
+                <th style="padding:10px 16px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Status</th>
+                <th style="padding:10px 16px;text-align:left;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Created</th>
+                <th style="padding:10px 16px;text-align:center;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-videos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
