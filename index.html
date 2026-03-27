@@ -1079,7 +1079,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <div class="nav-item" onclick="setNavActive(this);showDashSection('video-library')"><span class="nav-item-icon">▦</span> Video Library</div>
         <div class="nav-item" onclick="setNavActive(this);showDashSection('image-library')"><span class="nav-item-icon">🖼</span> Image Library</div>
         <div class="nav-item" onclick="setNavActive(this);showDashSection('thumbnail-gen')"><span class="nav-item-icon">🎯</span> Thumbnail AI</div>
-        <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">✦</span> Templates</div>
+        <div class="nav-item" onclick="setNavActive(this);showDashSection('templates')"><span class="nav-item-icon">✦</span> Templates</div>
         <div class="nav-section-label">Publish</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">📤</span> Instagram</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">📅</span> Scheduler</div>
@@ -1499,6 +1499,22 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
             <div id="thumb-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
           </div>
         </div>
+        <!-- TEMPLATES SECTION -->
+        <div id="dash-section-templates" style="display:none">
+          <div style="margin-bottom:24px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">✦ Template Library</div>
+            <div style="font-size:.85rem;color:var(--muted)">Proven templates for videos, captions, content plans and ads — click any to use instantly</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+            <button class="filter-pill active" onclick="filterTemplates('all',this)">All</button>
+            <button class="filter-pill" onclick="filterTemplates('video',this)">🎬 Video Prompts</button>
+            <button class="filter-pill" onclick="filterTemplates('plan',this)">📅 Content Plans</button>
+            <button class="filter-pill" onclick="filterTemplates('caption',this)">✍️ Captions</button>
+            <button class="filter-pill" onclick="filterTemplates('ad',this)">📸 Ad Templates</button>
+          </div>
+          <div id="template-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div>
+        </div>
+
         <div id="dash-section-video-library" style="display:none">
           <div style="margin-bottom:20px">
             <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">▦ Video Library</div>
@@ -2969,13 +2985,16 @@ function showDashSection(section){
   const imgLib = document.getElementById('dash-section-image-library');
   const vidLib = document.getElementById('dash-section-video-library');
   const thumbGen = document.getElementById('dash-section-thumbnail-gen');
+  const tmpl = document.getElementById('dash-section-templates');
   if(main) main.style.display = section==='main' ? 'block' : 'none';
   if(imgLib) imgLib.style.display = section==='image-library' ? 'block' : 'none';
   if(vidLib) vidLib.style.display = section==='video-library' ? 'block' : 'none';
   if(thumbGen) thumbGen.style.display = section==='thumbnail-gen' ? 'block' : 'none';
+  if(tmpl) tmpl.style.display = section==='templates' ? 'block' : 'none';
   if(section==='image-library') renderAdLibraryPage();
   if(section==='video-library') renderVideoLibraryPage();
   if(section==='thumbnail-gen'){ initThumbnailSection(); }
+  if(section==='templates') renderTemplates();
 }
 
 function renderAdLibraryPage(){
@@ -3299,8 +3318,142 @@ function clearThumbLibrary(){
 
 
 // ══════════════════════════════
-// ADMIN DASHBOARD
+// TEMPLATE LIBRARY
 // ══════════════════════════════
+const TEMPLATES = [
+  // ── VIDEO PROMPTS ──
+  { id:'v1', type:'video', niche:'luxury', tag:'Luxury', emoji:'💎', title:'Luxury Product Reveal', desc:'Slow cinematic zoom on a premium product with golden hour lighting and bokeh background', prompt:'Slow cinematic zoom on a luxury product on marble surface, golden hour warm light, soft bokeh background, dust particles floating, ultra premium aesthetic', tone:'luxury' },
+  { id:'v2', type:'video', niche:'fashion', tag:'Fashion', emoji:'👗', title:'Fashion Lookbook', desc:'Model walking in slow motion through an elegant location with editorial lighting', prompt:'Elegant model walking in slow motion through a luxury hotel lobby, editorial fashion lighting, high fashion aesthetic, cinematic quality', tone:'luxury' },
+  { id:'v3', type:'video', niche:'fitness', tag:'Fitness', emoji:'💪', title:'Transformation Hook', desc:'High energy before and after split screen with motivational energy', prompt:'Split screen transformation video, before and after physique, gym environment, motivational energy, high contrast lighting, dynamic camera movement', tone:'bold' },
+  { id:'v4', type:'video', niche:'real estate', tag:'Real Estate', emoji:'🏡', title:'Property Showcase', desc:'Sweeping cinematic shots through a luxury property interior', prompt:'Cinematic walkthrough of a luxury home interior, smooth camera glide through spacious rooms, natural light pouring through floor to ceiling windows, premium finishes', tone:'cinematic' },
+  { id:'v5', type:'video', niche:'food', tag:'Food', emoji:'🍽', title:'Food Close-Up', desc:'Macro shots of premium food with steam and perfect lighting', prompt:'Extreme macro close-up of gourmet food dish, steam rising, perfect studio lighting, droplets of sauce, ultra appetizing, Michelin star restaurant aesthetic', tone:'luxury' },
+  { id:'v6', type:'video', niche:'skincare', tag:'Skincare', emoji:'✨', title:'Skincare Ritual', desc:'Elegant skincare routine with dewy skin and soft morning light', prompt:'Elegant skincare routine in soft morning light, close-up of dewy glowing skin, luxury product textures, slow motion serum drops, minimal aesthetic', tone:'minimal' },
+  { id:'v7', type:'video', niche:'coaching', tag:'Coaching', emoji:'🎯', title:'Authority Hook', desc:'Confident coach speaking directly to camera with bold energy', prompt:'Confident professional speaking directly to camera in modern office, bold direct eye contact, dynamic zoom, motivational energy, clean professional background', tone:'bold' },
+  { id:'v8', type:'video', niche:'ecommerce', tag:'E-Commerce', emoji:'🛒', title:'Product In Use', desc:'Lifestyle shot of product being used naturally in daily life', prompt:'Person naturally using a premium product in aspirational lifestyle setting, candid authentic moment, warm natural lighting, modern home environment', tone:'playful' },
+
+  // ── CONTENT PLANS ──
+  { id:'p1', type:'plan', niche:'luxury fashion', tag:'Fashion', emoji:'👗', title:'Luxury Fashion Week', desc:'7 days of fashion content — lookbooks, styling tips, behind the scenes and product reveals', plan:{ niche:'luxury fashion', goal:'followers', tone:'luxury', audience:'fashion enthusiasts and luxury consumers' } },
+  { id:'p2', type:'plan', niche:'fitness coaching', tag:'Fitness', emoji:'💪', title:'Fitness Coach Week', desc:'7 days of fitness content — workouts, nutrition tips, transformations and motivation', plan:{ niche:'fitness coaching', goal:'clients', tone:'motivational', audience:'people who want to lose weight and get fit' } },
+  { id:'p3', type:'plan', niche:'real estate', tag:'Real Estate', emoji:'🏡', title:'Real Estate Agent Week', desc:'7 days of property content — tours, tips, market insights and lifestyle', plan:{ niche:'luxury real estate', goal:'clients', tone:'educational', audience:'home buyers and property investors' } },
+  { id:'p4', type:'plan', niche:'restaurant', tag:'Food', emoji:'🍽', title:'Restaurant Launch Week', desc:'7 days of food and dining content — dishes, kitchen BTS, chef stories and ambience', plan:{ niche:'restaurant and dining', goal:'footfall', tone:'playful', audience:'local foodies and dining enthusiasts' } },
+  { id:'p5', type:'plan', niche:'skincare brand', tag:'Skincare', emoji:'✨', title:'Skincare Brand Week', desc:'7 days of beauty content — routines, ingredients, before/after and tips', plan:{ niche:'skincare and beauty', goal:'sales', tone:'educational', audience:'skincare enthusiasts aged 25-45' } },
+  { id:'p6', type:'plan', niche:'business coaching', tag:'Business', emoji:'🎯', title:'Business Coach Week', desc:'7 days of business content — mindset, strategy, wins and client results', plan:{ niche:'business and entrepreneurship coaching', goal:'clients', tone:'bold', audience:'entrepreneurs and small business owners' } },
+
+  // ── CAPTIONS ──
+  { id:'c1', type:'caption', niche:'all', tag:'Hook', emoji:'🔥', title:'The Curiosity Hook', desc:'Starts with a question that makes people stop scrolling', caption:'Wait — are you making this mistake?\n\n[Your value/insight here]\n\nSave this before you scroll. 👇\n\n#[niche] #[topic] #content' },
+  { id:'c2', type:'caption', niche:'all', tag:'Story', emoji:'📖', title:'The Transformation Story', desc:'Before and after narrative that builds emotional connection', caption:'6 months ago I was [struggle].\n\nToday I [result].\n\nHere\'s exactly what changed 👇\n\n[Your key insight]\n\nDouble tap if this resonates.\n\n#[niche] #transformation' },
+  { id:'c3', type:'caption', niche:'all', tag:'Authority', emoji:'👑', title:'The Authority Statement', desc:'Positions you as the expert in your niche', caption:'After [timeframe] of [niche], I\'ve learned this:\n\n[Bold statement or insight]\n\nMost people don\'t know this yet.\n\nSave this post. 🔖\n\n#[niche] #expert #[topic]' },
+  { id:'c4', type:'caption', niche:'all', tag:'Luxury', emoji:'💎', title:'The Luxury Reveal', desc:'Aspirational and exclusive tone for premium brands', caption:'Not everything is for everyone.\n\n[Product/service] was designed for those who understand [value].\n\nBecause [luxury reason].\n\nLink in bio.\n\n#luxury #[brand] #exclusive' },
+  { id:'c5', type:'caption', niche:'all', tag:'Education', emoji:'🎓', title:'The Value Drop', desc:'Pure value that makes followers save and share', caption:'[Number] things nobody tells you about [topic]:\n\n1. [Insight]\n2. [Insight]\n3. [Insight]\n\nWhich one surprised you most?\n\n#[niche] #tips #[topic]' },
+  { id:'c6', type:'caption', niche:'all', tag:'CTA', emoji:'📣', title:'The Direct CTA', desc:'Clear call to action that drives conversions', caption:'If you\'re serious about [goal], this is for you.\n\n[What you offer] → [Result they get]\n\nDM me "[keyword]" to get started.\n\n#[niche] #[result] #coaching' },
+
+  // ── AD TEMPLATES ──
+  { id:'a1', type:'ad', niche:'all', tag:'Launch', emoji:'🚀', title:'New Product Launch', desc:'High energy product launch ad with urgency', scene:'minimal clean white background product photography', style:'bright clean minimalist white background', headline:'INTRODUCING [PRODUCT NAME]', cta:'SHOP NOW' },
+  { id:'a2', type:'ad', niche:'all', tag:'Sale', emoji:'💰', title:'Flash Sale Ad', desc:'Bold sale announcement with strong urgency', scene:'luxury lifestyle aspirational', style:'high contrast dark moody luxury aesthetic', headline:'LIMITED TIME OFFER', cta:'CLAIM YOUR DEAL' },
+  { id:'a3', type:'ad', niche:'coaching', tag:'Coaching', emoji:'🎯', title:'Free Consultation Ad', desc:'Professional coaching offer with clear value prop', scene:'home office professional', style:'ultra realistic warm lighting professional photography', headline:'GET YOUR FREE STRATEGY CALL', cta:'BOOK NOW — FREE' },
+  { id:'a4', type:'ad', niche:'fitness', tag:'Fitness', emoji:'💪', title:'Transformation Ad', desc:'Before/after style with bold motivational copy', scene:'fitness gym workout', style:'bold vibrant colors energetic dynamic', headline:'TRANSFORM IN 90 DAYS', cta:'START TODAY' },
+];
+
+let currentTemplateFilter = 'all';
+
+function filterTemplates(type, btn){
+  document.querySelectorAll('#dash-section-templates .filter-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTemplateFilter = type;
+  renderTemplates();
+}
+
+function renderTemplates(){
+  const grid = document.getElementById('template-grid');
+  if(!grid) return;
+  const filtered = currentTemplateFilter === 'all' ? TEMPLATES : TEMPLATES.filter(t=>t.type===currentTemplateFilter);
+
+  grid.innerHTML = filtered.map(t => `
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:.18s" onmouseover="this.style.borderColor='var(--gold3)'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:1.8rem">${t.emoji}</div>
+        <div>
+          <div style="font-weight:700;font-size:.9rem;color:var(--text)">${t.title}</div>
+          <span style="font-size:.68rem;padding:2px 8px;border-radius:20px;background:rgba(212,168,83,.08);border:1px solid var(--gold3);color:var(--gold)">${t.tag}</span>
+        </div>
+      </div>
+      <div style="font-size:.8rem;color:var(--muted);line-height:1.5;flex:1">${t.desc}</div>
+      ${t.type==='caption' ? `<div style="font-size:.75rem;color:var(--text);background:var(--noir3);border:1px solid var(--border);border-radius:6px;padding:10px;line-height:1.6;white-space:pre-line">${t.caption.substring(0,120)}…</div>` : ''}
+      ${t.type==='video' ? `<div style="font-size:.72rem;color:var(--gold);font-style:italic;background:rgba(212,168,83,.04);border-left:2px solid var(--gold3);padding:8px 10px;border-radius:0 4px 4px 0">🎬 ${t.prompt.substring(0,80)}…</div>` : ''}
+      <button class="btn btn-gold btn-sm" style="width:100%;margin-top:4px" onclick="useTemplate('${t.id}')">Use Template →</button>
+    </div>
+  `).join('');
+}
+
+function useTemplate(id){
+  const t = TEMPLATES.find(t=>t.id===id);
+  if(!t) return;
+
+  if(t.type === 'video'){
+    // Go to dashboard, open quick generate with prompt filled
+    showDashSection('main');
+    document.querySelectorAll('#page-dashboard .nav-item').forEach((n,i)=>{ if(i===0) n.classList.add('active'); else n.classList.remove('active'); });
+    // Find first calendar day and open it, or scroll to generate section
+    const firstDay = contentPlan[0];
+    if(firstDay){
+      openCalDay(1);
+      setTimeout(()=>{
+        const promptEl = document.getElementById('quick-prompt');
+        if(promptEl) promptEl.value = t.prompt;
+        const toneBtn = document.querySelector(`[data-tone="${t.tone}"]`);
+        if(toneBtn){ selectTone(toneBtn); }
+      }, 300);
+    }
+    toast(`Video prompt loaded: "${t.title}" ✦`,'success');
+  }
+
+  else if(t.type === 'plan'){
+    // Pre-fill onboarding with template values and open it
+    showDashSection('main');
+    showOnboarding();
+    setTimeout(()=>{
+      // Skip to screen 2 with values pre-filled
+      goObScreen(2);
+      const nicheEl = document.getElementById('ob-niche');
+      const audienceEl = document.getElementById('ob-audience');
+      if(nicheEl) nicheEl.value = t.plan.niche;
+      if(audienceEl) audienceEl.value = t.plan.audience;
+      selectedGoal = t.plan.goal;
+      selectedObTone = t.plan.tone;
+      // Highlight the correct tone button
+      document.querySelectorAll('[data-tone]').forEach(b=>b.classList.toggle('active', b.dataset.tone===t.plan.tone));
+    }, 200);
+    toast(`Content plan template loaded: "${t.title}" ✦`,'success');
+  }
+
+  else if(t.type === 'caption'){
+    // Copy caption to clipboard
+    navigator.clipboard.writeText(t.caption).then(()=>{
+      toast(`Caption copied to clipboard ✦`,'success');
+    });
+  }
+
+  else if(t.type === 'ad'){
+    // Go to main, fill ad creator
+    showDashSection('main');
+    document.querySelectorAll('#page-dashboard .nav-item').forEach((n,i)=>{ if(i===0) n.classList.add('active'); else n.classList.remove('active'); });
+    setTimeout(()=>{
+      const sceneEl = document.getElementById('ad-scene');
+      const styleEl = document.getElementById('ad-style');
+      const headlineEl = document.getElementById('ad-headline');
+      const ctaEl = document.getElementById('ad-cta');
+      if(sceneEl) sceneEl.value = t.scene;
+      if(styleEl) styleEl.value = t.style;
+      if(headlineEl) headlineEl.value = t.headline;
+      if(ctaEl) ctaEl.value = t.cta;
+      updateAdPreview();
+      document.querySelector('.create-section')?.scrollIntoView({behavior:'smooth'});
+    }, 200);
+    toast(`Ad template loaded: "${t.title}" — generate the background to preview ✦`,'success');
+  }
+}
+
+
 const ADMIN_PASSWORD = 'luxreel-admin-2026';
 let adminAuthenticated = false;
 let allAdminUsers = [];
