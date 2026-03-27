@@ -1075,8 +1075,9 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       <div class="sidebar-logo" onclick="go('landing')">Lux<span>Reel</span></div>
       <nav class="sidebar-nav">
         <div class="nav-section-label">Studio</div>
-        <div class="nav-item active" onclick="setNavActive(this)"><span class="nav-item-icon">◈</span> Dashboard</div>
-        <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">▦</span> Library</div>
+        <div class="nav-item active" onclick="setNavActive(this);showDashSection('main')"><span class="nav-item-icon">◈</span> Dashboard</div>
+        <div class="nav-item" onclick="setNavActive(this);showDashSection('video-library')"><span class="nav-item-icon">▦</span> Video Library</div>
+        <div class="nav-item" onclick="setNavActive(this);showDashSection('image-library')"><span class="nav-item-icon">🖼</span> Image Library</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">✦</span> Templates</div>
         <div class="nav-section-label">Publish</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">📤</span> Instagram</div>
@@ -1107,7 +1108,8 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       </div>
 
       <div class="dash-content">
-        <!-- Welcome -->
+        <!-- MAIN SECTION -->
+        <div id="dash-section-main">
         <div class="welcome-banner">
           <div class="welcome-text">
             <h2>Good morning, <em id="dash-first-name">Alex</em></h2>
@@ -1328,6 +1330,15 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
 
           <div id="ad-gen-error" style="display:none;color:var(--red);font-size:.8rem;margin-top:8px"></div>
+
+          <!-- Ad Image Library -->
+          <div id="ad-library-section" style="display:none;margin-top:20px;border-top:1px solid var(--border);padding-top:16px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div class="prompt-label">Saved Ad Images</div>
+              <button class="btn btn-ghost btn-sm" onclick="clearAdLibrary()">Clear All</button>
+            </div>
+            <div id="ad-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px"></div>
+          </div>
         </div>
 
         <!-- Library -->
@@ -1340,6 +1351,31 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
         </div>
         <div class="video-grid" id="video-grid"></div>
+        </div><!-- end dash-section-main -->
+
+        <!-- IMAGE LIBRARY SECTION -->
+        <div id="dash-section-image-library" style="display:none">
+          <div style="margin-bottom:20px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">🖼 Image Library</div>
+            <div style="font-size:.85rem;color:var(--muted)">All your AI-generated ad backgrounds — click any to reload into the Ad Creator</div>
+          </div>
+          <div id="ad-library-grid-page" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px"></div>
+          <div id="ad-library-empty" style="display:none;text-align:center;padding:60px 20px;color:var(--muted)">
+            <div style="font-size:2.5rem;margin-bottom:12px">🖼</div>
+            <div style="font-weight:600;margin-bottom:6px">No images yet</div>
+            <div style="font-size:.85rem">Generate your first ad image in the Ad Creator</div>
+          </div>
+        </div>
+
+        <!-- VIDEO LIBRARY SECTION -->
+        <div id="dash-section-video-library" style="display:none">
+          <div style="margin-bottom:20px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">▦ Video Library</div>
+            <div style="font-size:.85rem;color:var(--muted)">All your generated reels</div>
+          </div>
+          <div class="video-grid" id="video-grid-page"></div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -1898,7 +1934,7 @@ function go(page){
     target.style.display='block';
     window.scrollTo(0,0);
   }
-  if(page==='dashboard'){renderGrid();updateStats();loadContentPlan();}
+  if(page==='dashboard'){renderGrid();updateStats();loadContentPlan();renderAdLibrary();}
 }
 
 // ══════════════════════════════
@@ -2650,6 +2686,7 @@ async function generateAdBackground(){
       document.getElementById('ad-composer').style.display = 'block';
       updateAdPreview();
       initAdDrag();
+      saveAdToLibrary(data.imageUrl);
       toast('Background generated ✦','success');
     } else {
       throw new Error('No image');
@@ -2779,7 +2816,136 @@ async function downloadAdImage(){
   }catch(e){ window.open(generatedAdUrl,'_blank'); }
 }
 
-function useAdAsVideoImage(){
+function showDashSection(section){
+  // Hide all sections
+  document.getElementById('dash-section-main').style.display = section==='main' ? 'block' : 'none';
+  document.getElementById('dash-section-image-library').style.display = section==='image-library' ? 'block' : 'none';
+  document.getElementById('dash-section-video-library').style.display = section==='video-library' ? 'block' : 'none';
+
+  if(section==='image-library') renderAdLibraryPage();
+  if(section==='video-library') renderVideoLibraryPage();
+}
+
+function renderAdLibraryPage(){
+  const lib = JSON.parse(localStorage.getItem('lx_ad_library')||'[]');
+  const grid = document.getElementById('ad-library-grid-page');
+  const empty = document.getElementById('ad-library-empty');
+  if(!grid) return;
+
+  if(lib.length === 0){
+    grid.style.display = 'none';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  grid.style.display = 'grid';
+  if(empty) empty.style.display = 'none';
+
+  grid.innerHTML = lib.map(item => `
+    <div style="border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--panel)">
+      <div style="aspect-ratio:1/1;overflow:hidden;cursor:pointer" onclick="loadAdToCreator('${item.id}')">
+        <img src="${item.src}" style="width:100%;height:100%;object-fit:cover;transition:.2s" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+      </div>
+      <div style="padding:8px;display:flex;gap:6px">
+        <button class="btn btn-gold btn-sm" style="flex:1;font-size:.72rem" onclick="downloadAdFromLibrary('${item.id}')">Download ↓</button>
+        <button class="btn btn-outline btn-sm" style="font-size:.72rem" onclick="loadAdToCreator('${item.id}')">Edit ✏</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:.72rem" onclick="deleteAdFromLibrary('${item.id}');renderAdLibraryPage()">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadAdToCreator(id){
+  const lib = JSON.parse(localStorage.getItem('lx_ad_library')||'[]');
+  const item = lib.find(i => String(i.id) === String(id));
+  if(!item) return;
+  // Go back to main and open ad creator
+  showDashSection('main');
+  document.querySelectorAll('.nav-item').forEach((n,i)=>{ if(i===0) n.classList.add('active'); else n.classList.remove('active'); });
+  generatedAdUrl = item.src;
+  document.getElementById('ad-bg-img').src = item.src;
+  document.getElementById('ad-composer').style.display = 'block';
+  updateAdPreview();
+  initAdDrag();
+  // Scroll to ad creator
+  setTimeout(()=>document.getElementById('ad-composer')?.scrollIntoView({behavior:'smooth',block:'center'}), 200);
+  toast('Image loaded into Ad Creator ✦','success');
+}
+
+function renderVideoLibraryPage(){
+  const grid = document.getElementById('video-grid-page');
+  if(!grid) return;
+  // Reuse same render logic
+  grid.innerHTML = document.getElementById('video-grid').innerHTML;
+}
+
+
+function saveAdToLibrary(dataUrl){
+  const lib = JSON.parse(localStorage.getItem('lx_ad_library')||'[]');
+  lib.unshift({ id: Date.now(), src: dataUrl, created: new Date().toISOString() });
+  // Keep max 20 images
+  if(lib.length > 20) lib.pop();
+  localStorage.setItem('lx_ad_library', JSON.stringify(lib));
+  renderAdLibrary();
+}
+
+function renderAdLibrary(){
+  const lib = JSON.parse(localStorage.getItem('lx_ad_library')||'[]');
+  const grid = document.getElementById('ad-library-grid');
+  const section = document.getElementById('ad-library-section');
+  if(!grid || !section) return;
+
+  if(lib.length === 0){ section.style.display='none'; return; }
+  section.style.display = 'block';
+
+  grid.innerHTML = lib.map(item => `
+    <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);aspect-ratio:1/1;cursor:pointer" onclick="selectAdFromLibrary('${item.id}')">
+      <img src="${item.src}" style="width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,0);transition:.2s" onmouseover="this.style.background='rgba(0,0,0,.4)'" onmouseout="this.style.background='rgba(0,0,0,0)'">
+        <div style="position:absolute;bottom:4px;right:4px;display:flex;gap:4px">
+          <button class="btn btn-gold btn-sm" style="padding:3px 8px;font-size:.65rem" onclick="event.stopPropagation();downloadAdFromLibrary('${item.id}')">↓</button>
+          <button class="btn btn-ghost btn-sm" style="padding:3px 8px;font-size:.65rem" onclick="event.stopPropagation();deleteAdFromLibrary('${item.id}')">✕</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectAdFromLibrary(id){
+  const lib = JSON.parse(localStorage.getItem('lx_ad_library')||'[]');
+  const item = lib.find(i => String(i.id) === String(id));
+  if(!item) return;
+  generatedAdUrl = item.src;
+  document.getElementById('ad-bg-img').src = item.src;
+  document.getElementById('ad-composer').style.display = 'block';
+  updateAdPreview();
+  initAdDrag();
+  toast('Image loaded from library ✦','success');
+}
+
+function downloadAdFromLibrary(id){
+  const lib = JSON.parse(localStorage.getItem('lx_ad_library')||'[]');
+  const item = lib.find(i => String(i.id) === String(id));
+  if(!item) return;
+  const a = document.createElement('a');
+  a.href = item.src;
+  a.download = `luxreel-ad-${id}.png`;
+  a.click();
+  toast('Downloaded ✦','success');
+}
+
+function deleteAdFromLibrary(id){
+  let lib = JSON.parse(localStorage.getItem('lx_ad_library')||'[]');
+  lib = lib.filter(i => String(i.id) !== String(id));
+  localStorage.setItem('lx_ad_library', JSON.stringify(lib));
+  renderAdLibrary();
+}
+
+function clearAdLibrary(){
+  localStorage.removeItem('lx_ad_library');
+  renderAdLibrary();
+  toast('Library cleared','info');
+}
+
   if(!generatedAdUrl)return;
   fetch(generatedAdUrl).then(r=>r.blob()).then(blob=>{
     const reader = new FileReader();
