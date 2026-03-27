@@ -1219,8 +1219,19 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
                 <button class="btn btn-ghost btn-sm" style="margin-top:4px;font-size:.65rem" onclick="clearImage(event)">Remove ✕</button>
               </div>
             </div>
-            <div style="flex:2;min-width:200px">
-              <textarea class="prompt-textarea" id="quick-prompt" style="height:80px;margin-bottom:10px" placeholder="Add extra details or leave as is…"></textarea>
+            <div style="flex:2;min-width:200px;display:flex;flex-direction:column;gap:8px">
+              <div>
+                <div class="prompt-label" style="margin-bottom:4px">Hook <span style="color:var(--muted);font-weight:400">(first line of your post)</span></div>
+                <input id="quick-hook" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="Your attention-grabbing hook…">
+              </div>
+              <div>
+                <div class="prompt-label" style="margin-bottom:4px">Topic <span style="color:var(--muted);font-weight:400">(what this post is about)</span></div>
+                <input id="quick-topic" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="Topic description…">
+              </div>
+              <div>
+                <div class="prompt-label" style="margin-bottom:4px">Video Prompt <span style="color:var(--muted);font-weight:400">(what to generate)</span></div>
+                <textarea class="prompt-textarea" id="quick-prompt" style="height:70px" placeholder="Describe the video scene…"></textarea>
+              </div>
               <button class="btn btn-gold btn-md" id="quick-gen-btn" style="width:100%" onclick="handleQuickGenerate()">🎬 Generate Reel</button>
             </div>
           </div>
@@ -2209,12 +2220,18 @@ function openCalDay(day){
   activeCalDay=plan;
 
   document.getElementById('quick-gen-title').textContent=`✦ Day ${day} — ${plan.postType||plan.post_type}`;
-  document.getElementById('quick-gen-subtitle').textContent=plan.hook;
+  document.getElementById('quick-gen-subtitle').textContent='Edit and customise before generating';
+
+  // Fill all editable fields
+  const hookEl=document.getElementById('quick-hook');
+  const topicEl=document.getElementById('quick-topic');
+  if(hookEl)hookEl.value=plan.hook||'';
+  if(topicEl)topicEl.value=plan.topic||'';
   document.getElementById('quick-prompt').value=plan.videoPrompt||plan.topic||'';
 
-  // Pre-fill image generator with the video prompt
+  // Pre-fill image generator
   const imgPromptEl=document.getElementById('img-gen-prompt');
-  if(imgPromptEl) imgPromptEl.value=plan.videoPrompt||plan.topic||'';
+  if(imgPromptEl)imgPromptEl.value=plan.videoPrompt||plan.topic||'';
   document.getElementById('quick-generate-section').style.display='block';
   document.getElementById('quick-generate-section').scrollIntoView({behavior:'smooth',block:'center'});
 }
@@ -2227,7 +2244,9 @@ function hideQuickGenerate(){
 async function handleQuickGenerate(){
   if(generating){toast('Already generating — please wait','info');return}
   const prompt=document.getElementById('quick-prompt').value.trim();
-  if(!prompt){toast('Enter a prompt first','error');return}
+  const hook=document.getElementById('quick-hook')?.value.trim()||'';
+  const topic=document.getElementById('quick-topic')?.value.trim()||'';
+  if(!prompt){toast('Enter a video prompt first','error');return}
 
   generating=true;
   const btn=document.getElementById('quick-gen-btn');
@@ -2248,7 +2267,7 @@ async function handleQuickGenerate(){
     const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-      body:JSON.stringify({prompt,tone,duration:6,imageBase64:uploadedImageBase64,imageType:uploadedImageType}),
+      body:JSON.stringify({prompt,tone,duration:6,imageBase64:uploadedImageBase64,imageType:uploadedImageType,hook,topic}),
     });
     const startData=await startRes.json();
     console.log('Start response:',JSON.stringify(startData));
