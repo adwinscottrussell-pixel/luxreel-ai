@@ -1360,8 +1360,61 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 </div>
 
 <!-- ══════════════════════════════
-     PRICING PAGE
+     INSTAGRAM PREVIEW MODAL
 ══════════════════════════════ -->
+<div id="preview-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;padding:20px" onclick="closePreview()">
+  <div style="background:#000;border-radius:12px;width:100%;max-width:380px;overflow:hidden" onclick="event.stopPropagation()">
+
+    <!-- Instagram header -->
+    <div style="background:#000;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #222">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:white" id="preview-avatar">LX</div>
+        <div>
+          <div style="font-size:.82rem;font-weight:600;color:white" id="preview-username">yourbrand</div>
+          <div style="font-size:.68rem;color:#888">Sponsored</div>
+        </div>
+      </div>
+      <div style="color:#888;font-size:1.2rem">···</div>
+    </div>
+
+    <!-- Video -->
+    <div style="position:relative;background:#111;aspect-ratio:9/16;max-height:480px;overflow:hidden">
+      <video id="preview-video" muted loop playsinline autoplay style="width:100%;height:100%;object-fit:cover"></video>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center" id="preview-placeholder">
+        <div style="color:#444;font-size:2rem">▶</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="background:#000;padding:10px 16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;gap:16px">
+          <span style="font-size:1.4rem;cursor:pointer" id="preview-heart">🤍</span>
+          <span style="font-size:1.4rem;cursor:pointer">💬</span>
+          <span style="font-size:1.4rem;cursor:pointer">✈️</span>
+        </div>
+        <span style="font-size:1.4rem;cursor:pointer">🔖</span>
+      </div>
+      <div style="font-size:.8rem;font-weight:600;color:white;margin-bottom:4px" id="preview-likes">❤️ 1,247 likes</div>
+      <div style="font-size:.8rem;color:white;line-height:1.4">
+        <span style="font-weight:600" id="preview-caption-user">yourbrand</span>
+        <span id="preview-caption-text" style="color:#e0e0e0"> </span>
+      </div>
+      <div style="font-size:.72rem;color:#888;margin-top:6px">View all 48 comments</div>
+      <div style="font-size:.68rem;color:#555;margin-top:4px;text-transform:uppercase;letter-spacing:.05em">2 hours ago</div>
+    </div>
+
+    <!-- Close -->
+    <div style="background:#000;padding:12px;text-align:center;border-top:1px solid #222">
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn btn-outline btn-sm" onclick="closePreview()">Close</button>
+        <button class="btn btn-gold btn-sm" onclick="copyCaptionFromPreview()">Copy Caption ⧉</button>
+        <button class="btn btn-sm" style="background:#E1306C;color:white;border:none" onclick="toast('Instagram posting coming soon ✦','info')">Post to Instagram</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 <div class="page" id="page-pricing">
   <div style="background:var(--noir2);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;">
     <div class="wordmark" style="font-size:1.3rem;cursor:pointer" onclick="go('landing')">Lux<span style="color:var(--text);font-style:italic">Reel</span></div>
@@ -2466,7 +2519,7 @@ async function handleGenerate(){
 async function pollVideoStatus(video){
   console.log('Polling task:',video.task_id);
   for(let i=0;i<40;i++){
-    await new Promise(r=>setTimeout(r,8000));
+    await new Promise(r=>setTimeout(r,5000));
     try{
       const res=await fetch(`${SB_URL}/functions/v1/check-video`,{
         method:'POST',
@@ -2543,9 +2596,9 @@ function renderGrid(){
         <div class="card-prompt-text" title="${esc(v.prompt)}">${esc(v.prompt)}</div>
         <div class="card-caption-text ${v.status==='pending'?'loading-pulse':''}">${v.status==='done'?esc(v.caption):''}</div>
         <div class="card-actions-row">
+          <button class="card-act-btn" onclick="previewPost('${v.id}')">Preview 👁</button>
           <button class="card-act-btn" onclick="copyCaption('${v.id}')">Copy ⧉</button>
           <button class="card-act-btn" onclick="downloadVideo('${v.id}','${v.video_url}')">Download ↓</button>
-          <button class="card-act-btn" onclick="toast('Instagram posting coming soon','info')">Post 📤</button>
           <button class="card-act-btn delete" onclick="deleteVideo('${v.id}')">Delete ✕</button>
         </div>
       </div>
@@ -2576,6 +2629,64 @@ function filterVideos(f,el){
 // ══════════════════════════════
 // ACTIONS
 // ══════════════════════════════
+let previewVideoId = '';
+
+function previewPost(id){
+  const v=videos.find(v=>String(v.id)===String(id));
+  if(!v)return;
+  previewVideoId=id;
+
+  // Set video
+  const videoEl=document.getElementById('preview-video');
+  const placeholder=document.getElementById('preview-placeholder');
+  if(v.video_url&&!v.video_url.includes('commondatastorage')){
+    videoEl.src=v.video_url;
+    videoEl.style.display='block';
+    placeholder.style.display='none';
+    videoEl.play().catch(()=>{});
+  } else {
+    videoEl.style.display='none';
+    placeholder.style.display='flex';
+  }
+
+  // Set caption
+  const caption=v.caption||'';
+  document.getElementById('preview-caption-text').textContent=' '+caption;
+
+  // Set username from current user email
+  const username=currentUser?.email?.split('@')[0]?.replace(/[._]/g,'')?.toLowerCase()||'yourbrand';
+  document.getElementById('preview-username').textContent=username;
+  document.getElementById('preview-caption-user').textContent=username;
+  document.getElementById('preview-avatar').textContent=username.substring(0,2).toUpperCase();
+
+  // Random likes
+  const likes=(Math.floor(Math.random()*3000)+500).toLocaleString();
+  document.getElementById('preview-likes').textContent='❤️ '+likes+' likes';
+
+  // Heart animation
+  const heart=document.getElementById('preview-heart');
+  heart.textContent='🤍';
+  heart.onclick=()=>{heart.textContent=heart.textContent==='🤍'?'❤️':'🤍'};
+
+  // Show modal
+  const modal=document.getElementById('preview-modal');
+  modal.style.display='flex';
+}
+
+function closePreview(){
+  const modal=document.getElementById('preview-modal');
+  modal.style.display='none';
+  const videoEl=document.getElementById('preview-video');
+  videoEl.pause();
+  videoEl.src='';
+}
+
+function copyCaptionFromPreview(){
+  const v=videos.find(v=>String(v.id)===String(previewVideoId));
+  if(!v?.caption)return;
+  navigator.clipboard.writeText(v.caption).then(()=>toast('Caption copied! ✦','success'));
+}
+
 async function downloadVideo(id, url){
   if(!url||url.includes('commondatastorage')){toast('No video to download yet','error');return;}
   try{
