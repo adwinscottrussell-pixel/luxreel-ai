@@ -1078,6 +1078,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <div class="nav-item active" onclick="setNavActive(this);showDashSection('main')"><span class="nav-item-icon">◈</span> Dashboard</div>
         <div class="nav-item" onclick="setNavActive(this);showDashSection('video-library')"><span class="nav-item-icon">▦</span> Video Library</div>
         <div class="nav-item" onclick="setNavActive(this);showDashSection('image-library')"><span class="nav-item-icon">🖼</span> Image Library</div>
+        <div class="nav-item" onclick="setNavActive(this);showDashSection('thumbnail-gen')"><span class="nav-item-icon">🎯</span> Thumbnail AI</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">✦</span> Templates</div>
         <div class="nav-section-label">Publish</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">📤</span> Instagram</div>
@@ -1367,7 +1368,119 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
         </div>
 
-        <!-- VIDEO LIBRARY SECTION -->
+        <!-- THUMBNAIL AI SECTION -->
+        <div id="dash-section-thumbnail-gen" style="display:none">
+          <div style="margin-bottom:24px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">🎯 AI Thumbnail Intelligence</div>
+            <div style="font-size:.85rem;color:var(--muted)">Analyzes what's working in your niche and generates thumbnails in proven viral styles</div>
+          </div>
+
+          <!-- Step 1 — Niche + Style Analysis -->
+          <div class="create-section" style="margin-bottom:16px">
+            <div class="create-header">
+              <div>
+                <div class="create-title">Step 1 — Analyse Your Niche</div>
+                <div style="font-size:.75rem;color:var(--muted);margin-top:2px">We study what's trending and identify the visual patterns that get clicks</div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+              <div>
+                <div class="prompt-label" style="margin-bottom:6px">Your Niche</div>
+                <input id="thumb-niche" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coaching, luxury fashion, real estate…">
+              </div>
+              <div>
+                <div class="prompt-label" style="margin-bottom:6px">Platform</div>
+                <select id="thumb-platform" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
+                  <option value="Instagram Reels">Instagram Reels</option>
+                  <option value="YouTube">YouTube</option>
+                  <option value="TikTok">TikTok</option>
+                  <option value="Facebook">Facebook</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-outline btn-md" id="thumb-analyse-btn" style="width:100%" onclick="analyseThumbnailStyles()">🔍 Analyse Trending Styles</button>
+
+            <div id="thumb-analyse-loading" style="display:none;text-align:center;padding:24px">
+              <div class="spin-ring" style="margin:0 auto 10px"></div>
+              <div style="font-size:.8rem;color:var(--gold)">Studying viral thumbnails in your niche…</div>
+            </div>
+
+            <!-- Style Cards -->
+            <div id="thumb-styles" style="display:none;margin-top:16px">
+              <div class="prompt-label" style="margin-bottom:10px">Choose a proven style to generate:</div>
+              <div id="thumb-style-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
+            </div>
+          </div>
+
+          <!-- Step 2 — Customise & Generate -->
+          <div class="create-section" id="thumb-gen-section" style="display:none;margin-bottom:16px">
+            <div class="create-header">
+              <div>
+                <div class="create-title">Step 2 — Customise & Generate</div>
+                <div style="font-size:.75rem;color:var(--muted);margin-top:2px" id="thumb-selected-style-label">Selected style</div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+              <div>
+                <div class="prompt-label" style="margin-bottom:6px">Main Text / Title</div>
+                <input id="thumb-title" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. 5 Ways to Lose Weight Fast">
+              </div>
+              <div>
+                <div class="prompt-label" style="margin-bottom:6px">Subject / Person</div>
+                <input id="thumb-subject" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coach, luxury product, before/after">
+              </div>
+            </div>
+
+            <div style="margin-bottom:14px">
+              <div class="prompt-label" style="margin-bottom:6px">Mood / Emotion</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="tone-btn active" data-thumb-mood="excited and energetic" onclick="selectThumbMood(this)">🔥 Excited</button>
+                <button class="tone-btn" data-thumb-mood="shocked and surprised" onclick="selectThumbMood(this)">😱 Shocked</button>
+                <button class="tone-btn" data-thumb-mood="confident and powerful" onclick="selectThumbMood(this)">💪 Confident</button>
+                <button class="tone-btn" data-thumb-mood="luxury and aspirational" onclick="selectThumbMood(this)">💎 Luxury</button>
+                <button class="tone-btn" data-thumb-mood="curious and mysterious" onclick="selectThumbMood(this)">🤔 Curious</button>
+              </div>
+            </div>
+
+            <button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
+
+            <div id="thumb-gen-loading" style="display:none;text-align:center;padding:24px">
+              <div class="spin-ring" style="margin:0 auto 10px"></div>
+              <div style="font-size:.8rem;color:var(--gold)">Generating your viral thumbnail…</div>
+            </div>
+
+            <!-- Result -->
+            <div id="thumb-result" style="display:none;margin-top:16px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+                <div>
+                  <div class="prompt-label" style="margin-bottom:8px">Generated Thumbnail</div>
+                  <img id="thumb-result-img" style="width:100%;border-radius:10px;border:1px solid var(--border2)">
+                  <div style="display:flex;gap:8px;margin-top:10px">
+                    <button class="btn btn-gold btn-sm" style="flex:1" onclick="downloadThumbnail()">Download ↓</button>
+                    <button class="btn btn-outline btn-sm" onclick="generateThumbnail()">Regenerate ↺</button>
+                    <button class="btn btn-outline btn-sm" onclick="saveThumbnailToLibrary()">Save 🔖</button>
+                  </div>
+                </div>
+                <div>
+                  <div class="prompt-label" style="margin-bottom:8px">Why This Works</div>
+                  <div id="thumb-why-works" style="font-size:.82rem;color:var(--muted);line-height:1.6;background:var(--noir3);border:1px solid var(--border);border-radius:8px;padding:14px"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Thumbnail Library -->
+          <div id="thumb-library-section" style="display:none">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div class="prompt-label">Saved Thumbnails</div>
+              <button class="btn btn-ghost btn-sm" onclick="clearThumbLibrary()">Clear All</button>
+            </div>
+            <div id="thumb-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+          </div>
+        </div>
         <div id="dash-section-video-library" style="display:none">
           <div style="margin-bottom:20px">
             <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">▦ Video Library</div>
@@ -2820,11 +2933,14 @@ function showDashSection(section){
   const main = document.getElementById('dash-section-main');
   const imgLib = document.getElementById('dash-section-image-library');
   const vidLib = document.getElementById('dash-section-video-library');
+  const thumbGen = document.getElementById('dash-section-thumbnail-gen');
   if(main) main.style.display = section==='main' ? 'block' : 'none';
   if(imgLib) imgLib.style.display = section==='image-library' ? 'block' : 'none';
   if(vidLib) vidLib.style.display = section==='video-library' ? 'block' : 'none';
+  if(thumbGen) thumbGen.style.display = section==='thumbnail-gen' ? 'block' : 'none';
   if(section==='image-library') renderAdLibraryPage();
   if(section==='video-library') renderVideoLibraryPage();
+  if(section==='thumbnail-gen') renderThumbLibrary();
 }
 
 function renderAdLibraryPage(){
@@ -2962,8 +3078,200 @@ function useAdAsVideoImage(){
 }
 
 // ══════════════════════════════
-// IMAGE UPLOAD
+// THUMBNAIL AI
 // ══════════════════════════════
+let thumbStyles = [];
+let selectedThumbStyle = null;
+let selectedThumbMood = 'excited and energetic';
+let generatedThumbUrl = '';
+
+function selectThumbMood(btn){
+  document.querySelectorAll('[data-thumb-mood]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedThumbMood = btn.dataset.thumbMood;
+}
+
+async function analyseThumbnailStyles(){
+  const niche = document.getElementById('thumb-niche')?.value.trim();
+  const platform = document.getElementById('thumb-platform')?.value || 'Instagram Reels';
+  if(!niche){ toast('Enter your niche first','error'); return; }
+
+  const btn = document.getElementById('thumb-analyse-btn');
+  const loading = document.getElementById('thumb-analyse-loading');
+  const stylesEl = document.getElementById('thumb-styles');
+
+  btn.disabled = true;
+  btn.textContent = 'Analysing…';
+  loading.style.display = 'block';
+  stylesEl.style.display = 'none';
+
+  try{
+    const res = await fetch(`${SB_URL}/functions/v1/start-video`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_ANON}` },
+      body: JSON.stringify({ action: 'analyse-thumbnails', niche, platform })
+    });
+    const data = await res.json();
+    thumbStyles = data.styles || [];
+
+    if(thumbStyles.length > 0){
+      renderThumbStyles();
+      stylesEl.style.display = 'block';
+      toast('Styles found ✦','success');
+    } else {
+      toast('Could not analyse — please try again','error');
+    }
+  }catch(e){
+    toast('Analysis failed — please try again','error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🔍 Analyse Trending Styles';
+  loading.style.display = 'none';
+}
+
+function renderThumbStyles(){
+  const grid = document.getElementById('thumb-style-grid');
+  if(!grid) return;
+  grid.innerHTML = thumbStyles.map((s,i) => `
+    <div class="cal-card" id="thumb-style-${i}" onclick="selectThumbStyle(${i})" style="cursor:pointer">
+      <div style="font-size:1.6rem;margin-bottom:8px">${s.emoji||'🎯'}</div>
+      <div style="font-weight:700;font-size:.9rem;margin-bottom:6px;color:var(--text)">${s.name}</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;line-height:1.5">${s.description}</div>
+      <div style="font-size:.7rem;color:var(--gold)">✦ ${s.whyItWorks}</div>
+    </div>
+  `).join('');
+}
+
+function selectThumbStyle(i){
+  document.querySelectorAll('[id^="thumb-style-"]').forEach(el=>el.classList.remove('has-video'));
+  document.getElementById(`thumb-style-${i}`)?.classList.add('has-video');
+  selectedThumbStyle = thumbStyles[i];
+  document.getElementById('thumb-selected-style-label').textContent = `Style: ${selectedThumbStyle.name}`;
+  document.getElementById('thumb-gen-section').style.display = 'block';
+  document.getElementById('thumb-gen-section').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+async function generateThumbnail(){
+  if(!selectedThumbStyle){ toast('Select a style first','error'); return; }
+  const title = document.getElementById('thumb-title')?.value.trim();
+  const subject = document.getElementById('thumb-subject')?.value.trim();
+  const niche = document.getElementById('thumb-niche')?.value.trim();
+  const platform = document.getElementById('thumb-platform')?.value;
+
+  const btn = document.getElementById('thumb-gen-btn');
+  const loading = document.getElementById('thumb-gen-loading');
+  const result = document.getElementById('thumb-result');
+
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+  loading.style.display = 'block';
+  result.style.display = 'none';
+
+  const thumbPrompt = `Create a viral ${platform} thumbnail for the ${niche} niche.
+
+Style: ${selectedThumbStyle.name} — ${selectedThumbStyle.description}
+Visual approach: ${selectedThumbStyle.visualDetails}
+
+Subject: ${subject || 'professional person'}
+Mood/expression: ${selectedThumbMood}
+${title ? `Bold text overlay at top or bottom: "${title}" — large, high contrast, easy to read on mobile` : 'No text overlay'}
+
+Make it scroll-stopping, high contrast, optimized for ${platform}. Professional quality. No watermarks.`;
+
+  try{
+    const res = await fetch(`${SB_URL}/functions/v1/start-video`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_ANON}` },
+      body: JSON.stringify({ action: 'image', prompt: thumbPrompt })
+    });
+    const data = await res.json();
+    if(data.imageUrl){
+      generatedThumbUrl = data.imageUrl;
+      document.getElementById('thumb-result-img').src = data.imageUrl;
+      document.getElementById('thumb-why-works').innerHTML = `
+        <div style="margin-bottom:8px"><strong style="color:var(--gold)">Style:</strong> ${selectedThumbStyle.name}</div>
+        <div style="margin-bottom:8px"><strong style="color:var(--gold)">Why it works:</strong> ${selectedThumbStyle.whyItWorks}</div>
+        <div style="margin-bottom:8px"><strong style="color:var(--gold)">Best for:</strong> ${selectedThumbStyle.bestFor}</div>
+        <div><strong style="color:var(--gold)">Pro tip:</strong> ${selectedThumbStyle.proTip}</div>
+      `;
+      result.style.display = 'block';
+      renderThumbLibrary();
+      toast('Thumbnail generated ✦','success');
+    } else {
+      throw new Error('No image');
+    }
+  }catch(e){
+    toast('Generation failed — please try again','error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '✨ Generate Thumbnail';
+  loading.style.display = 'none';
+}
+
+function saveThumbnailToLibrary(){
+  if(!generatedThumbUrl) return;
+  const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  lib.unshift({ id: Date.now(), src: generatedThumbUrl, style: selectedThumbStyle?.name||'', created: new Date().toISOString() });
+  if(lib.length > 20) lib.pop();
+  localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
+  renderThumbLibrary();
+  toast('Saved to library ✦','success');
+}
+
+function renderThumbLibrary(){
+  const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  const grid = document.getElementById('thumb-library-grid');
+  const section = document.getElementById('thumb-library-section');
+  if(!grid||!section) return;
+  if(lib.length===0){ section.style.display='none'; return; }
+  section.style.display = 'block';
+  grid.innerHTML = lib.map(item=>`
+    <div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--panel)">
+      <div style="aspect-ratio:16/9;overflow:hidden">
+        <img src="${item.src}" style="width:100%;height:100%;object-fit:cover">
+      </div>
+      <div style="padding:6px;display:flex;gap:4px">
+        <button class="btn btn-gold btn-sm" style="flex:1;font-size:.65rem" onclick="downloadThumbFromLib('${item.id}')">↓</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:.65rem" onclick="deleteThumbFromLib('${item.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function downloadThumbnail(){
+  if(!generatedThumbUrl) return;
+  const a = document.createElement('a');
+  a.href = generatedThumbUrl;
+  a.download = 'luxreel-thumbnail.png';
+  a.click();
+  toast('Downloaded ✦','success');
+}
+
+function downloadThumbFromLib(id){
+  const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  const item = lib.find(i=>String(i.id)===String(id));
+  if(!item) return;
+  const a = document.createElement('a');
+  a.href = item.src;
+  a.download = `luxreel-thumb-${id}.png`;
+  a.click();
+}
+
+function deleteThumbFromLib(id){
+  let lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  lib = lib.filter(i=>String(i.id)!==String(id));
+  localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
+  renderThumbLibrary();
+}
+
+function clearThumbLibrary(){
+  localStorage.removeItem('lx_thumb_library');
+  renderThumbLibrary();
+}
+
+
 function handleImageUpload(input){
   const file=input.files[0];
   if(!file)return;
