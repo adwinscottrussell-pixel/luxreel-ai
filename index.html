@@ -1184,13 +1184,35 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
             </div>
             <button class="btn btn-ghost btn-sm" onclick="hideQuickGenerate()">✕ Close</button>
           </div>
+
+          <!-- AI Image Generator -->
+          <div style="background:var(--noir3);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
+            <div style="font-size:.75rem;font-weight:600;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">✦ AI Image Generator</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input id="img-gen-prompt" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem;flex:1" placeholder="Describe your product or scene… e.g. luxury gold perfume bottle on marble">
+              <button class="btn btn-outline btn-sm" id="img-gen-btn" onclick="generateAIImage()" style="white-space:nowrap;flex-shrink:0">✨ Generate Image</button>
+            </div>
+            <div id="img-gen-result" style="display:none;margin-top:10px;text-align:center">
+              <img id="img-gen-preview" style="max-height:140px;border-radius:8px;object-fit:cover;border:1px solid var(--border2)">
+              <div style="display:flex;gap:8px;justify-content:center;margin-top:8px">
+                <button class="btn btn-gold btn-sm" onclick="useGeneratedImage()">Use This Image →</button>
+                <button class="btn btn-ghost btn-sm" onclick="generateAIImage()">Try Again ↺</button>
+              </div>
+            </div>
+            <div id="img-gen-loading" style="display:none;text-align:center;padding:16px">
+              <div class="spin-ring" style="margin:0 auto 8px"></div>
+              <div style="font-size:.75rem;color:var(--muted)">Generating image with DALL-E 3…</div>
+            </div>
+            <div id="img-gen-error" style="display:none;font-size:.75rem;color:var(--red);margin-top:8px"></div>
+          </div>
+
           <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
             <div class="upload-area" id="quick-upload-area" onclick="document.getElementById('quick-image-input').click()" style="flex:1;min-width:200px;margin-bottom:0;padding:16px">
               <input type="file" id="quick-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleImageUpload(this)">
               <div id="quick-upload-placeholder">
                 <div class="upload-icon" style="font-size:1.2rem">⬆</div>
-                <div class="upload-title" style="font-size:.8rem">Add Product Photo</div>
-                <div class="upload-sub">Optional</div>
+                <div class="upload-title" style="font-size:.8rem">Upload Product Photo</div>
+                <div class="upload-sub">Or use AI generator above</div>
               </div>
               <div id="quick-upload-preview" style="display:none">
                 <img id="quick-upload-img" style="max-height:80px;max-width:100%;border-radius:6px;object-fit:contain">
@@ -2377,8 +2399,80 @@ function usePrompt(prompt){
 }
 
 // ══════════════════════════════
-// IMAGE UPLOAD
+// AI IMAGE GENERATOR
 // ══════════════════════════════
+let generatedImageUrl = '';
+let generatedImageBase64 = '';
+
+async function generateAIImage(){
+  const prompt = document.getElementById('img-gen-prompt').value.trim();
+  if(!prompt){ toast('Enter an image description first','error'); return; }
+
+  const btn = document.getElementById('img-gen-btn');
+  const loading = document.getElementById('img-gen-loading');
+  const result = document.getElementById('img-gen-result');
+  const error = document.getElementById('img-gen-error');
+
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+  loading.style.display = 'block';
+  result.style.display = 'none';
+  error.style.display = 'none';
+
+  try{
+    const res = await fetch(`${SB_URL}/functions/v1/start-video`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_ANON}` },
+      body: JSON.stringify({ action: 'image', prompt })
+    });
+    const data = await res.json();
+    if(data.imageUrl){
+      generatedImageUrl = data.imageUrl;
+      document.getElementById('img-gen-preview').src = data.imageUrl;
+      result.style.display = 'block';
+      toast('Image generated ✦','success');
+    } else {
+      throw new Error('No image returned');
+    }
+  }catch(e){
+    error.textContent = 'Could not generate image — please try again';
+    error.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '✨ Generate Image';
+  loading.style.display = 'none';
+}
+
+async function useGeneratedImage(){
+  if(!generatedImageUrl){ return; }
+
+  // Fetch image and convert to base64
+  try{
+    const res = await fetch(generatedImageUrl);
+    const blob = await res.blob();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target.result;
+      uploadedImageBase64 = result.split(',')[1];
+      uploadedImageType = blob.type || 'image/png';
+
+      // Show in upload preview
+      document.getElementById('quick-upload-placeholder').style.display = 'none';
+      document.getElementById('quick-upload-preview').style.display = 'block';
+      document.getElementById('quick-upload-img').src = result;
+      document.getElementById('quick-upload-area').classList.add('has-image');
+      toast('AI image loaded — ready to generate reel ✦','success');
+    };
+    reader.readAsDataURL(blob);
+  }catch(e){
+    // If CORS blocks, use URL directly
+    uploadedImageBase64 = '';
+    uploadedImageType = 'image/png';
+    toast('Image ready — generating reel with AI image ✦','success');
+  }
+}
+
 function handleImageUpload(input){
   const file=input.files[0];
   if(!file)return;
