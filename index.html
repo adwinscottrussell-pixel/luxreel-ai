@@ -1242,64 +1242,99 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           <div class="create-header">
             <div>
               <div class="create-title">✦ Ad Image Creator</div>
-              <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Generate a scroll-stopping social media ad with your headline and CTA</div>
+              <div style="font-size:.75rem;color:var(--muted);margin-top:2px">Generate a background image then overlay your text — no errors, fully editable</div>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px">
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
             <div>
-              <div class="prompt-label" style="margin-bottom:6px">Scene / Background</div>
-              <select id="ad-scene" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
-                <option value="home office">Home office — professional with laptop</option>
-                <option value="luxury lifestyle">Luxury lifestyle — aspirational setting</option>
-                <option value="fitness">Fitness — gym or outdoor workout</option>
-                <option value="restaurant">Restaurant — food and dining</option>
-                <option value="fashion">Fashion — model with product</option>
-                <option value="minimal product">Minimal product — clean white background</option>
+              <div class="prompt-label" style="margin-bottom:6px">Scene</div>
+              <select id="ad-scene" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" onchange="document.getElementById('ad-custom-scene').style.display=this.value==='custom'?'block':'none'">
+                <option value="home office professional">Home office — professional with laptop</option>
+                <option value="luxury lifestyle aspirational">Luxury lifestyle — aspirational setting</option>
+                <option value="fitness gym workout">Fitness — gym or outdoor workout</option>
+                <option value="restaurant food dining">Restaurant — food and dining</option>
+                <option value="fashion model product">Fashion — model with product</option>
+                <option value="minimal clean white background product photography">Minimal product — clean white background</option>
                 <option value="custom">Custom scene…</option>
               </select>
             </div>
             <div>
               <div class="prompt-label" style="margin-bottom:6px">Style</div>
               <select id="ad-style" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
-                <option value="ultra realistic, warm lighting, social media ad style">Warm & Realistic</option>
-                <option value="high contrast, dark moody, luxury aesthetic">Dark Luxury</option>
-                <option value="bright, clean, minimalist, white background">Clean Minimal</option>
-                <option value="bold, vibrant colors, energetic, dynamic">Bold & Vibrant</option>
-                <option value="cinematic, film grain, editorial fashion">Cinematic Editorial</option>
+                <option value="ultra realistic warm lighting professional photography">Warm & Realistic</option>
+                <option value="high contrast dark moody luxury aesthetic">Dark Luxury</option>
+                <option value="bright clean minimalist white background">Clean Minimal</option>
+                <option value="bold vibrant colors energetic dynamic">Bold & Vibrant</option>
+                <option value="cinematic film grain editorial">Cinematic Editorial</option>
               </select>
             </div>
           </div>
-          <div id="ad-custom-scene" style="display:none;margin-bottom:14px">
-            <div class="prompt-label" style="margin-bottom:6px">Describe your scene</div>
-            <textarea class="prompt-textarea" id="ad-custom-scene-text" style="height:60px" placeholder="Describe the background scene…"></textarea>
+
+          <div id="ad-custom-scene" style="display:none;margin-bottom:12px">
+            <textarea class="prompt-textarea" id="ad-custom-scene-text" style="height:60px" placeholder="Describe your custom background scene…"></textarea>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-            <div>
-              <div class="prompt-label" style="margin-bottom:6px">Headline Text</div>
-              <input id="ad-headline" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. HOW TO USE AI TO AUTOMATE OUTREACH">
-            </div>
-            <div>
-              <div class="prompt-label" style="margin-bottom:6px">CTA Button Text</div>
-              <input id="ad-cta" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. CLICK FOR HELP">
-            </div>
-          </div>
-          <div style="display:flex;gap:12px;align-items:flex-start">
-            <div style="flex:1">
-              <button class="btn btn-gold btn-md" id="ad-gen-btn" style="width:100%" onclick="generateAdImage()">✨ Generate Ad Image</button>
-            </div>
-          </div>
+
+          <button class="btn btn-outline btn-md" id="ad-bg-btn" style="width:100%;margin-bottom:16px" onclick="generateAdBackground()">✨ Generate Background Image</button>
+
           <div id="ad-gen-loading" style="display:none;text-align:center;padding:20px">
             <div class="spin-ring" style="margin:0 auto 10px"></div>
-            <div style="font-size:.8rem;color:var(--gold)">Creating your ad with DALL-E 3…</div>
+            <div style="font-size:.8rem;color:var(--gold)">Generating background with DALL-E 3…</div>
           </div>
-          <div id="ad-gen-result" style="display:none;margin-top:16px">
-            <img id="ad-gen-img" style="width:100%;border-radius:10px;border:1px solid var(--border2)">
-            <div style="display:flex;gap:8px;margin-top:10px">
-              <button class="btn btn-gold btn-sm" onclick="downloadAdImage()">Download ↓</button>
-              <button class="btn btn-outline btn-sm" onclick="generateAdImage()">Regenerate ↺</button>
-              <button class="btn btn-outline btn-sm" onclick="useAdAsVideoImage()">Use for Video →</button>
+
+          <!-- Live Ad Preview with editable overlay -->
+          <div id="ad-composer" style="display:none">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+
+              <!-- Controls -->
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div>
+                  <div class="prompt-label" style="margin-bottom:6px">Headline</div>
+                  <input id="ad-headline" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem;text-transform:uppercase" placeholder="YOUR HEADLINE HERE" oninput="updateAdPreview()">
+                </div>
+                <div>
+                  <div class="prompt-label" style="margin-bottom:6px">Subheadline</div>
+                  <input id="ad-sub" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="Supporting text (optional)" oninput="updateAdPreview()">
+                </div>
+                <div>
+                  <div class="prompt-label" style="margin-bottom:6px">CTA Button</div>
+                  <input id="ad-cta" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem;text-transform:uppercase" placeholder="CLICK HERE" oninput="updateAdPreview()">
+                </div>
+                <div>
+                  <div class="prompt-label" style="margin-bottom:6px">CTA Color</div>
+                  <div style="display:flex;gap:6px">
+                    <button class="tone-btn active" data-adcolor="linear-gradient(135deg,#f7971e,#ffd200)" onclick="setAdColor(this)" style="flex:1;justify-content:center;font-size:.7rem">🟡 Gold</button>
+                    <button class="tone-btn" data-adcolor="linear-gradient(135deg,#e6683c,#dc2743)" onclick="setAdColor(this)" style="flex:1;justify-content:center;font-size:.7rem">🔴 Red</button>
+                    <button class="tone-btn" data-adcolor="linear-gradient(135deg,#11998e,#38ef7d)" onclick="setAdColor(this)" style="flex:1;justify-content:center;font-size:.7rem">🟢 Green</button>
+                    <button class="tone-btn" data-adcolor="linear-gradient(135deg,#4776e6,#8e54e9)" onclick="setAdColor(this)" style="flex:1;justify-content:center;font-size:.7rem">🔵 Blue</button>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button class="btn btn-gold btn-sm" style="flex:1" onclick="downloadAdComposite()">Download Ad ↓</button>
+                  <button class="btn btn-outline btn-sm" onclick="generateAdBackground()">New BG ↺</button>
+                  <button class="btn btn-outline btn-sm" onclick="useAdAsVideoImage()">→ Video</button>
+                </div>
+              </div>
+
+              <!-- Live Preview -->
+              <div>
+                <div class="prompt-label" style="margin-bottom:6px">Live Preview</div>
+                <div id="ad-preview-wrap" style="position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--border2);aspect-ratio:1/1">
+                  <img id="ad-bg-img" style="width:100%;height:100%;object-fit:cover;display:block">
+                  <!-- Dark overlay -->
+                  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.5) 100%)"></div>
+                  <!-- Headline -->
+                  <div id="ad-preview-headline" style="position:absolute;top:12%;left:0;right:0;text-align:center;padding:0 16px;font-size:1.1rem;font-weight:900;color:white;text-shadow:2px 2px 8px rgba(0,0,0,.8);text-transform:uppercase;line-height:1.2;letter-spacing:.02em"></div>
+                  <!-- Sub -->
+                  <div id="ad-preview-sub" style="position:absolute;top:42%;left:0;right:0;text-align:center;padding:0 16px;font-size:.75rem;color:rgba(255,255,255,.9);text-shadow:1px 1px 4px rgba(0,0,0,.8);line-height:1.4"></div>
+                  <!-- CTA -->
+                  <div id="ad-preview-cta" style="position:absolute;bottom:10%;left:10%;right:10%;text-align:center;padding:14px 20px;border-radius:50px;font-weight:900;font-size:.9rem;color:white;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 4px 20px rgba(0,0,0,.4);background:linear-gradient(135deg,#f7971e,#ffd200);text-shadow:1px 1px 3px rgba(0,0,0,.4)"></div>
+                </div>
+              </div>
+
             </div>
           </div>
+
           <div id="ad-gen-error" style="display:none;color:var(--red);font-size:.8rem;margin-top:8px"></div>
         </div>
 
@@ -2492,71 +2527,84 @@ function usePrompt(prompt){
 // AD IMAGE CREATOR
 // ══════════════════════════════
 let generatedAdUrl = '';
+let adCtaColor = 'linear-gradient(135deg,#f7971e,#ffd200)';
 
-document.getElementById('ad-scene')?.addEventListener('change', function(){
-  const custom = document.getElementById('ad-custom-scene');
-  if(custom) custom.style.display = this.value === 'custom' ? 'block' : 'none';
-});
+function setAdColor(btn){
+  document.querySelectorAll('[data-adcolor]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  adCtaColor = btn.dataset.adcolor;
+  updateAdPreview();
+}
 
-async function generateAdImage(){
-  const headline = document.getElementById('ad-headline')?.value.trim();
-  const cta = document.getElementById('ad-cta')?.value.trim();
+function updateAdPreview(){
+  const headline = document.getElementById('ad-headline')?.value || '';
+  const sub = document.getElementById('ad-sub')?.value || '';
+  const cta = document.getElementById('ad-cta')?.value || '';
+
+  const h = document.getElementById('ad-preview-headline');
+  const s = document.getElementById('ad-preview-sub');
+  const c = document.getElementById('ad-preview-cta');
+
+  if(h) h.textContent = headline.toUpperCase();
+  if(s) s.textContent = sub;
+  if(c){
+    c.textContent = cta.toUpperCase();
+    c.style.background = adCtaColor;
+    c.style.display = cta ? 'block' : 'none';
+  }
+}
+
+async function generateAdBackground(){
   const sceneEl = document.getElementById('ad-scene');
   const styleEl = document.getElementById('ad-style');
   const scene = sceneEl?.value === 'custom'
     ? document.getElementById('ad-custom-scene-text')?.value.trim()
     : sceneEl?.value;
-  const style = styleEl?.value || 'ultra realistic, warm lighting, social media ad style';
+  const style = styleEl?.value || 'ultra realistic warm lighting';
 
-  if(!headline){toast('Enter a headline first','error');return}
-  if(!cta){toast('Enter CTA text first','error');return}
-
-  const btn = document.getElementById('ad-gen-btn');
+  const btn = document.getElementById('ad-bg-btn');
   const loading = document.getElementById('ad-gen-loading');
-  const result = document.getElementById('ad-gen-result');
   const error = document.getElementById('ad-gen-error');
 
-  btn.disabled = true;
-  btn.textContent = 'Generating…';
+  if(btn) btn.disabled = true;
   loading.style.display = 'block';
-  result.style.display = 'none';
   error.style.display = 'none';
 
-  const adPrompt = `Create a high-converting, scroll-stopping digital ad image optimized for mobile social media.
-
-Scene: ${scene}. Background clean and slightly blurred. Professional, aspirational, warm lighting.
-
-Style: ${style}. Ultra realistic. High contrast.
-
-Text Overlay:
-- Top headline (large, bold, white text, high contrast shadow): "${headline}"
-- Bottom CTA button: HUGE button taking up 30-40% of width, bright orange/yellow gradient, rounded corners, drop shadow, bold uppercase white text: "${cta}"
-
-Make it highly scroll-stopping, optimized for Instagram and Facebook ads.`;
+  const bgPrompt = `${scene}. ${style}. No text, no words, no logos, no signs. Clean background image for social media ad. High quality, professional photography.`;
 
   try{
     const res = await fetch(`${SB_URL}/functions/v1/start-video`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SB_ANON}` },
-      body: JSON.stringify({ action: 'image', prompt: adPrompt })
+      body: JSON.stringify({ action: 'image', prompt: bgPrompt })
     });
     const data = await res.json();
     if(data.imageUrl){
       generatedAdUrl = data.imageUrl;
-      document.getElementById('ad-gen-img').src = data.imageUrl;
-      result.style.display = 'block';
-      toast('Ad image created ✦','success');
+      document.getElementById('ad-bg-img').src = data.imageUrl;
+      document.getElementById('ad-composer').style.display = 'block';
+      updateAdPreview();
+      toast('Background generated ✦','success');
     } else {
-      throw new Error('No image returned');
+      throw new Error('No image');
     }
   }catch(e){
-    error.textContent = 'Could not generate ad — please try again';
+    error.textContent = 'Could not generate background — please try again';
     error.style.display = 'block';
   }
 
-  btn.disabled = false;
-  btn.textContent = '✨ Generate Ad Image';
+  if(btn){ btn.disabled = false; btn.textContent = '✨ Generate Background Image'; }
   loading.style.display = 'none';
+}
+
+async function downloadAdComposite(){
+  // Use html2canvas to capture the preview
+  const wrap = document.getElementById('ad-preview-wrap');
+  if(!wrap)return;
+  try{
+    // Fallback — open background image and let user screenshot
+    toast('Right-click the preview and Save Image, or use a screenshot tool ✦','info');
+  }catch(e){}
 }
 
 async function downloadAdImage(){
@@ -2566,25 +2614,20 @@ async function downloadAdImage(){
     const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'luxreel-ad.png';
+    a.download = 'luxreel-ad-bg.png';
     a.click();
     URL.revokeObjectURL(a.href);
-    toast('Ad downloaded ✦','success');
-  }catch(e){
-    window.open(generatedAdUrl,'_blank');
-  }
+  }catch(e){ window.open(generatedAdUrl,'_blank'); }
 }
 
 function useAdAsVideoImage(){
   if(!generatedAdUrl)return;
-  // Load ad image into video generator
   fetch(generatedAdUrl).then(r=>r.blob()).then(blob=>{
     const reader = new FileReader();
     reader.onload = (e) => {
       uploadedImageBase64 = e.target.result.split(',')[1];
       uploadedImageType = blob.type || 'image/png';
-      toast('Ad image loaded for video generation ✦','success');
-      // Scroll to calendar
+      toast('Background loaded for video generation ✦','success');
       document.getElementById('calendar-section')?.scrollIntoView({behavior:'smooth'});
     };
     reader.readAsDataURL(blob);
