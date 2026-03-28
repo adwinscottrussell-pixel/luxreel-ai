@@ -2030,8 +2030,8 @@ async function bootApp(){
   if(session){
     currentUser=session.user;
     updateUserUI();
-    await loadVideos();
     go('dashboard');
+    loadVideos(); // non-blocking — page shows immediately
   } else {
     go('landing');
   }
@@ -2041,7 +2041,7 @@ async function bootApp(){
     if(session){
       currentUser=session.user;
       updateUserUI();
-      await loadVideos();
+      loadVideos(); // non-blocking
     } else {
       currentUser=null;
       videos=[];
@@ -2600,12 +2600,14 @@ async function handleQuickGenerate(){
 async function loadContentPlan(){
   if(!sb||!currentUser)return;
 
-  // Pre-warm the function
-  fetch(`${SB_URL}/functions/v1/start-video`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-    body:JSON.stringify({action:'warm'}),
-  }).catch(()=>{});
+  // Pre-warm the function — delayed so it doesn't block initial render
+  setTimeout(()=>{
+    fetch(`${SB_URL}/functions/v1/start-video`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+      body:JSON.stringify({action:'warm'}),
+    }).catch(()=>{});
+  }, 2000);
   try{
     const{data}=await sb.from('content_plans')
       .select('*')
