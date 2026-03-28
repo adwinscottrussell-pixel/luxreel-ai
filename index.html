@@ -2557,41 +2557,25 @@ async function handleQuickGenerate(){
   videos.unshift(video);renderGrid();updateStats();
 
   try{
-    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
+    const startRes=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-      body:JSON.stringify({prompt,tone,duration:6,imageBase64:uploadedImageBase64,imageType:uploadedImageType,hook,topic}),
+      body:JSON.stringify({
+        userId:currentUser?.id||'anonymous',
+        scenes:[{index:1,text:prompt,visual:prompt,duration:6}],
+        style:selectedObTone||selectedTone||'luxury',
+        platform:'instagram_reels',
+        niche:userProfile?.niche||'luxury',
+        contentType:'reel',
+        tone:selectedObTone||selectedTone||'luxury',
+        hook:hook||prompt.slice(0,80),
+        scriptPreview:topic||'',
+      }),
     });
     const startData=await startRes.json();
     console.log('Start response:',JSON.stringify(startData));
-    video.caption=startData.caption||fallbackCaption();
-    video.task_id=startData.taskId||'';
-
-    if(startData.videoUrl){
-      video.video_url=startData.videoUrl;
-      video.status='done';
-      await saveVideo(video);
-      // Reload videos from DB to get fresh data with correct IDs
-      await loadVideos();
-
-      // Mark calendar day as done
-      if(activeCalDay){
-        activeCalDay.video_id=String(video.id);
-        if(sb&&currentUser){
-          await sb.from('content_plans')
-            .update({video_id:String(video.id),status:'done'})
-            .eq('user_id',currentUser.id)
-            .eq('day',activeCalDay.day);
-        }
-        renderCalendar(contentPlan);
-      }
-
-      btn.disabled=false;btn.textContent='🎬 Generate Reel';
-      generating=false;
-      toast('Reel created ✦','success');
-      hideQuickGenerate();
-      return;
-    }
+    video.caption=fallbackCaption();
+    video.task_id=startData.requestId||'';
 
     await saveVideo(video);
     renderGrid();
@@ -2599,7 +2583,7 @@ async function handleQuickGenerate(){
     generating=false;
     if(video.task_id){
       toast('Reel generating — ready in ~60 seconds ✦','info');
-      pollVideoStatus(video);
+      watchVideoJob(video);
     }else{
       toast('Could not start generation — please try again','error');
     }
@@ -3696,29 +3680,24 @@ async function handleGenerate(){
   videos.unshift(video);renderGrid();updateStats();
 
   try{
-    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
+    const startRes=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-      body:JSON.stringify({prompt,tone:selectedTone,duration:selectedDuration,ratio:selectedRatio,imageBase64:uploadedImageBase64,imageType:uploadedImageType}),
+      body:JSON.stringify({
+        userId:currentUser?.id||'anonymous',
+        scenes:[{index:1,text:prompt,visual:prompt,duration:6}],
+        style:selectedTone||'luxury',
+        platform:'instagram_reels',
+        niche:userProfile?.niche||'luxury',
+        contentType:'reel',
+        tone:selectedTone||'luxury',
+        hook:prompt.slice(0,80),
+      }),
     });
     const startData=await startRes.json();
     console.log('Start response:', JSON.stringify(startData));
-    video.caption=startData.caption||fallbackCaption();
-    video.task_id=startData.taskId||'';
-
-    // fal.ai sometimes returns video URL immediately (sync)
-    if(startData.videoUrl){
-      video.video_url=startData.videoUrl;
-      video.status='done';
-      await saveVideo(video);
-      await loadVideos();
-      btn.disabled=false;btn.textContent='Generate Video';
-      generating=false;
-      document.getElementById('dash-prompt').value='';
-      toast('Video created ✦','success');
-      return;
-    }
-    console.log('Task ID:', video.task_id);
+    video.caption=fallbackCaption();
+    video.task_id=startData.requestId||'';
 
     await saveVideo(video);
     renderGrid();
@@ -3728,7 +3707,7 @@ async function handleGenerate(){
 
     if(video.task_id){
       toast('Video generating — ready in ~2 mins ✦','info');
-      pollVideoStatus(video);
+      watchVideoJob(video);
     } else {
       toast('Could not start video — please try again','error');
     }
@@ -3744,43 +3723,95 @@ async function handleGenerate(){
   }
 }
 
-async function pollVideoStatus(video){
-  console.log('Polling task:',video.task_id);
-  for(let i=0;i<40;i++){
-    await new Promise(r=>setTimeout(r,5000));
-    try{
-      const res=await fetch(`${SB_URL}/functions/v1/check-video`,{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-        body:JSON.stringify({taskId:video.task_id}),
-      });
-      const data=await res.json();
-      console.log(`Poll ${i+1}:`,data.status,data.videoUrl||'');
-      if(data.status==='done'&&data.videoUrl){
-        video.video_url=data.videoUrl;
+// ── Video job status tracking ──────────────────
+// Two-layer approach:
+// 1. Supabase realtime subscription — instant UI update when DB changes
+// 2. process-video-job polling fallback — drives the actual status update
+// Active subscriptions stored here so we can unsubscribe when done.
+const activeJobSubscriptions={};
+
+async function watchVideoJob(video){
+  const requestId=video.task_id;
+  if(!requestId||!sb)return;
+  console.log('Watching job:',requestId);
+
+  // ── Layer 1: Realtime subscription ──
+  // Listens for DB row changes on this specific requestId.
+  // When process-video-job updates the row, this fires instantly.
+  const channel=sb.channel('job-'+requestId)
+    .on('postgres_changes',{
+      event:'UPDATE',
+      schema:'public',
+      table:'video_jobs',
+      filter:`request_id=eq.${requestId}`
+    },async(payload)=>{
+      console.log('Realtime update:',payload.new.status);
+      const row=payload.new;
+      if(row.status==='completed'&&row.video_url){
+        video.video_url=row.video_url;
         video.status='done';
         await saveVideo(video);
         const idx=videos.findIndex(v=>String(v.id)===String(video.id));
         if(idx>=0)videos[idx]=video;
         renderGrid();updateStats();
         toast('Your video is ready! ✦','success');
-        return;
+        // Unsubscribe — job is done
+        _cleanupJobSubscription(requestId);
       }
-      if(data.status==='failed'){
+      if(row.status==='failed'){
         video.status='done';
         await saveVideo(video);
         const idx=videos.findIndex(v=>String(v.id)===String(video.id));
         if(idx>=0)videos[idx]=video;
         renderGrid();
-        return;
+        toast('Video generation failed — please try again','error');
+        _cleanupJobSubscription(requestId);
       }
-    }catch(e){console.warn('Poll error',e)}
-  }
-  video.status='done';
-  await saveVideo(video);
-  const idx=videos.findIndex(v=>String(v.id)===String(video.id));
-  if(idx>=0)videos[idx]=video;
-  renderGrid();
+    })
+    .subscribe();
+
+  activeJobSubscriptions[requestId]=channel;
+
+  // ── Layer 2: process-video-job polling ──
+  // Calls the Edge Function every 5s to poll fal.ai and update the DB.
+  // The realtime subscription above picks up those DB updates instantly.
+  // Stops automatically when status reaches completed or failed.
+  let attempts=0;
+  const maxAttempts=36; // 36 × 5s = 3 minutes max
+  const poll=setInterval(async()=>{
+    attempts++;
+    try{
+      const res=await fetch(`${SB_URL}/functions/v1/process-video-job`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+        body:JSON.stringify({requestId}),
+      });
+      const data=await res.json();
+      console.log(`Job poll ${attempts}/${maxAttempts}:`,data.status);
+      // Terminal states — stop polling (realtime already handled UI)
+      if(data.status==='completed'||data.status==='failed'||attempts>=maxAttempts){
+        clearInterval(poll);
+        if(attempts>=maxAttempts&&data.status!=='completed'){
+          video.status='done';
+          await saveVideo(video);
+          renderGrid();
+          _cleanupJobSubscription(requestId);
+        }
+      }
+    }catch(e){
+      console.warn('process-video-job poll error:',e);
+    }
+  },5000);
+
+  // Store interval ref for cleanup
+  activeJobSubscriptions[requestId+'_interval']=poll;
+}
+
+function _cleanupJobSubscription(requestId){
+  const channel=activeJobSubscriptions[requestId];
+  if(channel){sb.removeChannel(channel);delete activeJobSubscriptions[requestId];}
+  const interval=activeJobSubscriptions[requestId+'_interval'];
+  if(interval){clearInterval(interval);delete activeJobSubscriptions[requestId+'_interval'];}
 }
 
 function fallbackCaption(){
