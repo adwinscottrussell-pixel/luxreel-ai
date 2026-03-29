@@ -2709,15 +2709,12 @@ async function handleQuickGenerate(){
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
       body:JSON.stringify({
-        userId:currentUser?.id||'anonymous',
-        scenes:[{index:1,text:prompt,visual:prompt,duration:6}],
-        style:selectedObTone||selectedTone||'luxury',
-        platform:'instagram_reels',
-        niche:localStorage.getItem('lx_niche')||'luxury',
-        contentType:'reel',
-        tone:selectedObTone||selectedTone||'luxury',
-        hook:hook||prompt.slice(0,80),
-        scriptPreview:topic||'',
+        body:JSON.stringify({
+    prompt:prompt,
+    tone:selectedObTone||selectedTone||'luxury',
+    duration:6,
+    action:'video',
+    niche:localStorage.getItem('lx_niche')||'luxury',
       }),
     });
     const startData=await startRes.json();
