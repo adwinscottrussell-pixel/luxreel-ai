@@ -2578,7 +2578,7 @@ async function generateContentPlan(){
     let res, attempts = 0;
     while(attempts < 3){
       try{
-        res=await fetch(`${SB_URL}/functions/v1/start-video`,{
+        res=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
           body:JSON.stringify({
