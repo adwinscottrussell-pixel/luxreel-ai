@@ -3852,7 +3852,8 @@ async function handleGenerate(){
     generating=false;
     document.getElementById('dash-prompt').value='';
 
-    if(video.task_id){
+    console.log('task_id check:',video.task_id);
+if(video.task_id){
       toast('Video generating — ready in ~2 mins ✦','info');
       watchVideoJob(video);
     } else {
