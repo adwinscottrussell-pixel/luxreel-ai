@@ -491,75 +491,205 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 .filter-pill:hover{border-color:var(--border2);color:var(--text)}
 .filter-pill.active{border-color:var(--gold3);color:var(--gold);background:rgba(212,168,83,.08)}
 
-.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+
+/* ── Video Card ── */
 .video-card{
-  background:var(--noir2);border:1px solid var(--border);border-radius:10px;
-  overflow:hidden;transition:border-color .2s,transform .2s;
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s;
   animation:fadeUp .3s both;
 }
-.video-card:hover{border-color:rgba(212,168,83,.25);transform:translateY(-2px)}
+.video-card:hover{
+  border-color:rgba(212,168,83,.2);transform:translateY(-2px);
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+}
+
+/* ── Thumb ── */
 .card-thumb{
-  aspect-ratio:9/16;background:var(--panel);position:relative;overflow:hidden;
+  aspect-ratio:9/16;background:var(--noir3);position:relative;overflow:hidden;
 }
 .card-thumb video{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Skeleton shimmer thumb */
+.card-thumb-skeleton{
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--noir3) 25%,rgba(212,168,83,.04) 50%,var(--noir3) 75%);
+  background-size:200% 100%;animation:shimmer 1.6s infinite;
+}
+
+/* Placeholder bg for non-video states */
 .card-thumb-bg{
   position:absolute;inset:0;
   background:linear-gradient(160deg,var(--noir3) 0%,var(--panel) 100%);
-  display:flex;align-items:center;justify-content:center;font-size:2rem;
+  display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:.4;
 }
+
+/* Play overlay on hover */
+.card-play-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .2s;background:rgba(0,0,0,.2);
+}
+.video-card:hover .card-play-overlay{opacity:1}
+.play-circle{
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(240,236,228,.92);display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);transition:transform .15s;
+}
+.play-circle:hover{transform:scale(1.1)}
+.play-circle svg{margin-left:2px}
+
+/* Status badge */
 .card-badge{
-  position:absolute;top:8px;right:8px;
-  padding:3px 8px;border-radius:4px;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  position:absolute;top:8px;left:8px;
+  display:flex;align-items:center;gap:5px;
+  padding:4px 8px;border-radius:20px;
+  font-size:.62rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
 }
-.badge-done{background:rgba(76,175,125,.15);border:1px solid rgba(76,175,125,.3);color:var(--green)}
-.badge-pending{background:rgba(212,168,83,.12);border:1px solid var(--gold3);color:var(--gold)}
-.card-body{padding:12px 14px}
-.card-prompt-text{
-  font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  margin-bottom:6px;letter-spacing:.02em;
+.card-badge-dot{
+  width:5px;height:5px;border-radius:50%;flex-shrink:0;
 }
-.card-caption-text{
-  font-size:.82rem;line-height:1.5;color:var(--text);
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  min-height:38px;
+.badge-done{
+  background:rgba(76,175,125,.15);border:1px solid rgba(76,175,125,.25);color:var(--green);
 }
-.card-caption-text.loading-pulse{
-  background:linear-gradient(90deg,var(--border) 25%,rgba(212,168,83,.08) 50%,var(--border) 75%);
-  background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px;color:transparent;
+.badge-done .card-badge-dot{background:var(--green)}
+.badge-pending{
+  background:rgba(212,168,83,.12);border:1px solid rgba(212,168,83,.2);color:var(--gold);
 }
-@keyframes shimmer{to{background-position:-200% 0}}
-.card-actions-row{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
-.card-act-btn{
-  flex:1;padding:6px;border-radius:5px;border:1px solid var(--border);
-  background:transparent;color:var(--muted);font-size:.7rem;cursor:pointer;transition:all .15s;
+.badge-pending .card-badge-dot{
+  background:var(--gold);animation:pulse-dot 1.4s ease infinite;
 }
-.card-act-btn:hover{border-color:var(--border2);color:var(--text)}
-.card-act-btn.delete:hover{border-color:rgba(224,85,85,.4);color:var(--red);background:rgba(224,85,85,.06)}
+.badge-failed{
+  background:rgba(224,85,85,.12);border:1px solid rgba(224,85,85,.25);color:var(--red);
+}
+.badge-failed .card-badge-dot{background:var(--red)}
+
+@keyframes pulse-dot{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.4;transform:scale(.7)}
+}
+
+/* fal.ai credit */
+.fal-credit{
+  position:absolute;bottom:6px;left:6px;
+  font-size:.48rem;color:rgba(255,255,255,.28);text-decoration:none;
+  letter-spacing:.06em;background:rgba(0,0,0,.35);padding:2px 6px;border-radius:3px;
+}
 
 /* Generating overlay */
 .gen-overlay{
-  position:absolute;inset:0;background:rgba(8,7,10,.75);backdrop-filter:blur(6px);
+  position:absolute;inset:0;background:rgba(8,7,10,.8);backdrop-filter:blur(8px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
 }
 .spin-ring{
-  width:36px;height:36px;border-radius:50%;
-  border:2px solid rgba(212,168,83,.2);border-top-color:var(--gold);
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid rgba(212,168,83,.15);border-top-color:var(--gold);
   animation:spin .7s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-.gen-label{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.gen-label{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.gen-sublabel{font-size:.56rem;color:var(--muted2);letter-spacing:.08em;margin-top:-4px}
 
-/* Empty */
-.library-empty{
-  grid-column:1/-1;padding:60px;text-align:center;
+/* Failed overlay */
+.failed-overlay{
+  position:absolute;inset:0;
+  background:rgba(224,85,85,.06);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
 }
-.empty-icon-big{font-size:2.5rem;margin-bottom:16px;opacity:.2}
-.empty-h{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:400;color:var(--muted);margin-bottom:6px}
-.empty-p{font-size:.8rem;color:var(--muted2);letter-spacing:.06em;text-transform:uppercase}
+.failed-icon{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(224,85,85,.12);border:1px solid rgba(224,85,85,.25);
+  display:flex;align-items:center;justify-content:center;color:var(--red);font-size:1rem;
+}
+.failed-label{font-size:.65rem;color:var(--red);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
 
-/* ════════════════════════════════
-   PRICING PAGE
-════════════════════════════════ */
+/* ── Card body ── */
+.card-body{padding:12px 14px 14px}
+.card-prompt-text{
+  font-size:.72rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-bottom:5px;letter-spacing:.02em;
+}
+.card-caption-text{
+  font-size:.8rem;line-height:1.5;color:var(--text);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  min-height:36px;
+}
+.card-caption-text.loading-pulse{
+  background:linear-gradient(90deg,var(--border) 25%,rgba(212,168,83,.06) 50%,var(--border) 75%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:4px;color:transparent;min-height:36px;
+}
+
+/* Skeleton lines */
+.card-skeleton-line{
+  height:10px;border-radius:5px;margin-bottom:7px;
+  background:linear-gradient(90deg,var(--border) 25%,rgba(212,168,83,.04) 50%,var(--border) 75%);
+  background-size:200% 100%;animation:shimmer 1.6s infinite;
+}
+.card-skeleton-line.short{width:55%}
+
+/* ── Card actions ── */
+.card-actions-row{
+  display:flex;gap:5px;margin-top:10px;padding-top:10px;
+  border-top:1px solid var(--border);
+}
+.card-act-btn{
+  flex:1;padding:6px 4px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.68rem;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.card-act-btn:hover{border-color:var(--border2);color:var(--text);background:rgba(255,255,255,.03)}
+.card-act-btn.delete:hover{border-color:rgba(224,85,85,.35);color:var(--red);background:rgba(224,85,85,.06)}
+.card-act-btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+
+/* ── Library header ── */
+.library-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;gap:12px;flex-wrap:wrap;
+}
+.library-title{
+  font-family:'Playfair Display',serif;font-size:1rem;font-weight:600;color:var(--text);
+}
+.library-filters{display:flex;gap:4px;flex-wrap:wrap}
+.filter-pill{
+  padding:5px 12px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.72rem;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;
+}
+.filter-pill:hover{border-color:var(--border2);color:var(--text)}
+.filter-pill.active{border-color:rgba(212,168,83,.35);color:var(--gold);background:rgba(212,168,83,.07)}
+.filter-count{
+  font-size:.62rem;background:rgba(255,255,255,.06);
+  border-radius:10px;padding:1px 5px;color:var(--muted2);
+}
+.filter-pill.active .filter-count{background:rgba(212,168,83,.12);color:var(--gold)}
+
+/* ── Stats mini row ── */
+.lib-stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;
+}
+.lib-stat{
+  background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;
+}
+.lib-stat-label{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-bottom:4px}
+.lib-stat-val{font-size:1.1rem;font-weight:600;letter-spacing:-.02em;color:var(--text)}
+.lib-stat-val.gold{color:var(--gold)}
+.lib-stat-val.green{color:var(--green)}
+.lib-stat-val.red{color:var(--red)}
+
+/* ── Empty state ── */
+.library-empty{
+  grid-column:1/-1;padding:64px 24px;text-align:center;
+}
+.empty-icon-big{
+  width:52px;height:52px;background:var(--panel);border:1px solid var(--border);
+  border-radius:12px;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;font-size:1.4rem;opacity:.5;
+}
+.empty-h{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--muted);margin-bottom:6px}
+.empty-p{font-size:.75rem;color:var(--muted2);letter-spacing:.06em;text-transform:uppercase}
+
+@keyframes shimmer{to{background-position:-200% 0}}
 #page-pricing .pricing-wrapper{padding:80px 60px;max-width:1100px;margin:0 auto}
 .pricing-hero{text-align:center;margin-bottom:60px}
 .pricing-hero .section-title{margin:0 auto 16px;max-width:none}
@@ -1343,12 +1473,30 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         </div>
 
         <!-- Library -->
+        <div class="lib-stats-row">
+          <div class="lib-stat">
+            <div class="lib-stat-label">Total</div>
+            <div class="lib-stat-val gold" id="stat-total">0</div>
+          </div>
+          <div class="lib-stat">
+            <div class="lib-stat-label">Done</div>
+            <div class="lib-stat-val green" id="stat-done">0</div>
+          </div>
+          <div class="lib-stat">
+            <div class="lib-stat-label">Pending</div>
+            <div class="lib-stat-val" id="stat-pending">0</div>
+          </div>
+          <div class="lib-stat">
+            <div class="lib-stat-label">Failed</div>
+            <div class="lib-stat-val red" id="stat-failed-count">0</div>
+          </div>
+        </div>
         <div class="library-header">
           <div class="library-title">Content Library</div>
           <div class="library-filters">
-            <button class="filter-pill active" onclick="filterVideos('all',this)">All</button>
-            <button class="filter-pill" onclick="filterVideos('done',this)">Done</button>
-            <button class="filter-pill" onclick="filterVideos('pending',this)">Pending</button>
+            <button class="filter-pill active" onclick="filterVideos('all',this)">All <span class="filter-count" id="fc-all">0</span></button>
+            <button class="filter-pill" onclick="filterVideos('done',this)">Done <span class="filter-count" id="fc-done">0</span></button>
+            <button class="filter-pill" onclick="filterVideos('pending',this)">Pending <span class="filter-count" id="fc-pending">0</span></button>
           </div>
         </div>
         <div class="video-grid" id="video-grid"></div>
@@ -2574,6 +2722,13 @@ async function handleQuickGenerate(){
     });
     const startData=await startRes.json();
     console.log('Start response:',JSON.stringify(startData));
+    if(!startRes.ok||startData.error){
+      toast(startData.error||'Video generation failed — please try again','error');
+      btn.disabled=false;btn.textContent='🎬 Generate Reel';
+      generating=false;
+      videos.shift();renderGrid();
+      return;
+    }
     video.caption=fallbackCaption();
     video.task_id=startData.requestId||'';
 
@@ -3834,43 +3989,121 @@ function renderGrid(){
   if(!grid)return;
   const filtered=currentFilter==='all'?videos:videos.filter(v=>v.status===currentFilter);
   updateUsageBar();
+  updateStats();
   if(filtered.length===0){
-    grid.innerHTML=`<div class="library-empty"><div class="empty-icon-big">◈</div><div class="empty-h">${currentFilter==='all'?'No videos yet':'No '+currentFilter+' videos'}</div><div class="empty-p">${currentFilter==='all'?'Enter a prompt above to generate your first reel':''}</div></div>`;
+    grid.innerHTML=`
+      <div class="library-empty">
+        <div class="empty-icon-big">◈</div>
+        <div class="empty-h">${currentFilter==='all'?'No videos yet':'No '+currentFilter+' videos'}</div>
+        <div class="empty-p">${currentFilter==='all'?'Generate your first reel above':''}</div>
+      </div>`;
     return;
   }
-  grid.innerHTML=filtered.map((v,i)=>`
-    <div class="video-card" style="animation-delay:${i*.05}s">
-      <div class="card-thumb">
-        ${v.status==='done'
-          ?`<video src="${v.video_url}" muted loop playsinline autoplay crossorigin="anonymous" style="cursor:pointer"
-              onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>`
-          :`<div class="card-thumb-bg">◈</div>`}
-        <div class="gen-overlay" id="ov-${v.id}" style="${v.status==='done'?'display:none':''}">
-          <div class="spin-ring"></div>
-          <div class="gen-label">AI video generating…</div>
-          <div style="font-size:.55rem;color:var(--gold-dim);letter-spacing:.08em;margin-top:4px">30–60 seconds</div>
+  grid.innerHTML=filtered.map((v,i)=>{
+    const isDone=v.status==='done';
+    const isPending=v.status==='pending'||v.status==='processing';
+    const isFailed=v.status==='failed';
+    const isLoading=!v.id||v._skeleton;
+
+    // Thumb content
+    let thumbContent='';
+    if(isLoading){
+      thumbContent=`<div class="card-thumb-skeleton"></div>`;
+    } else if(isDone&&v.video_url){
+      thumbContent=`
+        <video src="${v.video_url}" muted loop playsinline preload="metadata"
+          onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>
+        <div class="card-play-overlay">
+          <div class="play-circle" onclick="previewPost('${v.id}')">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M3.5 2.5l7 4.5-7 4.5V2.5z" fill="#0a0800"/>
+            </svg>
+          </div>
         </div>
-        <div class="card-badge ${v.status==='done'?'badge-done':'badge-pending'}">${v.status==='done'?'✦ Done':'Pending'}</div>
-        ${v.status==='done'?`<a href="https://fal.ai" target="_blank" style="position:absolute;bottom:6px;left:6px;font-size:.5rem;color:rgba(255,255,255,0.35);text-decoration:none;letter-spacing:.06em;background:rgba(0,0,0,.4);padding:2px 6px;border-radius:3px;">Powered by fal.ai</a>`:''}
+        <a class="fal-credit" href="https://fal.ai" target="_blank">Powered by fal.ai</a>`;
+    } else if(isFailed){
+      thumbContent=`
+        <div class="card-thumb-bg"></div>
+        <div class="failed-overlay">
+          <div class="failed-icon">✕</div>
+          <div class="failed-label">Generation failed</div>
+        </div>`;
+    } else {
+      thumbContent=`
+        <div class="card-thumb-bg"></div>
+        <div class="gen-overlay">
+          <div class="spin-ring"></div>
+          <div class="gen-label">AI generating…</div>
+          <div class="gen-sublabel">30 – 60 seconds</div>
+        </div>`;
+    }
+
+    // Badge
+    let badgeClass='badge-pending', badgeLabel='Pending';
+    if(isDone){ badgeClass='badge-done'; badgeLabel='✦ Done'; }
+    if(isFailed){ badgeClass='badge-failed'; badgeLabel='Failed'; }
+
+    // Actions
+    let actions='';
+    if(isLoading){
+      actions=`
+        <div class="card-skeleton-line" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"></div>`;
+    } else if(isDone){
+      actions=`
+        <button class="card-act-btn" onclick="previewPost('${v.id}')">Preview 👁</button>
+        <button class="card-act-btn" onclick="copyCaption('${v.id}')">Copy ⧉</button>
+        <button class="card-act-btn" onclick="downloadVideo('${v.id}','${v.video_url}')">↓</button>
+        <button class="card-act-btn delete" onclick="deleteVideo('${v.id}')">✕</button>`;
+    } else if(isFailed){
+      actions=`
+        <button class="card-act-btn" style="flex:3" onclick="deleteVideo('${v.id}')">Remove</button>
+        <button class="card-act-btn delete" onclick="deleteVideo('${v.id}')">✕</button>`;
+    } else {
+      actions=`
+        <button class="card-act-btn" disabled style="flex:1;opacity:.4">Generating…</button>
+        <button class="card-act-btn delete" onclick="deleteVideo('${v.id}')">✕</button>`;
+    }
+
+    return `
+    <div class="video-card" style="animation-delay:${i*.04}s" id="vc-${v.id}">
+      <div class="card-thumb">
+        ${thumbContent}
+        ${!isLoading?`<div class="card-badge ${badgeClass}"><div class="card-badge-dot"></div>${badgeLabel}</div>`:''}
       </div>
       <div class="card-body">
-        <div class="card-prompt-text" title="${esc(v.prompt)}">${esc(v.prompt)}</div>
-        <div class="card-caption-text ${v.status==='pending'?'loading-pulse':''}">${v.status==='done'?esc(v.caption):''}</div>
-        <div class="card-actions-row">
-          <button class="card-act-btn" onclick="previewPost('${v.id}')">Preview 👁</button>
-          <button class="card-act-btn" onclick="copyCaption('${v.id}')">Copy ⧉</button>
-          <button class="card-act-btn" onclick="downloadVideo('${v.id}','${v.video_url}')">Download ↓</button>
-          <button class="card-act-btn delete" onclick="deleteVideo('${v.id}')">Delete ✕</button>
-        </div>
+        ${isLoading
+          ?`<div class="card-skeleton-line"></div><div class="card-skeleton-line short"></div>`
+          :`<div class="card-prompt-text" title="${esc(v.prompt)}">${esc(v.prompt)}</div>
+            <div class="card-caption-text ${isPending?'loading-pulse':''}">${isDone?esc(v.caption):''}</div>`
+        }
+        <div class="card-actions-row">${actions}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 function updateStats(){
+  const done=videos.filter(v=>v.status==='done').length;
+  const pending=videos.filter(v=>v.status==='pending'||v.status==='processing').length;
+  const failed=videos.filter(v=>v.status==='failed').length;
+  const total=videos.length;
+  // Header stats (existing)
   const t=document.getElementById('stat-total');
   const d=document.getElementById('stat-done');
-  if(t)t.textContent=videos.length;
-  if(d)d.textContent=videos.filter(v=>v.status==='done').length;
+  if(t)t.textContent=total;
+  if(d)d.textContent=done;
+  // New mini stat cards
+  const sp=document.getElementById('stat-pending');
+  const sf=document.getElementById('stat-failed-count');
+  if(sp)sp.textContent=pending;
+  if(sf)sf.textContent=failed;
+  // Filter pill counts
+  const fall=document.getElementById('fc-all');
+  const fdone=document.getElementById('fc-done');
+  const fpend=document.getElementById('fc-pending');
+  if(fall)fall.textContent=total;
+  if(fdone)fdone.textContent=done;
+  if(fpend)fpend.textContent=pending;
   updateUsageBar();
 }
 function updateUsageBar(){
