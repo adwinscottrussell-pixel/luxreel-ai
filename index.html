@@ -3022,7 +3022,7 @@ async function downloadAdComposite(){
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, size, size);
 
-      const wrapRect = wrap.getBoundingClientRect();
+      const wrapRect = {top:0,left:0,width:wrap.offsetWidth||600,height:wrap.offsetHeight||600};
 
       // Draw headline
       const hEl = document.getElementById('ad-preview-headline');
@@ -3090,7 +3090,7 @@ async function downloadAdComposite(){
     };
 
     // Use src directly — base64 images load without CORS issues
-    img.src = bgImg.src;
+    
 
   }catch(e){
     console.error('Download error:', e);
