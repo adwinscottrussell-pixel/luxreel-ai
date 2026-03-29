@@ -3938,14 +3938,25 @@ async function watchVideoJob(video){
       console.log(`Job poll ${attempts}/${maxAttempts}:`,data.status);
       // Terminal states — stop polling (realtime already handled UI)
       if(data.status==='completed'||data.status==='failed'||attempts>=maxAttempts){
-        clearInterval(poll);
-        if(attempts>=maxAttempts&&data.status!=='completed'){
-          video.status='done';
-          await saveVideo(video);
-          renderGrid();
-          _cleanupJobSubscription(requestId);
+          clearInterval(poll);
+          if(data.status==='completed'&&data.videoUrl){
+            video.video_url=data.videoUrl;
+            video.status='done';
+            await saveVideo(video);
+            renderGrid();
+            _cleanupJobSubscription(requestId);
+          } else if(data.status==='failed'){
+            video.status='failed';
+            await saveVideo(video);
+            renderGrid();
+            _cleanupJobSubscription(requestId);
+          } else if(attempts>=maxAttempts&&data.status!=='completed'){
+            video.status='done';
+            await saveVideo(video);
+            renderGrid();
+            _cleanupJobSubscription(requestId);
+          }
         }
-      }
     }catch(e){
       console.warn('process-video-job poll error:',e);
     }
