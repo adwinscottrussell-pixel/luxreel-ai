@@ -2981,7 +2981,7 @@ async function generateAdBackground(){
       document.getElementById('ad-composer').style.display = 'block';
       updateAdPreview();
       initAdDrag();
-      saveAdToLibrary(data.imageUrl);
+      saveAdCompositeToLibrary();
       toast('Background generated ✦','success');
     } else {
       throw new Error('No image');
