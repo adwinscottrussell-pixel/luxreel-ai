@@ -3844,7 +3844,7 @@ async function handleGenerate(){
     const startData=await startRes.json();
     console.log('Start response:', JSON.stringify(startData));
     video.caption=fallbackCaption();
-    video.task_id=startData.requestId||'';
+    video.task_id=startData.taskId||startData.requestId||'';
 
     await saveVideo(video);
     renderGrid();
