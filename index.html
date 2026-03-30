@@ -3047,7 +3047,7 @@ async function downloadAdComposite(){
         ctx.font = `400 ${sSize * 3}px Arial`;
         ctx.fillStyle = 'rgba(255,255,255,0.95)';
         ctx.shadowBlur = 8;
-        ctx.fillText(sEl.textContent, size/2, sY + (sSize * 3));
+        ctx.fillText(sEl.textContent, size/2, size * 0.42 + (sSize * 3));
       }
 
       // Draw CTA button
@@ -3070,7 +3070,7 @@ async function downloadAdComposite(){
 
         ctx.fillStyle = btnGrad;
         ctx.beginPath();
-        ctx.roundRect(btnX, cY, btnW, btnH, btnH/2);
+        ctx.roundRect(btnX, size * 0.78, btnW, btnH, btnH/2);
         ctx.fill();
 
         ctx.font = `900 ${cSize * 3}px Arial`;
@@ -3089,7 +3089,7 @@ async function downloadAdComposite(){
       toast('Ad downloaded ✦','success');
     };
 
-    // Use src directly — base64 images load without CORS issues
+    img.src = bgImg.src;
     
 
   }catch(e){
