@@ -2578,7 +2578,7 @@ async function generateContentPlan(){
     let res, attempts = 0;
     while(attempts < 3){
       try{
-        res=await fetch(`${SB_URL}/functions/v1/start-video`,{
+        res=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
           body:JSON.stringify({
@@ -2708,17 +2708,7 @@ async function handleQuickGenerate(){
     const startRes=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-      body:JSON.stringify({
-        userId:currentUser?.id||'anonymous',
-        scenes:[{index:1,text:prompt,visual:prompt,duration:6}],
-        style:selectedObTone||selectedTone||'luxury',
-        platform:'instagram_reels',
-        niche:localStorage.getItem('lx_niche')||'luxury',
-        contentType:'reel',
-        tone:selectedObTone||selectedTone||'luxury',
-        hook:hook||prompt.slice(0,80),
-        scriptPreview:topic||'',
-      }),
+    body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury'}),
     });
     const startData=await startRes.json();
     console.log('Start response:',JSON.stringify(startData));
@@ -3854,7 +3844,7 @@ async function handleGenerate(){
     const startData=await startRes.json();
     console.log('Start response:', JSON.stringify(startData));
     video.caption=fallbackCaption();
-    video.task_id=startData.requestId||'';
+    video.task_id=startData.taskId||startData.requestId||'';
 
     await saveVideo(video);
     renderGrid();
@@ -3862,7 +3852,8 @@ async function handleGenerate(){
     generating=false;
     document.getElementById('dash-prompt').value='';
 
-    if(video.task_id){
+    console.log('task_id check:',video.task_id);
+if(video.task_id){
       toast('Video generating — ready in ~2 mins ✦','info');
       watchVideoJob(video);
     } else {
