@@ -2982,7 +2982,7 @@ async function generateAdBackground(){
       updateAdPreview();
       initAdDrag();
       fetch(data.imageUrl).then(r=>r.blob()).then(blob=>{const reader=new FileReader();reader.onload=(e)=>{document.getElementById('ad-bg-img').src=e.target.result;generatedAdUrl=e.target.result;saveAdToLibrary(e.target.result);};reader.readAsDataURL(blob);});
-      toast('Background generated ✦','success');
+      toast('Background generated — adding text overlay support…','info');
     } else {
       throw new Error('No image');
     }
