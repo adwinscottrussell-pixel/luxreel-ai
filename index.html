@@ -2994,7 +2994,7 @@ async function generateAdBackground(){
   if(btn){ btn.disabled = false; btn.textContent = '✨ Generate Background Image'; }
   loading.style.display = 'none';
 }
-async function downloadAdCompositeOLD(){
+async function downloadAdComposite(){   const bgImg = document.getElementById('ad-bg-img');   if(!bgImg || !bgImg.src || bgImg.src === window.location.href) return;   const headline = document.getElementById('ad-headline')?.value?.toUpperCase() || '';   const sub = document.getElementById('ad-sub')?.value || '';   const cta = document.getElementById('ad-cta')?.value?.toUpperCase() || '';   const hSize = parseInt(document.getElementById('ad-headline-size')?.value || 18) * 3;   const sSize = parseInt(document.getElementById('ad-sub-size')?.value || 12) * 3;   const cSize = parseInt(document.getElementById('ad-cta-size')?.value || 14) * 3;   toast('Preparing download…','info');   const canvas = document.createElement('canvas');   canvas.width = 1080; canvas.height = 1080;   const ctx = canvas.getContext('2d');   const img = new Image();   img.onload = () => {     ctx.drawImage(img, 0, 0, 1080, 1080);     const grad = ctx.createLinearGradient(0,0,0,1080);     grad.addColorStop(0,'rgba(0,0,0,0.4)');     grad.addColorStop(0.5,'rgba(0,0,0,0.05)');     grad.addColorStop(1,'rgba(0,0,0,0.5)');     ctx.fillStyle = grad; ctx.fillRect(0,0,1080,1080);     ctx.textAlign = 'center';     if(headline){ ctx.font=`900 ${hSize}px Arial`; ctx.fillStyle='white'; ctx.shadowColor='rgba(0,0,0,0.9)'; ctx.shadowBlur=15; ctx.fillText(headline,540,200); }     if(sub){ ctx.font=`400 ${sSize}px Arial`; ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.shadowBlur=8; ctx.fillText(sub,540,420); }     if(cta){       const btnW=756,btnH=90,btnX=162,btnY=880;       const btnGrad=ctx.createLinearGradient(btnX,0,btnX+btnW,0);       btnGrad.addColorStop(0,'#f7971e'); btnGrad.addColorStop(1,'#ffd200');       ctx.fillStyle=btnGrad; ctx.shadowBlur=20; ctx.shadowColor='rgba(0,0,0,0.5)';       ctx.beginPath(); ctx.roundRect(btnX,btnY,btnW,btnH,45); ctx.fill();       ctx.font=`700 ${cSize}px Arial`; ctx.fillStyle='white'; ctx.shadowBlur=4; ctx.fillText(cta,540,btnY+60);     }     const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='luxreel-ad.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a);     toast('Ad downloaded ✦','success');   };   img.onerror = () => toast('Download failed — please try again','error');   img.src = bgImg.src; }
 
   const wrap = document.getElementById('ad-preview-wrap');
   const bgImg = document.getElementById('ad-bg-img');
@@ -3035,7 +3035,7 @@ async function downloadAdCompositeOLD(){
         ctx.textAlign = 'center';
         ctx.shadowColor = 'rgba(0,0,0,0.9)';
         ctx.shadowBlur = 15;
-        ctx.fillText(hEl.textContent, size/2, size * 0.18 + (hSize * 3));
+        ctx.fillText(hEl.textContent, size/2, hY + (hSize * 3));
       }
 
       // Draw subheadline
@@ -3047,7 +3047,7 @@ async function downloadAdCompositeOLD(){
         ctx.font = `400 ${sSize * 3}px Arial`;
         ctx.fillStyle = 'rgba(255,255,255,0.95)';
         ctx.shadowBlur = 8;
-        ctx.fillText(sEl.textContent, size/2, size * 0.42 + (sSize * 3));
+        ctx.fillText(sEl.textContent, size/2, sY + (sSize * 3));
       }
 
       // Draw CTA button
@@ -3070,7 +3070,7 @@ async function downloadAdCompositeOLD(){
 
         ctx.fillStyle = btnGrad;
         ctx.beginPath();
-        ctx.roundRect(btnX, size * 0.78, btnW, btnH, btnH/2);
+        ctx.roundRect(btnX, cY, btnW, btnH, btnH/2);
         ctx.fill();
 
         ctx.font = `900 ${cSize * 3}px Arial`;
@@ -3089,7 +3089,7 @@ async function downloadAdCompositeOLD(){
       toast('Ad downloaded ✦','success');
     };
 
-    img.src = bgImg.src;
+    // Use src directly — base64 images load without CORS issues
     
 
   }catch(e){
@@ -3098,7 +3098,7 @@ async function downloadAdCompositeOLD(){
   }
 }
 
-async function downloadAdComposite(){ const bgImg = document.getElementById('ad-bg-img'); if(!bgImg||!bgImg.src||bgImg.src===window.location.href)return; const headline=document.getElementById('ad-headline')?.value?.toUpperCase()||''; const sub=document.getElementById('ad-sub')?.value||''; const cta=document.getElementById('ad-cta')?.value?.toUpperCase()||''; const hSize=parseInt(document.getElementById('ad-headline-size')?.value||18)*3; const sSize=parseInt(document.getElementById('ad-sub-size')?.value||12)*3; const cSize=parseInt(document.getElementById('ad-cta-size')?.value||14)*3; toast('Preparing download…','info'); const canvas=document.createElement('canvas'); canvas.width=1080;canvas.height=1080; const ctx=canvas.getContext('2d'); const img=new Image(); img.crossOrigin='anonymous'; img.onload=()=>{ ctx.drawImage(img,0,0,1080,1080); const grad=ctx.createLinearGradient(0,0,0,1080); grad.addColorStop(0,'rgba(0,0,0,0.4)'); grad.addColorStop(0.5,'rgba(0,0,0,0.05)'); grad.addColorStop(1,'rgba(0,0,0,0.5)'); ctx.fillStyle=grad; ctx.fillRect(0,0,1080,1080); ctx.textAlign='center'; if(headline){ ctx.font=`900 ${hSize}px Arial`; ctx.fillStyle='white'; ctx.shadowColor='rgba(0,0,0,0.9)'; ctx.shadowBlur=15; ctx.fillText(headline,540,200); } if(sub){ ctx.font=`400 ${sSize}px Arial`; ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.shadowBlur=8; ctx.fillText(sub,540,420); } if(cta){ const btnW=756,btnH=90,btnX=162,btnY=880; const btnGrad=ctx.createLinearGradient(btnX,0,btnX+btnW,0); if(adCtaColor.includes('f7971e')){ btnGrad.addColorStop(0,'#f7971e');btnGrad.addColorStop(1,'#ffd200'); } else if(adCtaColor.includes('e6683c')){ btnGrad.addColorStop(0,'#e6683c');btnGrad.addColorStop(1,'#dc2743'); } else if(adCtaColor.includes('11998e')){ btnGrad.addColorStop(0,'#11998e');btnGrad.addColorStop(1,'#38ef7d'); } else { btnGrad.addColorStop(0,'#4776e6');btnGrad.addColorStop(1,'#8e54e9'); } ctx.fillStyle=btnGrad; ctx.shadowBlur=20; ctx.shadowColor='rgba(0,0,0,0.5)'; ctx.beginPath(); ctx.roundRect(btnX,btnY,btnW,btnH,45); ctx.fill(); ctx.font=`900 ${cSize}px Arial`; ctx.fillStyle='white'; ctx.shadowBlur=4; ctx.fillText(cta,540,btnY+60); } const a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download='luxreel-ad.png'; document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('Ad downloaded ✦','success'); }; img.onerror=()=>toast('Download failed — please try again','error'); img.src=bgImg.src; }  async function downloadAdImage(){
+async function downloadAdImage(){
   if(!generatedAdUrl)return;
   try{
     const res = await fetch(generatedAdUrl);
