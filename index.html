@@ -2981,7 +2981,7 @@ async function generateAdBackground(){
       document.getElementById('ad-composer').style.display = 'block';
       updateAdPreview();
       initAdDrag();
-      saveAdToLibrary(data.imageUrl);
+      fetch(data.imageUrl).then(r=>r.blob()).then(blob=>{const reader=new FileReader();reader.onload=(e)=>{document.getElementById('ad-bg-img').src=e.target.result;generatedAdUrl=e.target.result;saveAdToLibrary(e.target.result);};reader.readAsDataURL(blob);});
       toast('Background generated ✦','success');
     } else {
       throw new Error('No image');
