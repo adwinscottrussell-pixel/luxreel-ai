@@ -1124,7 +1124,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <div class="testimonials-grid">
       <div class="testimonial-card">
         <div class="t-stars">★★★★★</div>
-        <div class="t-quote">"LuxReel cut my content production time by 80%. The captions are genuinely good — I barely edit them."</div>
+        <div class="t-quote">"LuxClip cut my content production time by 80%. The captions are genuinely good — I barely edit them."</div>
         <div class="t-author"><div class="t-avatar">JM</div><div><div class="t-name">Jade Monroe</div><div class="t-role">Lifestyle Creator · 280K followers</div></div></div>
       </div>
       <div class="testimonial-card">
@@ -1142,13 +1142,13 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
   <section class="section" style="padding-top:0;text-align:center">
     <h2 class="section-title" style="margin:0 auto 20px;max-width:none;font-size:clamp(2rem,4vw,3rem)">Ready to create content that <em>converts?</em></h2>
-    <p style="color:var(--muted);margin-bottom:40px;font-weight:300">Join 2,400+ creators using LuxReel AI. No credit card required.</p>
+    <p style="color:var(--muted);margin-bottom:40px;font-weight:300">Join 2,400+ creators using LuxClip AI. No credit card required.</p>
     <button class="btn btn-gold btn-xl" onclick="go('auth')">Start Free — 3 Videos on Us →</button>
   </section>
 
   <footer class="l-footer">
     <div class="wordmark" style="font-size:1.1rem;cursor:pointer" onclick="go('landing')">Lux<span style="color:var(--text);font-style:italic">Reel</span></div>
-    <div class="l-footer-copy">© 2025 LuxReel AI. All rights reserved.</div>
+    <div class="l-footer-copy">© 2025 LuxClip AI. All rights reserved.</div>
     <div class="l-footer-links">
       <a>Privacy</a><a>Terms</a><a>Support</a><a onclick="go('pricing')">Pricing</a>
     </div>
@@ -1163,7 +1163,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <div class="auth-left">
       <div class="auth-visual">
         <h2 class="auth-headline">Turn prompts into<br><em>premium content</em><br>in seconds.</h2>
-        <p class="auth-sub">Join thousands of creators and brands using LuxReel AI to generate, caption, and post short-form video — without the hours.</p>
+        <p class="auth-sub">Join thousands of creators and brands using LuxClip AI to generate, caption, and post short-form video — without the hours.</p>
       </div>
     </div>
     <div class="auth-right">
@@ -1280,7 +1280,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <div class="upgrade-banner" id="upgrade-banner">
           <div class="upgrade-text">
             <p>Unlock unlimited videos, Instagram posting & analytics</p>
-            <p>LuxReel Pro — from $29/mo. Cancel anytime.</p>
+            <p>LuxClip Pro — from $29/mo. Cancel anytime.</p>
           </div>
           <button class="btn btn-gold btn-sm" onclick="go('pricing')">Upgrade to Pro →</button>
         </div>
@@ -1902,7 +1902,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           <div class="plan-amount"><span>$</span>0</div>
           <div class="plan-period">Forever free</div>
         </div>
-        <div class="plan-desc">Perfect for trying LuxReel AI and creating your first reels.</div>
+        <div class="plan-desc">Perfect for trying LuxClip AI and creating your first reels.</div>
         <ul class="plan-features">
           <li>3 videos per month</li>
           <li>AI caption generation</li>
@@ -2025,7 +2025,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
           <div class="settings-section" id="settings-api">
             <div class="settings-h">Connected Apps</div>
-            <div class="settings-sub">Services powering your LuxReel account.</div>
+            <div class="settings-sub">Services powering your LuxClip account.</div>
             <div class="settings-card">
               <div class="settings-row">
                 <div><div class="settings-row-label">AI Video Generation</div><div class="settings-row-desc">Cinematic video creation engine</div></div>
@@ -2125,7 +2125,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 <!-- Upgrade Modal -->
 <div class="modal-backdrop" id="upgrade-modal" style="display:none" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-title">Upgrade to LuxReel Pro ✦</div>
+    <div class="modal-title">Upgrade to LuxClip Pro ✦</div>
     <div class="modal-sub">Unlock unlimited video generation, Instagram posting, analytics, and brand templates. Join 2,400+ creators already growing with Pro.</div>
     <div style="background:var(--panel);border-radius:8px;padding:16px;margin-bottom:4px;">
       <div style="font-size:.78rem;color:var(--muted);margin-bottom:10px">You'll get:</div>
@@ -2324,7 +2324,7 @@ async function handleAuth(){
       updateUserUI();
       await loadVideos();
       go('dashboard');
-      toast(authMode==='signup'?'Welcome to LuxReel! ✦':'Welcome back! ✦','success');
+      toast(authMode==='signup'?'Welcome to LuxClip! ✦':'Welcome back! ✦','success');
       return;
     }
 
@@ -3082,7 +3082,7 @@ async function downloadAdComposite(){
       // Download as PNG
       const a = document.createElement('a');
       a.href = canvas.toDataURL('image/png');
-      a.download = 'luxreel-ad.png';
+      a.download = 'LuxClip-ad.png';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -3105,7 +3105,7 @@ async function downloadAdImage(){
     const blob = await res.blob();
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'luxreel-ad-bg.png';
+    a.download = 'LuxClip-ad-bg.png';
     a.click();
     URL.revokeObjectURL(a.href);
   }catch(e){ window.open(generatedAdUrl,'_blank'); }
@@ -3230,7 +3230,7 @@ function downloadAdFromLibrary(id){
   if(!item) return;
   const a = document.createElement('a');
   a.href = item.src;
-  a.download = `luxreel-ad-${id}.png`;
+  a.download = `LuxClip-ad-${id}.png`;
   a.click();
   toast('Downloaded ✦','success');
 }
@@ -3423,7 +3423,7 @@ function renderThumbLibrary(){
 
 async function downloadThumbnail(){
   if(!generatedThumbUrl) return;
-  const a = document.createElement('a'); a.href = generatedThumbUrl; a.download = 'luxreel-thumbnail.png'; a.click();
+  const a = document.createElement('a'); a.href = generatedThumbUrl; a.download = 'LuxClip-thumbnail.png'; a.click();
   toast('Downloaded ✦','success');
 }
 
@@ -3431,7 +3431,7 @@ function downloadThumbFromLib(id){
   const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
   const item = lib.find(i=>String(i.id)===String(id));
   if(!item) return;
-  const a = document.createElement('a'); a.href = item.src; a.download = `luxreel-thumb-${id}.png`; a.click();
+  const a = document.createElement('a'); a.href = item.src; a.download = `LuxClip-thumb-${id}.png`; a.click();
 }
 
 function deleteThumbFromLib(id){
@@ -3585,7 +3585,7 @@ function useTemplate(id){
 }
 
 
-const ADMIN_PASSWORD = 'luxreel-admin-2026';
+const ADMIN_PASSWORD = 'LuxClip-admin-2026';
 let adminAuthenticated = false;
 let allAdminUsers = [];
 let allAdminVideos = [];
@@ -3728,7 +3728,7 @@ function exportUsersCSV(){
   const csv = [headers,...rows].map(r=>r.join(',')).join('\n');
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download = 'luxreel-users-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.download = 'LuxClip-users-'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
   toast('CSV exported ✦','success');
 }
@@ -3964,7 +3964,7 @@ function _cleanupJobSubscription(requestId){
 
 function fallbackCaption(){
   const caps=[
-    'Crafted with purpose. Worn with intention. ✦ #LuxReel #Aesthetic #ContentCreator',
+    'Crafted with purpose. Worn with intention. ✦ #LuxClip #Aesthetic #ContentCreator',
     'Every detail speaks before you do. #Luxury #Brand #Elevated',
     'Some things are worth the silence. #Minimal #Refined #LuxuryLifestyle',
     'Move differently. Create differently. ✦ #Bold #Creative #Visual',
@@ -4180,7 +4180,7 @@ async function downloadVideo(id, url){
     const blob=await res.blob();
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
-    a.download=`luxreel-${id}.mp4`;
+    a.download=`LuxClip-${id}.mp4`;
     a.click();
     URL.revokeObjectURL(a.href);
     toast('Video downloaded ✦','success');
@@ -4353,7 +4353,7 @@ bootApp();
   <div id="admin-gate" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px">
     <div style="background:var(--panel);border:1px solid var(--border2);border-radius:16px;padding:40px;width:100%;max-width:400px">
       <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:4px">⚙ Admin</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:28px">LuxReel AI Control Panel</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:28px">LuxClip AI Control Panel</div>
       <div class="form-group" style="margin-bottom:16px">
         <label class="form-label">Admin Password</label>
         <input type="password" id="admin-password-input" class="form-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminPassword()">
