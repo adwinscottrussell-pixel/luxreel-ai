@@ -3149,7 +3149,7 @@ function renderVideoLibraryPage(){
   const grid = document.getElementById('video-grid-page');
   if(!grid) return;
   // Reuse same render logic
-  grid.innerHTML = document.getElementById('video-grid').innerHTML;
+  renderGrid(grid);
 }
 
 
