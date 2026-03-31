@@ -3095,7 +3095,7 @@ function showDashSection(section){
   if(thumbGen) thumbGen.style.display = section==='thumbnail-gen' ? 'block' : 'none';
   if(tmpl) tmpl.style.display = section==='templates' ? 'block' : 'none';
   if(section==='image-library') renderAdLibraryPage();
-  if(section==='video-library') renderVideoLibraryPage();
+  if(section==='video-library'){renderGrid();const pg=document.getElementById('video-grid-page');if(pg)pg.innerHTML=document.getElementById('video-grid').innerHTML;}
   if(section==='thumbnail-gen'){ initThumbnailSection(); }
   if(section==='templates') renderTemplates();
 }
