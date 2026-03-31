@@ -2708,7 +2708,7 @@ async function handleQuickGenerate(){
     const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-    body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury',userId:currentUser?.id||''}),
+    body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury',imageBase64:uploadedImageBase64||'',imageType:uploadedImageType||'',erId:currentUser?.id||''}),
     });
     const startData=await startRes.json();
     console.log('Start response:',JSON.stringify(startData));
