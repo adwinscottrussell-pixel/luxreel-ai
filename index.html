@@ -2578,7 +2578,7 @@ async function generateContentPlan(){
     let res, attempts = 0;
     while(attempts < 3){
       try{
-        res=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
+        res=await fetch(`${SB_URL}/functions/v1/start-video`,{
           method:'POST',
           headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
           body:JSON.stringify({
@@ -2705,7 +2705,7 @@ async function handleQuickGenerate(){
   videos.unshift(video);renderGrid();updateStats();
 
   try{
-    const startRes=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
+    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
     body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury',userId:currentUser?.id||''}),
@@ -3827,7 +3827,7 @@ async function handleGenerate(){
   videos.unshift(video);renderGrid();updateStats();
 
   try{
-    const startRes=await fetch(`${SB_URL}/functions/v1/start-video-job`,{
+    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
       body:JSON.stringify({
