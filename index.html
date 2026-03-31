@@ -3149,7 +3149,7 @@ function renderVideoLibraryPage(){
   const grid = document.getElementById('video-grid-page');
   if(!grid) return;
   // Reuse same render logic
-  grid.innerHTML = document.getElementById('video-grid').innerHTML;
+  grid.innerHTML = const done=videos.filter(v=>v.status==='done'&&v.video_url);if(done.length===0){grid.innerHTML='<div style="text-align:center;padding:48px;color:var(--muted)">No videos yet — generate your first reel!</div>';return;}grid.innerHTML=done.map(v=>`<div class="video-card"><video src="${v.video_url}" muted loop playsinline preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video><div style="padding:10px 12px"><div style="font-size:.78rem;color:var(--muted)">${v.caption?v.caption.substring(0,60)+'...':''}</div></div></div>`).join('');
 }
 
 
