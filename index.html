@@ -2720,7 +2720,7 @@ async function handleQuickGenerate(){
       return;
     }
     video.caption=fallbackCaption();
-    video.task_id=startData.requestId||'';
+    video.task_id=startData.taskId||startData.requestId||'';
 
     await saveVideo(video);
     renderGrid();
