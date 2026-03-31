@@ -3936,7 +3936,7 @@ async function watchVideoJob(video){
       });
       const data=await res.json();
       console.log(`Job poll ${attempts}/${maxAttempts}:`,data.status);
-      // Terminal states — stop polling (realtime already handled UI)
+      // Terminal states — update UI directly from poll result
       if(data.status==='completed'||data.status==='failed'||attempts>=maxAttempts){
         clearInterval(poll);
         if(attempts>=maxAttempts&&data.status!=='completed'){
