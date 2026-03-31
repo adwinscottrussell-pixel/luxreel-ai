@@ -1647,7 +1647,35 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
             <div id="thumb-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
           </div>
         </div>
-        
+        <!-- TEMPLATES SECTION -->
+        <div id="dash-section-templates" style="display:none">
+          <div style="margin-bottom:24px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">✦ Template Library</div>
+            <div style="font-size:.85rem;color:var(--muted)">Proven templates for videos, captions, content plans and ads — click any to use instantly</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+            <button class="filter-pill active" onclick="filterTemplates('all',this)">All</button>
+            <button class="filter-pill" onclick="filterTemplates('video',this)">🎬 Video Prompts</button>
+            <button class="filter-pill" onclick="filterTemplates('plan',this)">📅 Content Plans</button>
+            <button class="filter-pill" onclick="filterTemplates('caption',this)">✍️ Captions</button>
+            <button class="filter-pill" onclick="filterTemplates('ad',this)">📸 Ad Templates</button>
+          </div>
+          <div id="template-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px"></div>
+        </div>
+
+        <div id="dash-section-video-library" style="display:none">
+          <div style="margin-bottom:20px">
+            <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">▦ Video Library</div>
+            <div style="font-size:.85rem;color:var(--muted)">All your generated reels</div>
+          </div>
+          <div class="video-grid" id="video-grid-page"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ══════════════════════════════
      ONBOARDING MODAL
 ══════════════════════════════ -->
@@ -2680,7 +2708,7 @@ async function handleQuickGenerate(){
     const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-    body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury',imageBase64:uploadedImageBase64||'',imageType:uploadedImageType||'',erId:currentUser?.id||''}),
+    body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury',userId:currentUser?.id||''}),
     });
     const startData=await startRes.json();
     console.log('Start response:',JSON.stringify(startData));
@@ -3095,7 +3123,7 @@ function showDashSection(section){
   if(thumbGen) thumbGen.style.display = section==='thumbnail-gen' ? 'block' : 'none';
   if(tmpl) tmpl.style.display = section==='templates' ? 'block' : 'none';
   if(section==='image-library') renderAdLibraryPage();
-  if(section==='video-library'){renderGrid();const pg=document.getElementById('video-grid-page');if(pg)pg.innerHTML=document.getElementById('video-grid').innerHTML;}
+  if(section==='video-library') renderVideoLibraryPage();
   if(section==='thumbnail-gen'){ initThumbnailSection(); }
   if(section==='templates') renderTemplates();
 }
@@ -3149,7 +3177,7 @@ function renderVideoLibraryPage(){
   const grid = document.getElementById('video-grid-page');
   if(!grid) return;
   // Reuse same render logic
-  renderGrid(grid);
+  grid.innerHTML = document.getElementById('video-grid').innerHTML;
 }
 
 
@@ -3908,8 +3936,8 @@ async function watchVideoJob(video){
       });
       const data=await res.json();
       console.log(`Job poll ${attempts}/${maxAttempts}:`,data.status);
-      // Terminal states — update UI directly from poll result
-      if(data.status==='completed'&&data.videoUrl){video.video_url=data.videoUrl;video.status='done';saveVideo(video);const idx=videos.findIndex(v=>String(v.id)===String(video.id));if(idx>=0)videos[idx]=video;renderGrid();updateStats();toast('Your video is ready! ✦','success');_cleanupJobSubscription(requestId);clearInterval(poll);}else if(data.status==='failed'||attempts>=maxAttempts){
+      // Terminal states — stop polling (realtime already handled UI)
+      if(data.status==='completed'||data.status==='failed'||attempts>=maxAttempts){
         clearInterval(poll);
         if(attempts>=maxAttempts&&data.status!=='completed'){
           video.status='done';
