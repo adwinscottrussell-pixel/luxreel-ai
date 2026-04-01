@@ -3125,7 +3125,7 @@ function showDashSection(section){
   if(section==='image-library') renderAdLibraryPage();
   if(section==='video-library') renderVideoLibraryPage();
   if(section==='thumbnail-gen'){ initThumbnailSection(); }
-  if(section==='templates') renderTemplates();
+  if(section==='templates') renderTemplates();   const avatarStudio=document.getElementById('dash-section-avatar-studio');   if(avatarStudio) avatarStudio.style.display=section==='avatar-studio'?'block':'none';
 }
 
 function renderAdLibraryPage(){
