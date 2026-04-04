@@ -1246,8 +1246,14 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Pick your avatar, choose a voice, write your script then generate.</p>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
-    <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">1 - Choose Avatar</div>
-    <div id="av-avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="avToggleGrid()">
+      <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">1 - Choose Avatar</div>
+      <div id="av-grid-toggle" style="font-size:.8rem;color:var(--gold);font-weight:600">Browse ▾</div>
+    </div>
+    <div id="av-selected-avatar" style="margin-top:10px;font-size:.85rem;color:var(--muted)">No avatar selected</div>
+    <div id="av-avatar-grid-wrap" style="display:none;margin-top:14px">
+      <div id="av-avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:400px;overflow-y:auto"></div>
+    </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
     <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">2 - Choose Voice</div>
@@ -4449,10 +4455,28 @@ async function initAvatarStudio(){
   }
 }
 
+function avToggleGrid(){
+  var wrap = document.getElementById("av-avatar-grid-wrap");
+  var toggle = document.getElementById("av-grid-toggle");
+  if(wrap.style.display === "none"){
+    wrap.style.display = "block";
+    toggle.textContent = "Close ▴";
+  } else {
+    wrap.style.display = "none";
+    toggle.textContent = "Browse ▾";
+  }
+}
+
 function avSelectAvatar(el){
   avSelectedAvatar = el.dataset.id;
+  var name = el.querySelector("div") ? el.querySelector("div").textContent : el.dataset.id;
   document.querySelectorAll("#av-avatar-grid > div").forEach(function(d){ d.style.borderColor = "transparent"; });
   el.style.borderColor = "var(--gold)";
+  var label = document.getElementById("av-selected-avatar");
+  if(label) label.textContent = "Selected: " + name;
+  // Close grid after selection
+  document.getElementById("av-avatar-grid-wrap").style.display = "none";
+  document.getElementById("av-grid-toggle").textContent = "Change ▾";
 }
 
 function avSelectVoice(el){
