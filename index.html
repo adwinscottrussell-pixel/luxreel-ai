@@ -1622,137 +1622,100 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
         </div>
 
-        <!-- THUMBNAIL AI SECTION -->
-        <div id="dash-section-thumbnail-gen" style="display:none">
-          <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-            <div>
-              <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">🎯 AI Thumbnail Intelligence</div>
-              <div style="font-size:.85rem;color:var(--muted)">Studies what's viral in your niche and generates thumbnails in proven styles</div>
-            </div>
-            <!-- Usage counter -->
-            <div style="background:var(--noir3);border:1px solid var(--border);border-radius:8px;padding:10px 16px;text-align:center;min-width:120px">
-              <div style="font-size:1.4rem;font-weight:700;color:var(--gold)" id="thumb-usage-count">0</div>
-              <div style="font-size:.7rem;color:var(--muted)" id="thumb-usage-label">/ 3 this month</div>
-              <div style="font-size:.65rem;color:var(--muted);margin-top:2px">Free Plan</div>
-            </div>
-          </div>
+       <!-- THUMBNAIL AI SECTION -->
+<div id="dash-section-thumbnail-gen" style="display:none">
+  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">🎯 Thumbnail AI</div>
+      <div style="font-size:.85rem;color:var(--muted)">Generate viral thumbnails powered by DALL-E 3</div>
+    </div>
+    <div style="background:var(--noir3);border:1px solid var(--border);border-radius:8px;padding:10px 16px;text-align:center;min-width:120px">
+      <div style="font-size:1.4rem;font-weight:700;color:var(--gold)" id="thumb-usage-count">0</div>
+      <div style="font-size:.7rem;color:var(--muted)" id="thumb-usage-label">/ 5 this month</div>
+      <div style="font-size:.65rem;color:var(--muted);margin-top:2px">Free Plan</div>
+    </div>
+  </div>
 
-          <!-- Profile locked banner -->
-          <div id="thumb-profile-banner" style="display:none;background:rgba(212,168,83,.06);border:1px solid var(--gold3);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
-            <div style="font-size:1.2rem">✦</div>
-            <div>
-              <div style="font-size:.8rem;font-weight:600;color:var(--gold)">Using your content profile</div>
-              <div style="font-size:.75rem;color:var(--muted)" id="thumb-profile-info"></div>
-            </div>
-            <button class="btn btn-ghost btn-sm" style="margin-left:auto;font-size:.7rem" onclick="document.getElementById('thumb-profile-banner').style.display='none';document.getElementById('thumb-niche-row').style.display='grid'">Edit</button>
-          </div>
+  <div class="create-section" style="margin-bottom:16px">
+    <div class="create-header">
+      <div class="create-title">Generate Thumbnail</div>
+    </div>
 
-          <!-- Step 1 — Niche + Style Analysis -->
-          <div class="create-section" style="margin-bottom:16px">
-            <div class="create-header">
-              <div>
-                <div class="create-title">Step 1 — Analyse Your Niche</div>
-                <div style="font-size:.75rem;color:var(--muted);margin-top:2px">We identify the visual patterns that get the most clicks in your niche</div>
-              </div>
-            </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Your Niche</div>
+        <input id="thumb-niche" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coaching, luxury fashion…">
+      </div>
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Platform</div>
+        <select id="thumb-platform" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
+          <option value="youtube">YouTube</option>
+          <option value="instagram">Instagram</option>
+          <option value="tiktok">TikTok</option>
+        </select>
+      </div>
+    </div>
 
-            <div id="thumb-niche-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Your Niche</div>
-                <input id="thumb-niche" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coaching, luxury fashion, real estate…">
-              </div>
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Platform</div>
-                <select id="thumb-platform" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
-                  <option value="Instagram Reels">Instagram Reels</option>
-                  <option value="YouTube">YouTube</option>
-                  <option value="TikTok">TikTok</option>
-                  <option value="Facebook">Facebook</option>
-                </select>
-              </div>
-            </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Style</div>
+        <select id="thumb-style" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
+          <option value="bold">Bold & Punchy</option>
+          <option value="cinematic">Cinematic</option>
+          <option value="luxury">Luxury</option>
+          <option value="minimal">Minimal</option>
+          <option value="neon">Neon</option>
+        </select>
+      </div>
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Title / Text Overlay <span style="color:var(--muted);font-weight:400">(optional)</span></div>
+        <input id="thumb-title" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. 5 Ways to Lose Weight Fast">
+      </div>
+    </div>
 
-            <button class="btn btn-outline btn-md" id="thumb-analyse-btn" style="width:100%" onclick="analyseThumbnailStyles()">🔍 Analyse Trending Styles</button>
+    <div style="margin-bottom:14px">
+      <div class="prompt-label" style="margin-bottom:6px">Subject <span style="color:var(--muted);font-weight:400">(optional)</span></div>
+      <input id="thumb-subject" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coach, luxury product, before/after">
+    </div>
 
-            <div id="thumb-analyse-loading" style="display:none;text-align:center;padding:24px">
-              <div class="spin-ring" style="margin:0 auto 10px"></div>
-              <div style="font-size:.8rem;color:var(--gold)">Studying viral thumbnails in your niche…</div>
-            </div>
+    <button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
 
-            <!-- Style Cards -->
-            <div id="thumb-styles" style="display:none;margin-top:16px">
-              <div class="prompt-label" style="margin-bottom:10px">Choose a proven style to generate:</div>
-              <div id="thumb-style-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
-            </div>
-          </div>
+    <div id="thumb-gen-loading" style="display:none;text-align:center;padding:24px">
+      <div class="spin-ring" style="margin:0 auto 10px"></div>
+      <div style="font-size:.8rem;color:var(--gold)">Generating your thumbnail with DALL-E 3…</div>
+    </div>
 
-          <!-- Step 2 — Customise & Generate -->
-          <div class="create-section" id="thumb-gen-section" style="display:none;margin-bottom:16px">
-            <div class="create-header">
-              <div>
-                <div class="create-title">Step 2 — Customise & Generate</div>
-                <div style="font-size:.75rem;color:var(--muted);margin-top:2px" id="thumb-selected-style-label">Selected style</div>
-              </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Main Text / Title</div>
-                <input id="thumb-title" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. 5 Ways to Lose Weight Fast">
-              </div>
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Subject / Person</div>
-                <input id="thumb-subject" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coach, luxury product, before/after">
-              </div>
-            </div>
-
-            <div style="margin-bottom:14px">
-              <div class="prompt-label" style="margin-bottom:6px">Mood / Emotion</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="tone-btn active" data-thumb-mood="excited and energetic" onclick="selectThumbMood(this)">🔥 Excited</button>
-                <button class="tone-btn" data-thumb-mood="shocked and surprised" onclick="selectThumbMood(this)">😱 Shocked</button>
-                <button class="tone-btn" data-thumb-mood="confident and powerful" onclick="selectThumbMood(this)">💪 Confident</button>
-                <button class="tone-btn" data-thumb-mood="luxury and aspirational" onclick="selectThumbMood(this)">💎 Luxury</button>
-                <button class="tone-btn" data-thumb-mood="curious and mysterious" onclick="selectThumbMood(this)">🤔 Curious</button>
-              </div>
-            </div>
-
-            <button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
-
-            <div id="thumb-gen-loading" style="display:none;text-align:center;padding:24px">
-              <div class="spin-ring" style="margin:0 auto 10px"></div>
-              <div style="font-size:.8rem;color:var(--gold)">Generating your viral thumbnail…</div>
-            </div>
-
-            <!-- Result -->
-            <div id="thumb-result" style="display:none;margin-top:16px">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
-                <div>
-                  <div class="prompt-label" style="margin-bottom:8px">Generated Thumbnail</div>
-                  <img id="thumb-result-img" style="width:100%;border-radius:10px;border:1px solid var(--border2)">
-                  <div style="display:flex;gap:8px;margin-top:10px">
-                    <button class="btn btn-gold btn-sm" style="flex:1" onclick="downloadThumbnail()">Download ↓</button>
-                    <button class="btn btn-outline btn-sm" onclick="generateThumbnail()">Regenerate ↺</button>
-                    <button class="btn btn-outline btn-sm" onclick="saveThumbnailToLibrary()">Save 🔖</button>
-                  </div>
-                </div>
-                <div>
-                  <div class="prompt-label" style="margin-bottom:8px">Why This Works</div>
-                  <div id="thumb-why-works" style="font-size:.82rem;color:var(--muted);line-height:1.6;background:var(--noir3);border:1px solid var(--border);border-radius:8px;padding:14px"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Thumbnail Library -->
-          <div id="thumb-library-section" style="display:none">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-              <div class="prompt-label">Saved Thumbnails</div>
-              <button class="btn btn-ghost btn-sm" onclick="clearThumbLibrary()">Clear All</button>
-            </div>
-            <div id="thumb-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+    <div id="thumb-result" style="display:none;margin-top:20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+        <div>
+          <div class="prompt-label" style="margin-bottom:8px">Generated Thumbnail</div>
+          <img id="thumb-result-img" style="width:100%;border-radius:10px;border:1px solid var(--border2)">
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-gold btn-sm" style="flex:1" onclick="downloadThumbnail()">Download ↓</button>
+            <button class="btn btn-outline btn-sm" onclick="generateThumbnail()">Regenerate ↺</button>
+            <button class="btn btn-outline btn-sm" onclick="saveThumbnailToLibrary()">Save 🔖</button>
           </div>
         </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:8px">Saved Thumbnails</div>
+          <div id="thumb-library-section" style="display:none">
+            <div id="thumb-library-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="clearThumbLibrary()">Clear All</button>
+          </div>
+          <div id="thumb-library-empty-msg" style="font-size:.8rem;color:var(--muted)">No saved thumbnails yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="thumb-library-section-main" style="margin-top:8px;display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="prompt-label">Saved Thumbnails</div>
+      <button class="btn btn-ghost btn-sm" onclick="clearThumbLibrary()">Clear All</button>
+    </div>
+    <div id="thumb-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+  </div>
+</div>
         <!-- TEMPLATES SECTION -->
         <div id="dash-section-templates" style="display:none">
           <div style="margin-bottom:24px">
