@@ -1256,8 +1256,14 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
-    <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">2 - Choose Voice</div>
-    <div id="av-voice-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="avToggleVoices()">
+      <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">2 - Choose Voice</div>
+      <div id="av-voice-toggle" style="font-size:.8rem;color:var(--gold);font-weight:600">Browse ▾</div>
+    </div>
+    <div id="av-selected-voice" style="margin-top:10px;font-size:.85rem;color:var(--muted)">No voice selected</div>
+    <div id="av-voice-list-wrap" style="display:none;margin-top:14px">
+      <div id="av-voice-list" style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto"></div>
+    </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
     <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">3 - Your Script</div>
@@ -4395,26 +4401,32 @@ async function initAvatarStudio(){
   if(!grid || grid.dataset.loaded) return;
   grid.dataset.loaded = "1";
   grid.innerHTML = "<div style='color:var(--muted);font-size:.85rem;padding:20px'>Loading avatars...</div>";
+  // Load avatars
   try {
     var res = await fetch("https://api.heygen.com/v2/avatars", {headers:{"X-Api-Key":HEYGEN_KEY}});
     var data = await res.json();
     var avatars = (data.data && data.data.avatars) ? data.data.avatars : [];
-    if(avatars.length === 0){ grid.innerHTML = "<div style='color:var(--muted)'>No avatars found</div>"; return; }
-    var html = "";
-    for(var i=0; i<avatars.length; i++){
-      var a = avatars[i];
-      var img = a.preview_image_url || "";
-      var name = a.avatar_name || a.avatar_id || "Avatar";
-      var id = a.avatar_id;
-      html += "<div onclick='avSelectAvatar(this)' data-id='" + id + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
-      if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block'>"; }
-      else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
-      html += "<div style='font-size:.75rem;padding:6px 4px;text-align:center;color:var(--text)'>" + name + "</div>";
-      html += "</div>";
+    if(avatars.length === 0){ grid.innerHTML = "<div style='color:var(--muted)'>No avatars found</div>"; }
+    else {
+      var html = "";
+      for(var i=0; i<avatars.length; i++){
+        var a = avatars[i];
+        var img = a.preview_image_url || "";
+        var name = a.avatar_name || a.avatar_id || "Avatar";
+        var id = a.avatar_id;
+        html += "<div data-id='" + id + "' data-name='" + name.replace(/'/g,"") + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
+        if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block' loading='lazy'>"; }
+        else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
+        html += "<div style='font-size:.72rem;padding:5px 4px;text-align:center;color:var(--text)'>" + name + "</div>";
+        html += "</div>";
+      }
+      grid.innerHTML = html;
+      // Add click listeners
+      var cards = grid.querySelectorAll("div[data-id]");
+      for(var c=0; c<cards.length; c++){
+        cards[c].addEventListener("click", function(){ avSelectAvatar(this); });
+      }
     }
-    grid.innerHTML = html;
-    var first = grid.firstElementChild;
-    if(first){ avSelectAvatar(first); }
   } catch(e){
     grid.innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
     console.error("Avatar load error:", e);
@@ -4426,29 +4438,49 @@ async function initAvatarStudio(){
     var vres = await fetch("https://api.heygen.com/v2/voices", {headers:{"X-Api-Key":HEYGEN_KEY}});
     var vdata = await vres.json();
     var voices = (vdata.data && vdata.data.voices) ? vdata.data.voices : [];
-    // Filter to English voices only, limit to 20
-    voices = voices.filter(function(v){ return !v.language || v.language === "English" || v.locale === "en-US" || v.locale === "en-GB"; }).slice(0,20);
-    if(voices.length === 0){ vlist.innerHTML = "<div style='color:var(--muted)'>No voices found</div>"; return; }
+    // Show all English voices, up to 50
+    var filtered = [];
+    for(var vi=0; vi<voices.length; vi++){
+      var v = voices[vi];
+      var lang = (v.language||"").toLowerCase();
+      var locale = (v.locale||"").toLowerCase();
+      if(!v.language || lang.indexOf("english") !== -1 || locale.indexOf("en-") !== -1){
+        filtered.push(v);
+      }
+    }
+    filtered = filtered.slice(0,50);
+    if(filtered.length === 0){ vlist.innerHTML = "<div style='color:var(--muted)'>No voices found</div>"; return; }
     var vhtml = "";
-    for(var j=0; j<voices.length; j++){
-      var v = voices[j];
-      var vid = v.voice_id;
-      var vname = v.display_name || v.name || vid;
-      var vgender = v.gender || "";
-      var vaudio = v.preview_audio || "";
-      vhtml += "<div data-id='" + vid + "' style='cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);transition:border-color .15s;gap:10px'>";
-      vhtml += "<div onclick='avSelectVoice(this.parentElement)' style='flex:1'>";
+    for(var j=0; j<filtered.length; j++){
+      var fv = filtered[j];
+      var vid = fv.voice_id;
+      var vname = fv.display_name || fv.name || vid;
+      var vgender = fv.gender || "";
+      var vaudio = fv.preview_audio || "";
+      vhtml += "<div data-id='" + vid + "' data-name='" + vname.replace(/'/g,"") + "' style='cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);transition:border-color .15s;gap:10px'>";
+      vhtml += "<div style='flex:1'>";
       vhtml += "<div style='font-size:.88rem;color:var(--text)'>" + vname + "</div>";
       vhtml += "<div style='font-size:.72rem;color:var(--muted)'>" + vgender + "</div>";
       vhtml += "</div>";
       if(vaudio){
-        vhtml += "<button onclick='avPlayVoice(event,\"" + vaudio + "\")' style='background:var(--border);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:var(--text);font-size:.8rem;flex-shrink:0'>▶</button>";
+        vhtml += "<button data-audio='" + vaudio + "' style='background:var(--border);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:var(--text);font-size:.8rem;flex-shrink:0'>▶</button>";
       }
       vhtml += "</div>";
     }
     vlist.innerHTML = vhtml;
-    var vfirst = vlist.firstElementChild;
-    if(vfirst){ avSelectVoice(vfirst); }
+    // Add click listeners for voice rows
+    var vrows = vlist.querySelectorAll("div[data-id]");
+    for(var vr=0; vr<vrows.length; vr++){
+      vrows[vr].addEventListener("click", function(){ avSelectVoice(this); });
+    }
+    // Add click listeners for play buttons
+    var btns = vlist.querySelectorAll("button[data-audio]");
+    for(var b=0; b<btns.length; b++){
+      btns[b].addEventListener("click", function(e){
+        e.stopPropagation();
+        avPlayVoice(this.dataset.audio);
+      });
+    }
   } catch(e){
     vlist.innerHTML = "<div style='color:var(--red)'>Failed to load voices</div>";
     console.error("Voice load error:", e);
@@ -4458,36 +4490,41 @@ async function initAvatarStudio(){
 function avToggleGrid(){
   var wrap = document.getElementById("av-avatar-grid-wrap");
   var toggle = document.getElementById("av-grid-toggle");
-  if(wrap.style.display === "none"){
-    wrap.style.display = "block";
-    toggle.textContent = "Close ▴";
-  } else {
-    wrap.style.display = "none";
-    toggle.textContent = "Browse ▾";
-  }
+  if(wrap.style.display === "none"){ wrap.style.display = "block"; toggle.textContent = "Close ▴"; }
+  else { wrap.style.display = "none"; toggle.textContent = avSelectedAvatar ? "Change ▾" : "Browse ▾"; }
+}
+
+function avToggleVoices(){
+  var wrap = document.getElementById("av-voice-list-wrap");
+  var toggle = document.getElementById("av-voice-toggle");
+  if(wrap.style.display === "none"){ wrap.style.display = "block"; toggle.textContent = "Close ▴"; }
+  else { wrap.style.display = "none"; toggle.textContent = avSelectedVoice ? "Change ▾" : "Browse ▾"; }
 }
 
 function avSelectAvatar(el){
   avSelectedAvatar = el.dataset.id;
-  var name = el.querySelector("div") ? el.querySelector("div").textContent : el.dataset.id;
-  document.querySelectorAll("#av-avatar-grid > div").forEach(function(d){ d.style.borderColor = "transparent"; });
+  var name = el.dataset.name || el.dataset.id;
+  document.querySelectorAll("#av-avatar-grid > div[data-id]").forEach(function(d){ d.style.borderColor = "transparent"; });
   el.style.borderColor = "var(--gold)";
   var label = document.getElementById("av-selected-avatar");
   if(label) label.textContent = "Selected: " + name;
-  // Close grid after selection
   document.getElementById("av-avatar-grid-wrap").style.display = "none";
   document.getElementById("av-grid-toggle").textContent = "Change ▾";
 }
 
 function avSelectVoice(el){
   avSelectedVoice = el.dataset.id;
-  document.querySelectorAll("#av-voice-list > div").forEach(function(d){ d.style.borderColor = "var(--border)"; });
+  var name = el.dataset.name || el.dataset.id;
+  document.querySelectorAll("#av-voice-list > div[data-id]").forEach(function(d){ d.style.borderColor = "var(--border)"; });
   el.style.borderColor = "var(--gold)";
+  var label = document.getElementById("av-selected-voice");
+  if(label) label.textContent = "Selected: " + name;
+  document.getElementById("av-voice-list-wrap").style.display = "none";
+  document.getElementById("av-voice-toggle").textContent = "Change ▾";
 }
 
 var avAudio = null;
-function avPlayVoice(e, url){
-  e.stopPropagation();
+function avPlayVoice(url){
   if(avAudio){ avAudio.pause(); avAudio = null; }
   avAudio = new Audio(url);
   avAudio.play();
