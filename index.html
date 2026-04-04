@@ -4892,7 +4892,7 @@ async function generateHeyGenVideo(){
         if(s==="completed"){
           clearInterval(interval); status.style.display="none";
           document.getElementById("av-video").src = d2.data.video_url;
-          result.style.display="block"; toast("Video ready!","success");
+          result.style.display="block"; toast("Video ready!","success"); const hgVid={id:Date.now(),prompt:script,tone:'luxury',video_url:d2.data.video_url,caption:'',status:'done',created:new Date().toISOString()};videos.unshift(hgVid);await saveVideo(hgVid);renderGrid();updateStats();
         } else if(s==="failed"){
           clearInterval(interval); status.textContent="Generation failed."; toast("Video failed","error");
         }
