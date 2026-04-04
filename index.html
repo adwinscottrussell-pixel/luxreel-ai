@@ -3369,141 +3369,69 @@ function useAdAsVideoImage(){
 }
 
 // ══════════════════════════════
-// THUMBNAIL AI
 // ══════════════════════════════
-let thumbStyles = [];
-let selectedThumbStyle = null;
-let selectedThumbMood = 'excited and energetic';
+// ══════════════════════════════
+// THUMBNAIL AI (v2 — Edge Function powered)
+// ══════════════════════════════
 let generatedThumbUrl = '';
-
-const THUMB_LIMITS = { free: 3, pro: 50, agency: 999 };
-const BLOCKED_KEYWORDS = ['nude','naked','explicit','sexual','violence','gore','weapon','drug'];
-
-function getThumbUsage(){
-  const key = 'lx_thumb_usage_' + new Date().toISOString().slice(0,7);
-  return parseInt(localStorage.getItem(key)||'0');
-}
-function incrementThumbUsage(){
-  const key = 'lx_thumb_usage_' + new Date().toISOString().slice(0,7);
-  localStorage.setItem(key, String(getThumbUsage() + 1));
-}
-function getThumbLimit(){ return THUMB_LIMITS.free; }
-
-function updateThumbUsageUI(){
-  const used = getThumbUsage();
-  const limit = getThumbLimit();
-  const countEl = document.getElementById('thumb-usage-count');
-  const labelEl = document.getElementById('thumb-usage-label');
-  if(countEl){ countEl.textContent = used; countEl.style.color = used >= limit ? 'var(--red)' : 'var(--gold)'; }
-  if(labelEl) labelEl.textContent = '/ ' + limit + ' this month';
-}
-
-function initThumbnailSection(){
-  const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
-  const niche = profile.niche || localStorage.getItem('lx_niche') || '';
-  const tone = profile.tone || localStorage.getItem('lx_tone') || '';
-  const mode = profile.mode || '';
-  const nicheEl = document.getElementById('thumb-niche');
-  const banner = document.getElementById('thumb-profile-banner');
-  const profileInfo = document.getElementById('thumb-profile-info');
-  const nicheRow = document.getElementById('thumb-niche-row');
-  if(niche && nicheEl){
-    nicheEl.value = niche;
-    if(banner && profileInfo){
-      banner.style.display = 'flex';
-      profileInfo.textContent = 'Niche: ' + niche + ' · Tone: ' + tone + ' · Mode: ' + mode;
-      if(nicheRow) nicheRow.style.display = 'none';
-    }
-  }
-  const moodMap = {luxury:'luxury and aspirational',bold:'excited and energetic',motivational:'confident and powerful',educational:'curious and mysterious',playful:'excited and energetic'};
-  if(tone && moodMap[tone]){
-    selectedThumbMood = moodMap[tone];
-    document.querySelectorAll('[data-thumb-mood]').forEach(b=>{ b.classList.toggle('active', b.dataset.thumbMood === selectedThumbMood); });
-  }
-  updateThumbUsageUI();
-  renderThumbLibrary();
-}
-
-function validateThumbPrompt(text){
-  const lower = text.toLowerCase();
-  for(const word of BLOCKED_KEYWORDS){ if(lower.includes(word)) return false; }
-  return true;
-}
-
-function selectThumbMood(btn){
-  document.querySelectorAll('[data-thumb-mood]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedThumbMood = btn.dataset.thumbMood;
-}
-
-async function analyseThumbnailStyles(){
-  const niche = document.getElementById('thumb-niche')?.value.trim();
-  const platform = document.getElementById('thumb-platform')?.value || 'Instagram Reels';
-  if(!niche){ toast('Enter your niche first','error'); return; }
-  if(!validateThumbPrompt(niche)){ toast('Please keep content professional and brand-safe','error'); return; }
-  const btn = document.getElementById('thumb-analyse-btn');
-  const loading = document.getElementById('thumb-analyse-loading');
-  const stylesEl = document.getElementById('thumb-styles');
-  btn.disabled = true; btn.textContent = 'Analysing…';
-  loading.style.display = 'block'; stylesEl.style.display = 'none';
-  try{
-    const res = await fetch(`${SB_URL}/functions/v1/start-video`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},body:JSON.stringify({action:'analyse-thumbnails',niche,platform})});
-    const data = await res.json();
-    thumbStyles = data.styles || [];
-    if(thumbStyles.length > 0){ renderThumbStyles(); stylesEl.style.display = 'block'; toast('Styles found ✦','success'); }
-    else { toast('Could not analyse — please try again','error'); }
-  }catch(e){ toast('Analysis failed — please try again','error'); }
-  btn.disabled = false; btn.textContent = '🔍 Analyse Trending Styles';
-  loading.style.display = 'none';
-}
-
-function renderThumbStyles(){
-  const grid = document.getElementById('thumb-style-grid');
-  if(!grid) return;
-  grid.innerHTML = thumbStyles.map((s,i) => `<div class="cal-card" id="thumb-style-${i}" onclick="selectThumbStyle(${i})" style="cursor:pointer"><div style="font-size:1.6rem;margin-bottom:8px">${s.emoji||'🎯'}</div><div style="font-weight:700;font-size:.9rem;margin-bottom:6px;color:var(--text)">${s.name}</div><div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;line-height:1.5">${s.description}</div><div style="font-size:.7rem;color:var(--gold)">✦ ${s.whyItWorks}</div></div>`).join('');
-}
-
-function selectThumbStyle(i){
-  document.querySelectorAll('[id^="thumb-style-"]').forEach(el=>el.classList.remove('has-video'));
-  document.getElementById(`thumb-style-${i}`)?.classList.add('has-video');
-  selectedThumbStyle = thumbStyles[i];
-  document.getElementById('thumb-selected-style-label').textContent = 'Style: ' + selectedThumbStyle.name;
-  document.getElementById('thumb-gen-section').style.display = 'block';
-  document.getElementById('thumb-gen-section').scrollIntoView({behavior:'smooth',block:'center'});
-}
+let selectedThumbStyle = 'bold';
+let selectedThumbPlatform = 'youtube';
 
 async function generateThumbnail(){
-  const used = getThumbUsage();
-  const limit = getThumbLimit();
-  if(used >= limit){ toast(`You've used all ${limit} thumbnails this month — upgrade to Pro for 50/month`,'error'); setTimeout(()=>go('pricing'),2000); return; }
-  if(!selectedThumbStyle){ toast('Select a style first','error'); return; }
-  const title = document.getElementById('thumb-title')?.value.trim();
+  const niche   = document.getElementById('thumb-niche')?.value.trim();
+  const title   = document.getElementById('thumb-title')?.value.trim();
   const subject = document.getElementById('thumb-subject')?.value.trim();
-  const niche = document.getElementById('thumb-niche')?.value.trim();
-  const platform = document.getElementById('thumb-platform')?.value;
+  const style   = document.getElementById('thumb-style')?.value || 'bold';
+  const platform = document.getElementById('thumb-platform')?.value || 'youtube';
   const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
-  const tone = profile.tone || localStorage.getItem('lx_tone') || 'professional';
-  if(title && !validateThumbPrompt(title)){ toast('Please keep content professional and brand-safe','error'); return; }
-  if(subject && !validateThumbPrompt(subject)){ toast('Please keep content professional and brand-safe','error'); return; }
-  const btn = document.getElementById('thumb-gen-btn');
+  const tone    = profile.tone || localStorage.getItem('lx_tone') || 'professional';
+
+  if(!niche){ toast('Enter your niche first','error'); return; }
+
+  const btn     = document.getElementById('thumb-gen-btn');
   const loading = document.getElementById('thumb-gen-loading');
-  const result = document.getElementById('thumb-result');
+  const result  = document.getElementById('thumb-result');
+
   btn.disabled = true; btn.textContent = 'Generating…';
   loading.style.display = 'block'; result.style.display = 'none';
-  const platformAspect = platform === 'YouTube' ? '16:9 widescreen' : '9:16 vertical portrait';
-  const thumbPrompt = `Create a professional brand-safe viral ${platform} thumbnail for the ${niche} niche. Platform format: ${platformAspect}. Brand tone: ${tone}. Style: ${selectedThumbStyle.name} — ${selectedThumbStyle.description}. Visual: ${selectedThumbStyle.visualDetails}. Subject: ${subject||'professional person relevant to the niche'}. Mood: ${selectedThumbMood}. ${title ? `Bold text overlay: "${title}" — ALL text must be fully visible and completely within the image boundaries, minimum 60px padding from all edges, no text cropped or cut off, large high contrast easy to read on mobile.` : 'Clean visual no text overlay.'} CRITICAL: Every single letter of every word must be fully readable and inside the frame. Professional quality. Brand safe. No explicit content. No real celebrity likenesses. No competitor logos.`;
+
   try{
-    const res = await fetch(`${SB_URL}/functions/v1/start-video`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},body:JSON.stringify({action:'image',prompt:thumbPrompt})});
+    const session = await sb.auth.getSession();
+    const token   = session?.data?.session?.access_token;
+    if(!token) throw new Error('Not logged in');
+
+    const res = await fetch(`${SB_URL}/functions/v1/generate-thumbnail`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ niche, title, subject, style, platform, tone })
+    });
+
     const data = await res.json();
-    if(data.imageUrl){
-      generatedThumbUrl = data.imageUrl;
-      document.getElementById('thumb-result-img').src = data.imageUrl;
-      document.getElementById('thumb-why-works').innerHTML = `<div style="margin-bottom:8px"><strong style="color:var(--gold)">Style:</strong> ${selectedThumbStyle.name}</div><div style="margin-bottom:8px"><strong style="color:var(--gold)">Why it works:</strong> ${selectedThumbStyle.whyItWorks}</div><div style="margin-bottom:8px"><strong style="color:var(--gold)">Best for:</strong> ${selectedThumbStyle.bestFor}</div><div><strong style="color:var(--gold)">Pro tip:</strong> ${selectedThumbStyle.proTip}</div>`;
-      result.style.display = 'block';
-      incrementThumbUsage(); updateThumbUsageUI(); saveThumbnailToLibrary();
-      toast('Thumbnail generated ✦','success');
-    } else { throw new Error('No image'); }
-  }catch(e){ toast('Generation failed — please try again','error'); }
+
+    if(res.status === 429){
+      toast(`Limit reached — ${data.used}/${data.limit} used this month. Upgrade to Pro for 50/month.`,'error');
+      setTimeout(()=>go('pricing'), 2000);
+      return;
+    }
+
+    if(!data.imageUrl) throw new Error(data.error || 'No image returned');
+
+    generatedThumbUrl = data.imageUrl;
+    document.getElementById('thumb-result-img').src = data.imageUrl;
+    document.getElementById('thumb-usage-count').textContent = data.used;
+    document.getElementById('thumb-usage-label').textContent = `/ ${data.limit} this month`;
+    result.style.display = 'block';
+    saveThumbnailToLibrary();
+    toast('Thumbnail generated ✦','success');
+
+  }catch(e){
+    console.error('[thumbnail]', e);
+    toast('Generation failed — please try again','error');
+  }
+
   btn.disabled = false; btn.textContent = '✨ Generate Thumbnail';
   loading.style.display = 'none';
 }
@@ -3511,33 +3439,50 @@ async function generateThumbnail(){
 function saveThumbnailToLibrary(){
   if(!generatedThumbUrl) return;
   const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
-  lib.unshift({id:Date.now(),src:generatedThumbUrl,style:selectedThumbStyle?.name||'',created:new Date().toISOString()});
+  lib.unshift({ id: Date.now(), src: generatedThumbUrl, style: selectedThumbStyle, created: new Date().toISOString() });
   if(lib.length > 20) lib.pop();
   localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
   renderThumbLibrary();
 }
 
 function renderThumbLibrary(){
-  const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
-  const grid = document.getElementById('thumb-library-grid');
+  const lib     = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  const grid    = document.getElementById('thumb-library-grid');
   const section = document.getElementById('thumb-library-section');
   if(!grid||!section) return;
   if(lib.length===0){ section.style.display='none'; return; }
   section.style.display = 'block';
-  grid.innerHTML = lib.map(item=>`<div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--panel)"><div style="aspect-ratio:16/9;overflow:hidden"><img src="${item.src}" style="width:100%;height:100%;object-fit:cover"></div><div style="padding:4px 6px;font-size:.65rem;color:var(--muted)">${item.style}</div><div style="padding:0 6px 6px;display:flex;gap:4px"><button class="btn btn-gold btn-sm" style="flex:1;font-size:.65rem" onclick="downloadThumbFromLib('${item.id}')">↓</button><button class="btn btn-ghost btn-sm" style="font-size:.65rem" onclick="deleteThumbFromLib('${item.id}')">✕</button></div></div>`).join('');
+  grid.innerHTML = lib.map(item=>`
+    <div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--panel)">
+      <div style="aspect-ratio:16/9;overflow:hidden">
+        <img src="${item.src}" style="width:100%;height:100%;object-fit:cover">
+      </div>
+      <div style="padding:4px 6px;font-size:.65rem;color:var(--muted)">${item.style}</div>
+      <div style="padding:0 6px 6px;display:flex;gap:4px">
+        <button class="btn btn-gold btn-sm" style="flex:1;font-size:.65rem" onclick="downloadThumbFromLib('${item.id}')">↓ Download</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:.65rem" onclick="deleteThumbFromLib('${item.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
 }
 
 async function downloadThumbnail(){
   if(!generatedThumbUrl) return;
-  const a = document.createElement('a'); a.href = generatedThumbUrl; a.download = 'LuxClip-thumbnail.png'; a.click();
+  const a = document.createElement('a');
+  a.href = generatedThumbUrl;
+  a.download = 'LuxClip-thumbnail.png';
+  a.click();
   toast('Downloaded ✦','success');
 }
 
 function downloadThumbFromLib(id){
-  const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  const lib  = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
   const item = lib.find(i=>String(i.id)===String(id));
   if(!item) return;
-  const a = document.createElement('a'); a.href = item.src; a.download = `LuxClip-thumb-${id}.png`; a.click();
+  const a = document.createElement('a');
+  a.href = item.src;
+  a.download = `LuxClip-thumb-${id}.png`;
+  a.click();
 }
 
 function deleteThumbFromLib(id){
@@ -3547,8 +3492,10 @@ function deleteThumbFromLib(id){
   renderThumbLibrary();
 }
 
-function clearThumbLibrary(){
-  localStorage.removeItem('lx_thumb_library');
+function initThumbnailSection(){
+  const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
+  const niche   = profile.niche || localStorage.getItem('lx_niche') || '';
+  if(niche) { const el = document.getElementById('thumb-niche'); if(el) el.value = niche; }
   renderThumbLibrary();
 }
 
