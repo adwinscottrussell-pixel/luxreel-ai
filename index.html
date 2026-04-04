@@ -1295,8 +1295,23 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
-    <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">3 - Your Script</div>
-    <textarea id="av-script" placeholder="Write your script here..." style="width:100%;min-height:140px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:.9rem;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">3 - Your Script</div>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.75rem;color:var(--muted)">
+        <input type="checkbox" id="av-ai-toggle" checked style="accent-color:var(--gold)">
+        AI Enhance
+      </label>
+    </div>
+    <textarea id="av-script" placeholder="Write your idea or script here... AI will enhance it before generating." style="width:100%;min-height:140px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:.9rem;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+    <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+      <button onclick="avEnhanceScript()" id="av-enhance-btn" style="padding:8px 18px;background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer">✦ Enhance Script</button>
+      <div id="av-enhance-status" style="font-size:.78rem;color:var(--muted)"></div>
+    </div>
+    <div id="av-tone-badge" style="display:none;margin-top:10px;padding:8px 12px;background:var(--panel);border-radius:8px;border:1px solid var(--border);font-size:.8rem">
+      <span style="color:var(--gold);font-weight:600">Tone detected: </span>
+      <span id="av-tone-label"></span>
+      <span style="color:var(--muted);margin-left:8px" id="av-tone-reason"></span>
+    </div>
   </div>
   <button onclick="generateHeyGenVideo()" style="width:100%;padding:14px;background:var(--gold);color:#000;font-weight:700;font-size:1rem;border:none;border-radius:8px;cursor:pointer">Generate Avatar Video</button>
   <div id="av-status" style="margin-top:12px;font-size:.85rem;color:var(--muted);text-align:center;display:none"></div>
@@ -4605,6 +4620,57 @@ function avPlayVoice(url){
   avAudio = new Audio(url); avAudio.play();
 }
 
+
+async function avEnhanceScript(){
+  var script = document.getElementById("av-script").value.trim();
+  if(!script){ toast("Please write a script first","error"); return; }
+  var aiEnabled = document.getElementById("av-ai-toggle").checked;
+  var btn = document.getElementById("av-enhance-btn");
+  var status = document.getElementById("av-enhance-status");
+  btn.disabled = true;
+  btn.textContent = "Enhancing...";
+  status.textContent = "";
+  try {
+    var res = await fetch("https://tvshyswdwgwunzzrsqca.supabase.co/functions/v1/enhance-script", {
+      method: "POST",
+      headers: {"Content-Type":"application/json","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MTQzMzUsImV4cCI6MjA1Nzk5MDMzNX0.xMLtHOjSgFHHNJpSlWRyiCIBvDFDUFRxOXbvQIFLDZM"},
+      body: JSON.stringify({raw_script: script, ai_enabled: aiEnabled})
+    });
+    var data = await res.json();
+    if(data.error) throw new Error(data.error);
+    // Update script box with enhanced version
+    document.getElementById("av-script").value = data.enhanced_script;
+    // Show tone badge
+    if(data.tone){
+      document.getElementById("av-tone-label").textContent = data.tone.charAt(0).toUpperCase() + data.tone.slice(1);
+      document.getElementById("av-tone-reason").textContent = data.tone_reason || "";
+      document.getElementById("av-tone-badge").style.display = "block";
+    }
+    // Auto-select recommended voice if user hasnt picked one
+    if(data.recommended_voice_id && !avSelectedVoice){
+      avSelectedVoice = data.recommended_voice_id;
+      // Find and highlight the voice card
+      var vcard = document.querySelector("#av-voice-list [data-id='" + data.recommended_voice_id + "']");
+      if(vcard){ avSelectVoice(vcard); }
+      else {
+        // Voice not rendered yet - store and show label
+        avSelectedVoice = data.recommended_voice_id;
+        document.getElementById("av-voice-selected-name").textContent = data.recommended_voice_name || "AI Recommended";
+        document.getElementById("av-voice-selected-gender").textContent = "Auto-selected based on tone";
+        document.getElementById("av-voice-selected-preview").style.display = "flex";
+        document.getElementById("av-voice-grid-section").style.display = "none";
+      }
+    }
+    status.textContent = data.ai_enhanced ? "Script enhanced ✦" : "Original script kept";
+    toast("Script enhanced ✦","success");
+  } catch(e){
+    status.textContent = "Enhancement failed - original kept";
+    console.error("enhance-script error:", e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "✦ Enhance Script";
+  }
+}
 async function generateHeyGenVideo(){
   var script = document.getElementById("av-script").value.trim();
   if(!script){ toast("Please write a script first","error"); return; }
