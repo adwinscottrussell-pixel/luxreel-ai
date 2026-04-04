@@ -4766,9 +4766,13 @@ async function avStartBatch(){
 
   // Step 1: Generate scripts via edge function
   try {
-    var res = await fetch(SUPABASE_URL + "/batch-generate-scripts", {
+    var res = await fetch("https://tvshyswdwgwunzzrsqca.supabase.co/functions/v1/batch-generate-scripts", {
       method: "POST",
-      headers: {"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MTQzMzUsImV4cCI6MjA1Nzk5MDMzNX0.xMLtHOjSgFHHNJpSlWRyiCIBvDFDUFRxOXbvQIFLDZM",
+        "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MTQzMzUsImV4cCI6MjA1Nzk5MDMzNX0.xMLtHOjSgFHHNJpSlWRyiCIBvDFDUFRxOXbvQIFLDZM"
+      },
       body: JSON.stringify({base_input: topic, variations: avBatchCount})
     });
     var data = await res.json();
