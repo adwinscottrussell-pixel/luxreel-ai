@@ -1246,10 +1246,24 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Pick your avatar, choose a voice, write your script then generate.</p>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
-    <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">1 - Choose Avatar</div>
-    <div id="av-selected-avatar" style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Loading avatars...</div>
-    <div id="av-group-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
-    <div id="av-avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:380px;overflow-y:auto"></div>
+    <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">1 - Choose Avatar</div>
+    <!-- Selected state -->
+    <div id="av-selected-preview" style="display:none;align-items:center;gap:14px;margin-bottom:14px">
+      <img id="av-selected-img" style="width:60px;height:60px;border-radius:8px;object-fit:cover;border:2px solid var(--gold)">
+      <div>
+        <div id="av-selected-name" style="font-size:.9rem;font-weight:600;color:var(--text)"></div>
+        <button onclick="avOpenGrid()" style="margin-top:6px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer">Change Avatar</button>
+      </div>
+    </div>
+    <!-- Grid state -->
+    <div id="av-grid-section">
+      <div id="av-group-filters" style="display:flex;gap:8px;margin-bottom:14px">
+        <button onclick="avFilterGender('all',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--gold);background:var(--gold);color:#000;font-size:.78rem;font-weight:600;cursor:pointer">All</button>
+        <button onclick="avFilterGender('female',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">Female</button>
+        <button onclick="avFilterGender('male',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">Male</button>
+      </div>
+      <div id="av-avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:360px;overflow-y:auto"></div>
+    </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="avToggleVoices()">
@@ -4392,35 +4406,20 @@ var HEYGEN_KEY = "sk_V2_hgu_kCjIfbAddDe_IAvx1OOYPoVPFoiTi68YQT38qvvFEBWF";
 var avSelectedAvatar = null;
 var avSelectedVoice = null;
 var avAllAvatars = [];
+var avCurrentGender = "all";
 
 async function initAvatarStudio(){
   var grid = document.getElementById("av-avatar-grid");
   if(!grid || grid.dataset.loaded) return;
   grid.dataset.loaded = "1";
-  // Load avatars
+  grid.innerHTML = "<div style='color:var(--muted);font-size:.85rem;padding:20px'>Loading avatars...</div>";
   try {
     var res = await fetch("https://api.heygen.com/v2/avatars", {headers:{"X-Api-Key":HEYGEN_KEY}});
     var data = await res.json();
     avAllAvatars = (data.data && data.data.avatars) ? data.data.avatars : [];
-    // Build filter buttons from first name
-    var seen = {};
-    var firstNames = [];
-    for(var i=0; i<avAllAvatars.length; i++){
-      var name = avAllAvatars[i].avatar_name || "";
-      var first = name.split(" ")[0];
-      if(first && !seen[first]){ seen[first] = true; firstNames.push(first); }
-    }
-    firstNames.sort();
-    var filters = document.getElementById("av-group-filters");
-    var fbtn = "<button onclick='avFilterGroup(\"all\",this)' style='padding:5px 12px;border-radius:20px;border:1px solid var(--gold);background:var(--gold);color:#000;font-size:.75rem;font-weight:600;cursor:pointer'>All</button>";
-    for(var f=0; f<firstNames.length; f++){
-      fbtn += "<button onclick='avFilterGroup(\"" + firstNames[f] + "\",this)' style='padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer'>" + firstNames[f] + "</button>";
-    }
-    filters.innerHTML = fbtn;
     avRenderAvatars("all");
-    document.getElementById("av-selected-avatar").textContent = "Select an avatar below";
   } catch(e){
-    document.getElementById("av-avatar-grid").innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
+    grid.innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
     console.error("Avatar load error:", e);
   }
   // Load voices
@@ -4464,10 +4463,12 @@ async function initAvatarStudio(){
   }
 }
 
-function avRenderAvatars(filter){
+function avRenderAvatars(gender){
+  avCurrentGender = gender;
   var grid = document.getElementById("av-avatar-grid");
-  var list = filter === "all" ? avAllAvatars : avAllAvatars.filter(function(a){
-    return (a.avatar_name || "").split(" ")[0] === filter;
+  var list = avAllAvatars.filter(function(a){
+    if(gender === "all") return true;
+    return (a.gender||"").toLowerCase() === gender;
   });
   if(list.length === 0){ grid.innerHTML = "<div style='color:var(--muted);padding:20px'>No avatars found</div>"; return; }
   var html = "";
@@ -4476,7 +4477,7 @@ function avRenderAvatars(filter){
     var img = a.preview_image_url || "";
     var name = a.avatar_name || a.avatar_id || "Avatar";
     var id = a.avatar_id;
-    html += "<div data-id='" + id + "' data-name='" + name.replace(/'/g,"") + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
+    html += "<div data-id='" + id + "' data-name='" + name.replace(/'/g,"") + "' data-img='" + img + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
     if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block' loading='lazy'>"; }
     else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
     html += "<div style='font-size:.72rem;padding:5px 4px;text-align:center;color:var(--text)'>" + name + "</div>";
@@ -4489,7 +4490,7 @@ function avRenderAvatars(filter){
   }
 }
 
-function avFilterGroup(filter, btn){
+function avFilterGender(gender, btn){
   document.querySelectorAll("#av-group-filters button").forEach(function(b){
     b.style.background = "transparent";
     b.style.color = "var(--muted)";
@@ -4498,7 +4499,23 @@ function avFilterGroup(filter, btn){
   btn.style.background = "var(--gold)";
   btn.style.color = "#000";
   btn.style.borderColor = "var(--gold)";
-  avRenderAvatars(filter);
+  avRenderAvatars(gender);
+}
+
+function avSelectAvatar(el){
+  avSelectedAvatar = el.dataset.id;
+  var name = el.dataset.name || el.dataset.id;
+  var img = el.dataset.img || "";
+  // Show preview, hide grid
+  document.getElementById("av-selected-img").src = img;
+  document.getElementById("av-selected-name").textContent = name;
+  document.getElementById("av-selected-preview").style.display = "flex";
+  document.getElementById("av-grid-section").style.display = "none";
+}
+
+function avOpenGrid(){
+  document.getElementById("av-selected-preview").style.display = "none";
+  document.getElementById("av-grid-section").style.display = "block";
 }
 
 function avToggleVoices(){
@@ -4506,15 +4523,6 @@ function avToggleVoices(){
   var toggle = document.getElementById("av-voice-toggle");
   if(wrap.style.display === "none"){ wrap.style.display = "block"; toggle.textContent = "Close ▴"; }
   else { wrap.style.display = "none"; toggle.textContent = avSelectedVoice ? "Change ▾" : "Browse ▾"; }
-}
-
-function avSelectAvatar(el){
-  avSelectedAvatar = el.dataset.id;
-  var name = el.dataset.name || el.dataset.id;
-  document.querySelectorAll("#av-avatar-grid > div[data-id]").forEach(function(d){ d.style.borderColor = "transparent"; });
-  el.style.borderColor = "var(--gold)";
-  var label = document.getElementById("av-selected-avatar");
-  if(label) label.textContent = "Selected: " + name;
 }
 
 function avSelectVoice(el){
