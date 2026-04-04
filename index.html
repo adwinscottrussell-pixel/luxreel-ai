@@ -1313,10 +1313,34 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       <span style="color:var(--muted);margin-left:8px" id="av-tone-reason"></span>
     </div>
   </div>
-  <button onclick="generateHeyGenVideo()" style="width:100%;padding:14px;background:var(--gold);color:#000;font-weight:700;font-size:1rem;border:none;border-radius:8px;cursor:pointer">Generate Avatar Video</button>
-  <div id="av-status" style="margin-top:12px;font-size:.85rem;color:var(--muted);text-align:center;display:none"></div>
-  <div id="av-result" style="margin-top:16px;display:none">
-    <video id="av-video" controls style="width:100%;border-radius:10px;background:#000"></video>
+  <!-- Single video generate -->
+  <div id="av-single-mode">
+    <button onclick="generateHeyGenVideo()" style="width:100%;padding:14px;background:var(--gold);color:#000;font-weight:700;font-size:1rem;border:none;border-radius:8px;cursor:pointer">Generate Avatar Video</button>
+    <div id="av-status" style="margin-top:12px;font-size:.85rem;color:var(--muted);text-align:center;display:none"></div>
+    <div id="av-result" style="margin-top:16px;display:none">
+      <video id="av-video" controls style="width:100%;border-radius:10px;background:#000"></video>
+    </div>
+  </div>
+  <!-- Batch mode toggle -->
+  <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:.78rem;color:var(--muted)">Generate multiple videos from one idea</div>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.78rem;color:var(--muted)">
+        <input type="checkbox" id="av-batch-toggle" onchange="avToggleBatchMode()" style="accent-color:var(--gold)">
+        Batch Mode
+      </label>
+    </div>
+    <div id="av-batch-controls" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <div style="font-size:.78rem;color:var(--muted)">Variations:</div>
+        <button onclick="avSetBatchCount(3,this)" class="av-batch-count-btn" style="padding:4px 14px;border-radius:20px;border:1px solid var(--gold);background:var(--gold);color:#000;font-size:.78rem;font-weight:600;cursor:pointer">3</button>
+        <button onclick="avSetBatchCount(5,this)" class="av-batch-count-btn" style="padding:4px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">5</button>
+        <button onclick="avSetBatchCount(10,this)" class="av-batch-count-btn" style="padding:4px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">10</button>
+      </div>
+      <button onclick="avStartBatch()" style="width:100%;padding:14px;background:var(--gold);color:#000;font-weight:700;font-size:1rem;border:none;border-radius:8px;cursor:pointer">✦ Generate Batch Videos</button>
+      <div id="av-batch-status" style="margin-top:10px;font-size:.82rem;color:var(--muted);text-align:center"></div>
+      <div id="av-batch-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px"></div>
+    </div>
   </div>
 </div>
 <div id="dash-section-main">
@@ -4669,6 +4693,161 @@ async function avEnhanceScript(){
   } finally {
     btn.disabled = false;
     btn.textContent = "✦ Enhance Script";
+  }
+}
+
+// -- BATCH VIDEO GENERATION --
+var avBatchCount = 3;
+var avBatchJobs = [];
+var avBatchPollInterval = null;
+var SUPABASE_URL = "https://tvshyswdwgwunzzrsqca.supabase.co/functions/v1";
+var SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MTQzMzUsImV4cCI6MjA1Nzk5MDMzNX0.xMLtHOjSgFHHNJpSlWRyiCIBvDFDUFRxOXbvQIFLDZM";
+
+function avToggleBatchMode(){
+  var on = document.getElementById("av-batch-toggle").checked;
+  document.getElementById("av-batch-controls").style.display = on ? "block" : "none";
+  document.getElementById("av-single-mode").style.display = on ? "none" : "block";
+}
+
+function avSetBatchCount(n, btn){
+  avBatchCount = n;
+  document.querySelectorAll(".av-batch-count-btn").forEach(function(b){
+    b.style.background = "transparent"; b.style.color = "var(--muted)"; b.style.borderColor = "var(--border)";
+  });
+  btn.style.background = "var(--gold)"; btn.style.color = "#000"; btn.style.borderColor = "var(--gold)";
+}
+
+async function avStartBatch(){
+  var topic = document.getElementById("av-script").value.trim();
+  if(!topic){ toast("Please write a topic or script first","error"); return; }
+  if(!avSelectedAvatar){ toast("Please select an avatar","error"); return; }
+  if(!avSelectedVoice){ toast("Please select a voice","error"); return; }
+
+  var statusEl = document.getElementById("av-batch-status");
+  var grid = document.getElementById("av-batch-grid");
+  statusEl.textContent = "Generating " + avBatchCount + " unique scripts...";
+  grid.innerHTML = "";
+  avBatchJobs = [];
+  if(avBatchPollInterval) clearInterval(avBatchPollInterval);
+
+  // Step 1: Generate scripts via edge function
+  try {
+    var res = await fetch(SUPABASE_URL + "/batch-generate-scripts", {
+      method: "POST",
+      headers: {"Content-Type":"application/json","Authorization":"Bearer "+SUPABASE_ANON},
+      body: JSON.stringify({base_input: topic, variations: avBatchCount})
+    });
+    var data = await res.json();
+    if(data.error || !data.scripts) throw new Error(data.error || "No scripts returned");
+
+    var scripts = data.scripts;
+    statusEl.textContent = "Scripts ready. Submitting " + scripts.length + " videos to HeyGen...";
+
+    // Step 2: Render initial cards
+    for(var i=0; i<scripts.length; i++){
+      var s = scripts[i];
+      avBatchJobs.push({ script: s, status: "queued", video_id: null, video_url: null });
+      grid.innerHTML += avBatchCard(i, s, "queued");
+    }
+
+    // Step 3: Submit to HeyGen with stagger
+    for(var j=0; j<scripts.length; j++){
+      (function(idx){
+        var delay = idx === 0 ? 0 : 2000 + (idx * 500);
+        setTimeout(async function(){
+          avUpdateCard(idx, "generating", null);
+          try {
+            var hvRes = await fetch("https://api.heygen.com/v2/video/generate", {
+              method: "POST",
+              headers: {"X-Api-Key": HEYGEN_KEY, "Content-Type": "application/json"},
+              body: JSON.stringify({
+                video_inputs:[{
+                  character:{type:"avatar",avatar_id:avSelectedAvatar,avatar_style:"normal"},
+                  voice:{type:"text",input_text:avBatchJobs[idx].script.full_script,voice_id:avSelectedVoice}
+                }],
+                dimension:{width:1280,height:720}
+              })
+            });
+            var hvData = await hvRes.json();
+            if(hvData.data && hvData.data.video_id){
+              avBatchJobs[idx].video_id = hvData.data.video_id;
+              avBatchJobs[idx].status = "generating";
+            } else {
+              avBatchJobs[idx].status = "failed";
+              avUpdateCard(idx, "failed", null);
+            }
+          } catch(e){
+            avBatchJobs[idx].status = "failed";
+            avUpdateCard(idx, "failed", null);
+          }
+        }, delay);
+      })(j);
+    }
+
+    // Step 4: Poll all videos in parallel
+    avBatchPollInterval = setInterval(async function(){
+      var pending = avBatchJobs.filter(function(j){ return j.status === "generating" && j.video_id; });
+      if(pending.length === 0){
+        var allDone = avBatchJobs.every(function(j){ return j.status === "completed" || j.status === "failed"; });
+        if(allDone){ clearInterval(avBatchPollInterval); statusEl.textContent = "Batch complete!"; }
+        return;
+      }
+      await Promise.all(pending.map(async function(job){
+        try {
+          var r = await fetch("https://api.heygen.com/v1/video_status.get?video_id="+job.video_id,{headers:{"X-Api-Key":HEYGEN_KEY}});
+          var d = await r.json();
+          var s = d.data && d.data.status;
+          var idx = avBatchJobs.indexOf(job);
+          if(s === "completed"){
+            job.status = "completed";
+            job.video_url = d.data.video_url;
+            avUpdateCard(idx, "completed", d.data.video_url);
+          } else if(s === "failed"){
+            job.status = "failed";
+            avUpdateCard(idx, "failed", null);
+          }
+        } catch(e){ console.error("Poll error:", e); }
+      }));
+    }, 5000);
+
+  } catch(e){
+    statusEl.textContent = "Error: " + e.message;
+    toast("Batch failed: " + e.message, "error");
+  }
+}
+
+function avBatchCard(idx, script, status){
+  var hook = script.hook || script.full_script.substring(0,80) + "...";
+  var style = script.hook_style ? script.hook_style.replace(/_/g," ") : "";
+  return "<div id='av-batch-card-"+idx+"' style='border-radius:10px;border:1px solid var(--border);background:var(--panel);padding:14px;'>"
+    + "<div style='font-size:.7rem;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px'>" + (style || "Variation "+(idx+1)) + "</div>"
+    + "<div style='font-size:.82rem;color:var(--text);margin-bottom:10px;line-height:1.5'>" + hook + "</div>"
+    + "<div id='av-batch-status-"+idx+"'>"+avStatusBadge(status)+"</div>"
+    + "</div>";
+}
+
+function avStatusBadge(status){
+  if(status === "queued") return "<span style='font-size:.75rem;color:var(--muted)'>⏳ Queued</span>";
+  if(status === "generating") return "<span style='font-size:.75rem;color:#60a5fa'>⚡ Generating...</span>";
+  if(status === "failed") return "<span style='font-size:.75rem;color:var(--red)'>✕ Failed</span>";
+  return "";
+}
+
+function avUpdateCard(idx, status, videoUrl){
+  var statusEl = document.getElementById("av-batch-status-"+idx);
+  if(!statusEl) return;
+  if(status === "completed" && videoUrl){
+    statusEl.innerHTML = "<video src='"+videoUrl+"' controls style='width:100%;border-radius:6px;margin-top:6px;background:#000'></video>"
+      + "<a href='"+videoUrl+"' download style='display:block;margin-top:6px;font-size:.75rem;color:var(--gold);text-align:center'>Download</a>";
+  } else {
+    statusEl.innerHTML = avStatusBadge(status);
+  }
+  // Update card border
+  var card = document.getElementById("av-batch-card-"+idx);
+  if(card){
+    if(status === "completed") card.style.borderColor = "var(--gold)";
+    if(status === "failed") card.style.borderColor = "var(--red)";
+    if(status === "generating") card.style.borderColor = "#60a5fa";
   }
 }
 async function generateHeyGenVideo(){
