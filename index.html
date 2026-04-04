@@ -1255,7 +1255,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <button onclick="avOpenGrid()" style="margin-top:6px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer">Change Avatar</button>
       </div>
     </div>
-    <!-- Grid state -->
+    <!-- Level 1: Person grid -->
     <div id="av-grid-section">
       <div id="av-group-filters" style="display:flex;gap:8px;margin-bottom:14px">
         <button onclick="avFilterGender('all',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--gold);background:var(--gold);color:#000;font-size:.78rem;font-weight:600;cursor:pointer">All</button>
@@ -1263,6 +1263,14 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <button onclick="avFilterGender('male',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">Male</button>
       </div>
       <div id="av-avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:360px;overflow-y:auto"></div>
+    </div>
+    <!-- Level 2: Looks grid -->
+    <div id="av-looks-section" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <button onclick="avBackToPersons()" style="padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">← Back</button>
+        <div id="av-looks-title" style="font-size:.9rem;font-weight:600;color:var(--text)"></div>
+      </div>
+      <div id="av-looks-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:360px;overflow-y:auto"></div>
     </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
@@ -4417,7 +4425,7 @@ async function initAvatarStudio(){
     var res = await fetch("https://api.heygen.com/v2/avatars", {headers:{"X-Api-Key":HEYGEN_KEY}});
     var data = await res.json();
     avAllAvatars = (data.data && data.data.avatars) ? data.data.avatars : [];
-    avRenderAvatars("all");
+    avRenderPersons("all");
   } catch(e){
     grid.innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
     console.error("Avatar load error:", e);
@@ -4459,62 +4467,97 @@ async function initAvatarStudio(){
     }
   } catch(e){
     vlist.innerHTML = "<div style='color:var(--red)'>Failed to load voices</div>";
-    console.error("Voice load error:", e);
   }
 }
 
-function avRenderAvatars(gender){
+function avRenderPersons(gender){
   avCurrentGender = gender;
   var grid = document.getElementById("av-avatar-grid");
-  var list = avAllAvatars.filter(function(a){
-    if(gender === "all") return true;
-    return (a.gender||"").toLowerCase() === gender;
-  });
-  if(list.length === 0){ grid.innerHTML = "<div style='color:var(--muted);padding:20px'>No avatars found</div>"; return; }
+  // Group by first name, pick one representative per person
+  var seen = {};
+  var persons = [];
+  for(var i=0; i<avAllAvatars.length; i++){
+    var a = avAllAvatars[i];
+    if(gender !== "all" && (a.gender||"").toLowerCase() !== gender) continue;
+    var first = (a.avatar_name||"").split(" ")[0];
+    if(first && !seen[first]){
+      seen[first] = true;
+      persons.push(a);
+    }
+  }
+  if(persons.length === 0){ grid.innerHTML = "<div style='color:var(--muted);padding:20px'>No avatars found</div>"; return; }
   var html = "";
-  for(var i=0; i<list.length; i++){
-    var a = list[i];
+  for(var p=0; p<persons.length; p++){
+    var a = persons[p];
     var img = a.preview_image_url || "";
-    var name = a.avatar_name || a.avatar_id || "Avatar";
+    var first = (a.avatar_name||"").split(" ")[0];
+    html += "<div data-first='" + first + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
+    if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block' loading='lazy'>"; }
+    else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
+    html += "<div style='font-size:.78rem;padding:6px 4px;text-align:center;color:var(--text);font-weight:600'>" + first + "</div>";
+    html += "</div>";
+  }
+  grid.innerHTML = html;
+  var cards = grid.querySelectorAll("div[data-first]");
+  for(var c=0; c<cards.length; c++){
+    cards[c].addEventListener("click", function(){ avShowLooks(this.dataset.first); });
+  }
+}
+
+function avShowLooks(firstName){
+  var looksGrid = document.getElementById("av-looks-grid");
+  var looks = avAllAvatars.filter(function(a){ return (a.avatar_name||"").split(" ")[0] === firstName; });
+  document.getElementById("av-looks-title").textContent = firstName + " — pick a look";
+  var html = "";
+  for(var i=0; i<looks.length; i++){
+    var a = looks[i];
+    var img = a.preview_image_url || "";
+    var name = a.avatar_name || a.avatar_id;
     var id = a.avatar_id;
     html += "<div data-id='" + id + "' data-name='" + name.replace(/'/g,"") + "' data-img='" + img + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
     if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block' loading='lazy'>"; }
     else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
-    html += "<div style='font-size:.72rem;padding:5px 4px;text-align:center;color:var(--text)'>" + name + "</div>";
+    // Show just the look name (everything after the first word)
+    var lookName = name.split(" ").slice(1).join(" ") || name;
+    html += "<div style='font-size:.72rem;padding:5px 4px;text-align:center;color:var(--text)'>" + lookName + "</div>";
     html += "</div>";
   }
-  grid.innerHTML = html;
-  var cards = grid.querySelectorAll("div[data-id]");
+  looksGrid.innerHTML = html;
+  var cards = looksGrid.querySelectorAll("div[data-id]");
   for(var c=0; c<cards.length; c++){
     cards[c].addEventListener("click", function(){ avSelectAvatar(this); });
   }
+  document.getElementById("av-grid-section").style.display = "none";
+  document.getElementById("av-looks-section").style.display = "block";
+}
+
+function avBackToPersons(){
+  document.getElementById("av-looks-section").style.display = "none";
+  document.getElementById("av-grid-section").style.display = "block";
 }
 
 function avFilterGender(gender, btn){
   document.querySelectorAll("#av-group-filters button").forEach(function(b){
-    b.style.background = "transparent";
-    b.style.color = "var(--muted)";
-    b.style.borderColor = "var(--border)";
+    b.style.background = "transparent"; b.style.color = "var(--muted)"; b.style.borderColor = "var(--border)";
   });
-  btn.style.background = "var(--gold)";
-  btn.style.color = "#000";
-  btn.style.borderColor = "var(--gold)";
-  avRenderAvatars(gender);
+  btn.style.background = "var(--gold)"; btn.style.color = "#000"; btn.style.borderColor = "var(--gold)";
+  avRenderPersons(gender);
 }
 
 function avSelectAvatar(el){
   avSelectedAvatar = el.dataset.id;
   var name = el.dataset.name || el.dataset.id;
   var img = el.dataset.img || "";
-  // Show preview, hide grid
   document.getElementById("av-selected-img").src = img;
   document.getElementById("av-selected-name").textContent = name;
   document.getElementById("av-selected-preview").style.display = "flex";
+  document.getElementById("av-looks-section").style.display = "none";
   document.getElementById("av-grid-section").style.display = "none";
 }
 
 function avOpenGrid(){
   document.getElementById("av-selected-preview").style.display = "none";
+  document.getElementById("av-looks-section").style.display = "none";
   document.getElementById("av-grid-section").style.display = "block";
 }
 
@@ -4539,8 +4582,7 @@ function avSelectVoice(el){
 var avAudio = null;
 function avPlayVoice(url){
   if(avAudio){ avAudio.pause(); avAudio = null; }
-  avAudio = new Audio(url);
-  avAudio.play();
+  avAudio = new Audio(url); avAudio.play();
 }
 
 async function generateHeyGenVideo(){
@@ -4575,15 +4617,11 @@ async function generateHeyGenVideo(){
         var d2 = await r2.json();
         var s = d2.data && d2.data.status;
         if(s==="completed"){
-          clearInterval(interval);
-          status.style.display="none";
+          clearInterval(interval); status.style.display="none";
           document.getElementById("av-video").src = d2.data.video_url;
-          result.style.display="block";
-          toast("Video ready!","success");
+          result.style.display="block"; toast("Video ready!","success");
         } else if(s==="failed"){
-          clearInterval(interval);
-          status.textContent="Generation failed. Try again.";
-          toast("Video failed","error");
+          clearInterval(interval); status.textContent="Generation failed."; toast("Video failed","error");
         }
       } catch(e){ console.error("Poll error:",e); }
     }, 5000);
