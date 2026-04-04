@@ -4888,6 +4888,59 @@ function avUpdateCard(idx, status, videoUrl){
     if(status === "generating") card.style.borderColor = "#60a5fa";
   }
 }
+
+async function avEnhanceScript(){
+  var script = document.getElementById("av-script").value.trim();
+  if(!script){ toast("Please write a script first","error"); return; }
+  var aiEnabled = document.getElementById("av-ai-toggle").checked;
+  var btn = document.getElementById("av-enhance-btn");
+  var status = document.getElementById("av-enhance-status");
+  btn.disabled = true;
+  btn.textContent = "Enhancing...";
+  status.textContent = "";
+  try {
+    var res = await fetch("https://tvshyswdwgwunzzrsqca.supabase.co/functions/v1/enhance-script", {
+      method: "POST",
+      headers: {
+        "Content-Type":"application/json",
+        "Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MTQzMzUsImV4cCI6MjA1Nzk5MDMzNX0.xMLtHOjSgFHHNJpSlWRyiCIBvDFDUFRxOXbvQIFLDZM",
+        "apikey":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MTQzMzUsImV4cCI6MjA1Nzk5MDMzNX0.xMLtHOjSgFHHNJpSlWRyiCIBvDFDUFRxOXbvQIFLDZM"
+      },
+      body: JSON.stringify({raw_script: script, ai_enabled: aiEnabled})
+    });
+    var data = await res.json();
+    if(data.error) throw new Error(data.error);
+    document.getElementById("av-script").value = data.enhanced_script;
+    if(data.tone){
+      avDetectedTone = data.tone;
+      document.getElementById("av-tone-label").textContent = data.tone.charAt(0).toUpperCase() + data.tone.slice(1);
+      document.getElementById("av-tone-reason").textContent = data.tone_reason || "";
+      document.getElementById("av-tone-badge").style.display = "block";
+      if(!avVoiceManualOverride) avApplyVoiceRecommendation();
+    }
+    if(data.recommended_voice_id && !avSelectedVoice){
+      avSelectedVoice = data.recommended_voice_id;
+      var vcard = document.querySelector("#av-voice-list [data-id='" + data.recommended_voice_id + "']");
+      if(vcard){ avSelectVoice(vcard, true); }
+      else {
+        avSelectedVoice = data.recommended_voice_id;
+        document.getElementById("av-voice-selected-name").textContent = data.recommended_voice_name || "AI Recommended";
+        document.getElementById("av-voice-selected-gender").textContent = "Auto-selected based on tone";
+        document.getElementById("av-voice-selected-preview").style.display = "flex";
+        document.getElementById("av-voice-grid-section").style.display = "none";
+      }
+    }
+    status.textContent = data.ai_enhanced ? "Script enhanced ✦" : "Original script kept";
+    toast("Script enhanced ✦","success");
+  } catch(e){
+    status.textContent = "Enhancement failed - original kept";
+    console.error("enhance-script error:", e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "✦ Enhance Script";
+  }
+}
+
 async function generateHeyGenVideo(){
   var script = document.getElementById("av-script").value.trim();
   if(!script){ toast("Please write a script first","error"); return; }
