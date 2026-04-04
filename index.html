@@ -4381,80 +4381,142 @@ window.addEventListener('scroll',()=>{
 
 // -- AVATAR STUDIO --
 var HEYGEN_KEY = "sk_V2_hgu_kCjIfbAddDe_IAvx1OOYPoVPFoiTi68YQT38qvvFEBWF";
-var AV_AVATARS = [
-  {id:"Abigail_expressive_2024112501",name:"Abigail",img:"https://files.heygen.ai/avatar/v3/Abigail_expressive_2024112501/full/2.2/preview_target.webp"},
-  {id:"Aditya_public_1",name:"Aditya",img:"https://files.heygen.ai/avatar/v3/Aditya_public_1/full/2.2/preview_target.webp"},
-  {id:"Adrian_public_2_20240312",name:"Adrian",img:"https://files.heygen.ai/avatar/v3/Adrian_public_2_20240312/full/2.2/preview_target.webp"}
-];
-var AV_VOICES = [
-  {id:"f8c69e517f424cafaecde32dde57096b",name:"Allison",gender:"Female"},
-  {id:"d92994ae0de34b2e8659b456a2f388b8",name:"John Doe",gender:"Male"},
-  {id:"453c20e1525a429080e2ad9e4b26f2cd",name:"Archer",gender:"Male"},
-  {id:"7e157ec62c9c45f1adca12faae72c86f",name:"Patrick",gender:"Male"}
-];
-var avSelectedAvatar = AV_AVATARS[0].id;
-var avSelectedVoice = AV_VOICES[0].id;
-function initAvatarStudio(){
+var avSelectedAvatar = null;
+var avSelectedVoice = null;
+
+async function initAvatarStudio(){
   var grid = document.getElementById("av-avatar-grid");
-  if(!grid||grid.dataset.loaded) return;
-  grid.dataset.loaded="1";
-  var html="";
-  for(var i=0;i<AV_AVATARS.length;i++){
-    var a=AV_AVATARS[i];
-    html+='<div onclick="avSelectAvatar("'+'"'+a.id+'"'+',this)" style="cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel)">';
-    html+='<img src="'+a.img+'" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block">';
-    html+='<div style="font-size:.78rem;padding:6px 4px;text-align:center">'+a.name+"</div></div>";
+  if(!grid || grid.dataset.loaded) return;
+  grid.dataset.loaded = "1";
+  grid.innerHTML = "<div style='color:var(--muted);font-size:.85rem;padding:20px'>Loading avatars...</div>";
+  try {
+    var res = await fetch("https://api.heygen.com/v2/avatars", {headers:{"X-Api-Key":HEYGEN_KEY}});
+    var data = await res.json();
+    var avatars = (data.data && data.data.avatars) ? data.data.avatars : [];
+    if(avatars.length === 0){ grid.innerHTML = "<div style='color:var(--muted)'>No avatars found</div>"; return; }
+    var html = "";
+    for(var i=0; i<avatars.length; i++){
+      var a = avatars[i];
+      var img = a.preview_image_url || "";
+      var name = a.avatar_name || a.avatar_id || "Avatar";
+      var id = a.avatar_id;
+      html += "<div onclick='avSelectAvatar(this)' data-id='" + id + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
+      if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block'>"; }
+      else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
+      html += "<div style='font-size:.75rem;padding:6px 4px;text-align:center;color:var(--text)'>" + name + "</div>";
+      html += "</div>";
+    }
+    grid.innerHTML = html;
+    var first = grid.firstElementChild;
+    if(first){ avSelectAvatar(first); }
+  } catch(e){
+    grid.innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
+    console.error("Avatar load error:", e);
   }
-  grid.innerHTML=html;
-  avSelectAvatar(AV_AVATARS[0].id,grid.firstElementChild);
-  var vlist=document.getElementById("av-voice-list");
-  var vhtml="";
-  for(var j=0;j<AV_VOICES.length;j++){
-    var v=AV_VOICES[j];
-    vhtml+='<div onclick="avSelectVoice("'+'"'+v.id+'"'+',this)" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel)">';
-    vhtml+='<span>'+v.name+'</span><span style="color:var(--muted);font-size:.75rem">'+v.gender+"</span></div>";
+  // Load voices
+  var vlist = document.getElementById("av-voice-list");
+  vlist.innerHTML = "<div style='color:var(--muted);font-size:.85rem;padding:10px'>Loading voices...</div>";
+  try {
+    var vres = await fetch("https://api.heygen.com/v2/voices", {headers:{"X-Api-Key":HEYGEN_KEY}});
+    var vdata = await vres.json();
+    var voices = (vdata.data && vdata.data.voices) ? vdata.data.voices : [];
+    // Filter to English voices only, limit to 20
+    voices = voices.filter(function(v){ return !v.language || v.language === "English" || v.locale === "en-US" || v.locale === "en-GB"; }).slice(0,20);
+    if(voices.length === 0){ vlist.innerHTML = "<div style='color:var(--muted)'>No voices found</div>"; return; }
+    var vhtml = "";
+    for(var j=0; j<voices.length; j++){
+      var v = voices[j];
+      var vid = v.voice_id;
+      var vname = v.display_name || v.name || vid;
+      var vgender = v.gender || "";
+      var vaudio = v.preview_audio || "";
+      vhtml += "<div data-id='" + vid + "' style='cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:8px;border:1px solid var(--border);background:var(--panel);transition:border-color .15s;gap:10px'>";
+      vhtml += "<div onclick='avSelectVoice(this.parentElement)' style='flex:1'>";
+      vhtml += "<div style='font-size:.88rem;color:var(--text)'>" + vname + "</div>";
+      vhtml += "<div style='font-size:.72rem;color:var(--muted)'>" + vgender + "</div>";
+      vhtml += "</div>";
+      if(vaudio){
+        vhtml += "<button onclick='avPlayVoice(event,\"" + vaudio + "\")' style='background:var(--border);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:var(--text);font-size:.8rem;flex-shrink:0'>▶</button>";
+      }
+      vhtml += "</div>";
+    }
+    vlist.innerHTML = vhtml;
+    var vfirst = vlist.firstElementChild;
+    if(vfirst){ avSelectVoice(vfirst); }
+  } catch(e){
+    vlist.innerHTML = "<div style='color:var(--red)'>Failed to load voices</div>";
+    console.error("Voice load error:", e);
   }
-  vlist.innerHTML=vhtml;
-  avSelectVoice(AV_VOICES[0].id,vlist.firstElementChild);
 }
-function avSelectAvatar(id,el){
-  avSelectedAvatar=id;
-  document.querySelectorAll("#av-avatar-grid > div").forEach(function(d){d.style.borderColor="transparent";});
-  if(el) el.style.borderColor="var(--gold)";
+
+function avSelectAvatar(el){
+  avSelectedAvatar = el.dataset.id;
+  document.querySelectorAll("#av-avatar-grid > div").forEach(function(d){ d.style.borderColor = "transparent"; });
+  el.style.borderColor = "var(--gold)";
 }
-function avSelectVoice(id,el){
-  avSelectedVoice=id;
-  document.querySelectorAll("#av-voice-list > div").forEach(function(d){d.style.borderColor="var(--border)";});
-  if(el) el.style.borderColor="var(--gold)";
+
+function avSelectVoice(el){
+  avSelectedVoice = el.dataset.id;
+  document.querySelectorAll("#av-voice-list > div").forEach(function(d){ d.style.borderColor = "var(--border)"; });
+  el.style.borderColor = "var(--gold)";
 }
+
+var avAudio = null;
+function avPlayVoice(e, url){
+  e.stopPropagation();
+  if(avAudio){ avAudio.pause(); avAudio = null; }
+  avAudio = new Audio(url);
+  avAudio.play();
+}
+
 async function generateHeyGenVideo(){
-  var script=document.getElementById("av-script").value.trim();
-  if(!script){toast("Please write a script first","error");return;}
-  var status=document.getElementById("av-status");
-  var result=document.getElementById("av-result");
-  status.style.display="block";
-  status.textContent="Submitting to HeyGen...";
-  result.style.display="none";
-  try{
-    var res=await fetch("https://api.heygen.com/v2/video/generate",{
+  var script = document.getElementById("av-script").value.trim();
+  if(!script){ toast("Please write a script first","error"); return; }
+  if(!avSelectedAvatar){ toast("Please select an avatar","error"); return; }
+  if(!avSelectedVoice){ toast("Please select a voice","error"); return; }
+  var status = document.getElementById("av-status");
+  var result = document.getElementById("av-result");
+  status.style.display = "block";
+  status.textContent = "Submitting to HeyGen...";
+  result.style.display = "none";
+  try {
+    var res = await fetch("https://api.heygen.com/v2/video/generate", {
       method:"POST",
       headers:{"X-Api-Key":HEYGEN_KEY,"Content-Type":"application/json"},
-      body:JSON.stringify({video_inputs:[{character:{type:"avatar",avatar_id:avSelectedAvatar,avatar_style:"normal"},voice:{type:"text",input_text:script,voice_id:avSelectedVoice}}],dimension:{width:1280,height:720}})
+      body:JSON.stringify({
+        video_inputs:[{
+          character:{type:"avatar",avatar_id:avSelectedAvatar,avatar_style:"normal"},
+          voice:{type:"text",input_text:script,voice_id:avSelectedVoice}
+        }],
+        dimension:{width:1280,height:720}
+      })
     });
-    var data=await res.json();
-    if(!data.data||!data.data.video_id) throw new Error(data.message||"No video ID");
-    var vid=data.data.video_id;
-    status.textContent="Generating video... this takes 1-2 minutes";
-    var interval=setInterval(async function(){
-      try{
-        var r2=await fetch("https://api.heygen.com/v1/video_status.get?video_id="+vid,{headers:{"X-Api-Key":HEYGEN_KEY}});
-        var d2=await r2.json();
-        var s=d2.data&&d2.data.status;
-        if(s==="completed"){clearInterval(interval);status.style.display="none";document.getElementById("av-video").src=d2.data.video_url;result.style.display="block";toast("Video ready!","success");}
-        else if(s==="failed"){clearInterval(interval);status.textContent="Generation failed.";toast("Video failed","error");}
-      }catch(e){console.error("Poll error:",e);}
-    },5000);
-  }catch(e){status.textContent="Error: "+e.message;toast("Error: "+e.message,"error");}
+    var data = await res.json();
+    if(!data.data || !data.data.video_id) throw new Error(data.message||"No video ID");
+    var vid = data.data.video_id;
+    status.textContent = "Generating video... this takes 1-2 minutes";
+    var interval = setInterval(async function(){
+      try {
+        var r2 = await fetch("https://api.heygen.com/v1/video_status.get?video_id="+vid,{headers:{"X-Api-Key":HEYGEN_KEY}});
+        var d2 = await r2.json();
+        var s = d2.data && d2.data.status;
+        if(s==="completed"){
+          clearInterval(interval);
+          status.style.display="none";
+          document.getElementById("av-video").src = d2.data.video_url;
+          result.style.display="block";
+          toast("Video ready!","success");
+        } else if(s==="failed"){
+          clearInterval(interval);
+          status.textContent="Generation failed. Try again.";
+          toast("Video failed","error");
+        }
+      } catch(e){ console.error("Poll error:",e); }
+    }, 5000);
+  } catch(e){
+    status.textContent = "Error: "+e.message;
+    toast("Error: "+e.message,"error");
+  }
 }
 
 // ── BOOT ──
