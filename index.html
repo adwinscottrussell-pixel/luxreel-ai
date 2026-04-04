@@ -3454,7 +3454,10 @@ function deleteThumbFromLib(id){
   localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
   renderThumbLibrary();
 }
-
+function clearThumbLibrary(){
+  localStorage.removeItem('lx_thumb_library');
+  renderThumbLibrary();
+}
 function initThumbnailSection(){
   const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
   const niche   = profile.niche || localStorage.getItem('lx_niche') || '';
