@@ -4946,11 +4946,15 @@ async function generateHeyGenVideo(){
   if(!script){ toast("Please write a script first","error"); return; }
   if(!avSelectedAvatar){ toast("Please select an avatar","error"); return; }
   if(!avSelectedVoice){ toast("Please select a voice","error"); return; }
+  // Make sure single mode is visible
+  var singleMode = document.getElementById("av-single-mode");
+  if(singleMode) singleMode.style.display = "block";
   var status = document.getElementById("av-status");
   var result = document.getElementById("av-result");
   status.style.display = "block";
   status.textContent = "Submitting to HeyGen...";
   result.style.display = "none";
+  toast("Submitting to HeyGen...","success");
   try {
     var res = await fetch("https://api.heygen.com/v2/video/generate", {
       method:"POST",
