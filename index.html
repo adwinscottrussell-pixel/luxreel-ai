@@ -1246,15 +1246,10 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Pick your avatar, choose a voice, write your script then generate.</p>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="avToggleGrid()">
-      <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">1 - Choose Avatar</div>
-      <div id="av-grid-toggle" style="font-size:.8rem;color:var(--gold);font-weight:600">Browse ▾</div>
-    </div>
-    <div id="av-selected-avatar" style="margin-top:10px;font-size:.85rem;color:var(--muted)">No avatar selected</div>
-    <div id="av-avatar-grid-wrap" style="display:none;margin-top:14px">
-      <div id="av-group-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
-      <div id="av-avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:400px;overflow-y:auto"></div>
-    </div>
+    <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:12px">1 - Choose Avatar</div>
+    <div id="av-selected-avatar" style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Loading avatars...</div>
+    <div id="av-group-filters" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
+    <div id="av-avatar-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;max-height:380px;overflow-y:auto"></div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
     <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="avToggleVoices()">
@@ -4397,42 +4392,35 @@ var HEYGEN_KEY = "sk_V2_hgu_kCjIfbAddDe_IAvx1OOYPoVPFoiTi68YQT38qvvFEBWF";
 var avSelectedAvatar = null;
 var avSelectedVoice = null;
 var avAllAvatars = [];
-var avCurrentGroup = "all";
 
 async function initAvatarStudio(){
   var grid = document.getElementById("av-avatar-grid");
   if(!grid || grid.dataset.loaded) return;
   grid.dataset.loaded = "1";
-  grid.innerHTML = "<div style='color:var(--muted);font-size:.85rem;padding:20px'>Loading avatars...</div>";
-  // Load avatar groups + avatars
+  // Load avatars
   try {
-    var [avatarRes, groupRes] = await Promise.all([
-      fetch("https://api.heygen.com/v2/avatars", {headers:{"X-Api-Key":HEYGEN_KEY}}),
-      fetch("https://api.heygen.com/v2/avatar_group.list", {headers:{"X-Api-Key":HEYGEN_KEY}})
-    ]);
-    var avatarData = await avatarRes.json();
-    var groupData = await groupRes.json();
-    avAllAvatars = (avatarData.data && avatarData.data.avatars) ? avatarData.data.avatars : [];
-    console.log('GROUP API RESPONSE:', JSON.stringify(groupData).substring(0,500));
-    var groups = (groupData.data && groupData.data.avatar_groups) ? groupData.data.avatar_groups 
-      : (groupData.data && groupData.data.list) ? groupData.data.list
-      : (Array.isArray(groupData.data)) ? groupData.data
-      : [];
-    // Build filter buttons
-    var filters = document.getElementById("av-group-filters");
-    if(filters && groups.length > 0){
-      var fbtn = "<button onclick='avFilterGroup(\"all\",this)' style='padding:5px 12px;border-radius:20px;border:1px solid var(--gold);background:var(--gold);color:#000;font-size:.75rem;font-weight:600;cursor:pointer'>All</button>";
-      for(var g=0; g<groups.length; g++){
-        var grp = groups[g];
-        var gname = grp.group_name || grp.name || ("Group " + g);
-        var gid = grp.group_id || grp.id || gname;
-        fbtn += "<button onclick='avFilterGroup(\"" + gid + "\",this)' data-group='" + gid + "' style='padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer'>" + gname + "</button>";
-      }
-      filters.innerHTML = fbtn;
+    var res = await fetch("https://api.heygen.com/v2/avatars", {headers:{"X-Api-Key":HEYGEN_KEY}});
+    var data = await res.json();
+    avAllAvatars = (data.data && data.data.avatars) ? data.data.avatars : [];
+    // Build filter buttons from first name
+    var seen = {};
+    var firstNames = [];
+    for(var i=0; i<avAllAvatars.length; i++){
+      var name = avAllAvatars[i].avatar_name || "";
+      var first = name.split(" ")[0];
+      if(first && !seen[first]){ seen[first] = true; firstNames.push(first); }
     }
+    firstNames.sort();
+    var filters = document.getElementById("av-group-filters");
+    var fbtn = "<button onclick='avFilterGroup(\"all\",this)' style='padding:5px 12px;border-radius:20px;border:1px solid var(--gold);background:var(--gold);color:#000;font-size:.75rem;font-weight:600;cursor:pointer'>All</button>";
+    for(var f=0; f<firstNames.length; f++){
+      fbtn += "<button onclick='avFilterGroup(\"" + firstNames[f] + "\",this)' style='padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer'>" + firstNames[f] + "</button>";
+    }
+    filters.innerHTML = fbtn;
     avRenderAvatars("all");
+    document.getElementById("av-selected-avatar").textContent = "Select an avatar below";
   } catch(e){
-    grid.innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
+    document.getElementById("av-avatar-grid").innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
     console.error("Avatar load error:", e);
   }
   // Load voices
@@ -4476,11 +4464,12 @@ async function initAvatarStudio(){
   }
 }
 
-function avRenderAvatars(groupId){
-  avCurrentGroup = groupId;
+function avRenderAvatars(filter){
   var grid = document.getElementById("av-avatar-grid");
-  var list = groupId === "all" ? avAllAvatars : avAllAvatars.filter(function(a){ return a.group_id === groupId || a.avatar_group_id === groupId; });
-  if(list.length === 0){ grid.innerHTML = "<div style='color:var(--muted);padding:20px'>No avatars in this group</div>"; return; }
+  var list = filter === "all" ? avAllAvatars : avAllAvatars.filter(function(a){
+    return (a.avatar_name || "").split(" ")[0] === filter;
+  });
+  if(list.length === 0){ grid.innerHTML = "<div style='color:var(--muted);padding:20px'>No avatars found</div>"; return; }
   var html = "";
   for(var i=0; i<list.length; i++){
     var a = list[i];
@@ -4500,7 +4489,7 @@ function avRenderAvatars(groupId){
   }
 }
 
-function avFilterGroup(groupId, btn){
+function avFilterGroup(filter, btn){
   document.querySelectorAll("#av-group-filters button").forEach(function(b){
     b.style.background = "transparent";
     b.style.color = "var(--muted)";
@@ -4509,14 +4498,7 @@ function avFilterGroup(groupId, btn){
   btn.style.background = "var(--gold)";
   btn.style.color = "#000";
   btn.style.borderColor = "var(--gold)";
-  avRenderAvatars(groupId);
-}
-
-function avToggleGrid(){
-  var wrap = document.getElementById("av-avatar-grid-wrap");
-  var toggle = document.getElementById("av-grid-toggle");
-  if(wrap.style.display === "none"){ wrap.style.display = "block"; toggle.textContent = "Close ▴"; }
-  else { wrap.style.display = "none"; toggle.textContent = avSelectedAvatar ? "Change ▾" : "Browse ▾"; }
+  avRenderAvatars(filter);
 }
 
 function avToggleVoices(){
@@ -4533,8 +4515,6 @@ function avSelectAvatar(el){
   el.style.borderColor = "var(--gold)";
   var label = document.getElementById("av-selected-avatar");
   if(label) label.textContent = "Selected: " + name;
-  document.getElementById("av-avatar-grid-wrap").style.display = "none";
-  document.getElementById("av-grid-toggle").textContent = "Change ▾";
 }
 
 function avSelectVoice(el){
