@@ -3413,7 +3413,7 @@ function renderThumbLibrary(){
   const grid    = document.getElementById('thumb-library-grid');
   const section = document.getElementById('thumb-library-section');
   if(!grid||!section) return;
-  if(lib.length===0){ section.style.display='none'; return; }
+  if(lib.length===0){ section.style.display='none'; const em=document.getElementById('thumb-library-empty-msg'); if(em)em.style.display='block'; return; }   const em=document.getElementById('thumb-library-empty-msg'); if(em)em.style.display='none';
   section.style.display = 'block';
   grid.innerHTML = lib.map(item=>`
     <div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--panel)">
