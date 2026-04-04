@@ -1274,13 +1274,24 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
-    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="avToggleVoices()">
-      <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase">2 - Choose Voice</div>
-      <div id="av-voice-toggle" style="font-size:.8rem;color:var(--gold);font-weight:600">Browse ▾</div>
+    <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:14px">2 - Choose Voice</div>
+    <!-- Selected state -->
+    <div id="av-voice-selected-preview" style="display:none;align-items:center;gap:14px;margin-bottom:14px">
+      <div style="width:50px;height:50px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">🎙</div>
+      <div>
+        <div id="av-voice-selected-name" style="font-size:.9rem;font-weight:600;color:var(--text)"></div>
+        <div id="av-voice-selected-gender" style="font-size:.75rem;color:var(--muted);margin-bottom:6px"></div>
+        <button onclick="avOpenVoiceGrid()" style="padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer">Change Voice</button>
+      </div>
     </div>
-    <div id="av-selected-voice" style="margin-top:10px;font-size:.85rem;color:var(--muted)">No voice selected</div>
-    <div id="av-voice-list-wrap" style="display:none;margin-top:14px">
-      <div id="av-voice-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;max-height:400px;overflow-y:auto"></div>
+    <!-- Voice grid -->
+    <div id="av-voice-grid-section">
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <button onclick="avFilterVoiceGender('all',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--gold);background:var(--gold);color:#000;font-size:.78rem;font-weight:600;cursor:pointer">All</button>
+        <button onclick="avFilterVoiceGender('female',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">Female</button>
+        <button onclick="avFilterVoiceGender('male',this)" style="padding:5px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer">Male</button>
+      </div>
+      <div id="av-voice-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;max-height:360px;overflow-y:auto"></div>
     </div>
   </div>
   <div class="card" style="padding:20px;margin-bottom:16px">
@@ -4414,7 +4425,9 @@ var HEYGEN_KEY = "sk_V2_hgu_kCjIfbAddDe_IAvx1OOYPoVPFoiTi68YQT38qvvFEBWF";
 var avSelectedAvatar = null;
 var avSelectedVoice = null;
 var avAllAvatars = [];
+var avAllVoices = [];
 var avCurrentGender = "all";
+var avCurrentVoiceGender = "all";
 
 async function initAvatarStudio(){
   var grid = document.getElementById("av-avatar-grid");
@@ -4428,7 +4441,6 @@ async function initAvatarStudio(){
     avRenderPersons("all");
   } catch(e){
     grid.innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
-    console.error("Avatar load error:", e);
   }
   // Load voices
   var vlist = document.getElementById("av-voice-list");
@@ -4437,53 +4449,28 @@ async function initAvatarStudio(){
     var vres = await fetch("https://api.heygen.com/v2/voices", {headers:{"X-Api-Key":HEYGEN_KEY}});
     var vdata = await vres.json();
     var voices = (vdata.data && vdata.data.voices) ? vdata.data.voices : [];
-    var filtered = voices.filter(function(v){
+    avAllVoices = voices.filter(function(v){
       var lang = (v.language||"").toLowerCase();
       var locale = (v.locale||"").toLowerCase();
       return !v.language || lang.indexOf("english") !== -1 || locale.indexOf("en-") !== -1;
     }).slice(0,50);
-    if(filtered.length === 0){ vlist.innerHTML = "<div style='color:var(--muted)'>No voices found</div>"; return; }
-    var vhtml = "";
-    for(var j=0; j<filtered.length; j++){
-      var fv = filtered[j];
-      var vid = fv.voice_id;
-      var vname = fv.display_name || fv.name || vid;
-      var vgender = fv.gender || "";
-      var vaudio = fv.preview_audio || "";
-      vhtml += "<div data-id='" + vid + "' data-name='" + vname.replace(/'/g,"") + "' style='cursor:pointer;border-radius:10px;border:2px solid var(--border);background:var(--panel);transition:border-color .15s;padding:12px;text-align:center'>";
-      vhtml += "<div style='font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:2px'>" + vname + "</div>";
-      vhtml += "<div style='font-size:.72rem;color:var(--muted);margin-bottom:8px'>" + vgender + "</div>";
-      if(vaudio){ vhtml += "<button data-audio='" + vaudio + "' style='background:var(--gold);border:none;border-radius:20px;padding:4px 10px;cursor:pointer;color:#000;font-size:.72rem;font-weight:600'>▶ Preview</button>"; }
-      vhtml += "</div>";
-    }
-    vlist.innerHTML = vhtml;
-    var vrows = vlist.querySelectorAll("div[data-id]");
-    for(var vr=0; vr<vrows.length; vr++){
-      vrows[vr].addEventListener("click", function(){ avSelectVoice(this); });
-    }
-    var btns = vlist.querySelectorAll("button[data-audio]");
-    for(var b=0; b<btns.length; b++){
-      btns[b].addEventListener("click", function(e){ e.stopPropagation(); avPlayVoice(this.dataset.audio); });
-    }
+    avRenderVoices("all");
   } catch(e){
     vlist.innerHTML = "<div style='color:var(--red)'>Failed to load voices</div>";
   }
 }
 
+// ── AVATAR LEVEL 1: Persons ──
 function avRenderPersons(gender){
   avCurrentGender = gender;
   var grid = document.getElementById("av-avatar-grid");
-  // Group by first name, pick one representative per person
   var seen = {};
   var persons = [];
   for(var i=0; i<avAllAvatars.length; i++){
     var a = avAllAvatars[i];
     if(gender !== "all" && (a.gender||"").toLowerCase() !== gender) continue;
     var first = (a.avatar_name||"").split(" ")[0];
-    if(first && !seen[first]){
-      seen[first] = true;
-      persons.push(a);
-    }
+    if(first && !seen[first]){ seen[first] = true; persons.push(a); }
   }
   if(persons.length === 0){ grid.innerHTML = "<div style='color:var(--muted);padding:20px'>No avatars found</div>"; return; }
   var html = "";
@@ -4498,10 +4485,9 @@ function avRenderPersons(gender){
     html += "</div>";
   }
   grid.innerHTML = html;
-  var cards = grid.querySelectorAll("div[data-first]");
-  for(var c=0; c<cards.length; c++){
-    cards[c].addEventListener("click", function(){ avShowLooks(this.dataset.first); });
-  }
+  grid.querySelectorAll("div[data-first]").forEach(function(el){
+    el.addEventListener("click", function(){ avShowLooks(this.dataset.first); });
+  });
 }
 
 function avShowLooks(firstName){
@@ -4514,19 +4500,17 @@ function avShowLooks(firstName){
     var img = a.preview_image_url || "";
     var name = a.avatar_name || a.avatar_id;
     var id = a.avatar_id;
+    var lookName = name.split(" ").slice(1).join(" ") || name;
     html += "<div data-id='" + id + "' data-name='" + name.replace(/'/g,"") + "' data-img='" + img + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
     if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block' loading='lazy'>"; }
     else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
-    // Show just the look name (everything after the first word)
-    var lookName = name.split(" ").slice(1).join(" ") || name;
     html += "<div style='font-size:.72rem;padding:5px 4px;text-align:center;color:var(--text)'>" + lookName + "</div>";
     html += "</div>";
   }
   looksGrid.innerHTML = html;
-  var cards = looksGrid.querySelectorAll("div[data-id]");
-  for(var c=0; c<cards.length; c++){
-    cards[c].addEventListener("click", function(){ avSelectAvatar(this); });
-  }
+  looksGrid.querySelectorAll("div[data-id]").forEach(function(el){
+    el.addEventListener("click", function(){ avSelectAvatar(this); });
+  });
   document.getElementById("av-grid-section").style.display = "none";
   document.getElementById("av-looks-section").style.display = "block";
 }
@@ -4538,9 +4522,9 @@ function avBackToPersons(){
 
 function avFilterGender(gender, btn){
   document.querySelectorAll("#av-group-filters button").forEach(function(b){
-    b.style.background = "transparent"; b.style.color = "var(--muted)"; b.style.borderColor = "var(--border)";
+    b.style.background="transparent"; b.style.color="var(--muted)"; b.style.borderColor="var(--border)";
   });
-  btn.style.background = "var(--gold)"; btn.style.color = "#000"; btn.style.borderColor = "var(--gold)";
+  btn.style.background="var(--gold)"; btn.style.color="#000"; btn.style.borderColor="var(--gold)";
   avRenderPersons(gender);
 }
 
@@ -4561,22 +4545,58 @@ function avOpenGrid(){
   document.getElementById("av-grid-section").style.display = "block";
 }
 
-function avToggleVoices(){
-  var wrap = document.getElementById("av-voice-list-wrap");
-  var toggle = document.getElementById("av-voice-toggle");
-  if(wrap.style.display === "none"){ wrap.style.display = "block"; toggle.textContent = "Close ▴"; }
-  else { wrap.style.display = "none"; toggle.textContent = avSelectedVoice ? "Change ▾" : "Browse ▾"; }
+// ── VOICE SECTION ──
+function avRenderVoices(gender){
+  avCurrentVoiceGender = gender;
+  var vlist = document.getElementById("av-voice-list");
+  var list = avAllVoices.filter(function(v){
+    if(gender === "all") return true;
+    return (v.gender||"").toLowerCase() === gender;
+  });
+  if(list.length === 0){ vlist.innerHTML = "<div style='color:var(--muted);padding:20px'>No voices found</div>"; return; }
+  var html = "";
+  for(var j=0; j<list.length; j++){
+    var v = list[j];
+    var vid = v.voice_id;
+    var vname = v.display_name || v.name || vid;
+    var vgender = v.gender || "";
+    var vaudio = v.preview_audio || "";
+    html += "<div data-id='" + vid + "' data-name='" + vname.replace(/'/g,"") + "' data-gender='" + vgender + "' style='cursor:pointer;border-radius:10px;border:2px solid var(--border);background:var(--panel);transition:border-color .15s;padding:14px;text-align:center'>";
+    html += "<div style='font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:3px'>" + vname + "</div>";
+    html += "<div style='font-size:.72rem;color:var(--muted);margin-bottom:10px'>" + vgender + "</div>";
+    if(vaudio){ html += "<button data-audio='" + vaudio + "' style='background:var(--gold);border:none;border-radius:20px;padding:5px 12px;cursor:pointer;color:#000;font-size:.75rem;font-weight:600'>▶ Preview</button>"; }
+    html += "</div>";
+  }
+  vlist.innerHTML = html;
+  vlist.querySelectorAll("div[data-id]").forEach(function(el){
+    el.addEventListener("click", function(){ avSelectVoice(this); });
+  });
+  vlist.querySelectorAll("button[data-audio]").forEach(function(btn){
+    btn.addEventListener("click", function(e){ e.stopPropagation(); avPlayVoice(this.dataset.audio); });
+  });
+}
+
+function avFilterVoiceGender(gender, btn){
+  btn.closest("div").querySelectorAll("button").forEach(function(b){
+    b.style.background="transparent"; b.style.color="var(--muted)"; b.style.borderColor="var(--border)";
+  });
+  btn.style.background="var(--gold)"; btn.style.color="#000"; btn.style.borderColor="var(--gold)";
+  avRenderVoices(gender);
 }
 
 function avSelectVoice(el){
   avSelectedVoice = el.dataset.id;
   var name = el.dataset.name || el.dataset.id;
-  document.querySelectorAll("#av-voice-list > div[data-id]").forEach(function(d){ d.style.borderColor = "var(--border)"; });
-  el.style.borderColor = "var(--gold)";
-  var label = document.getElementById("av-selected-voice");
-  if(label) label.textContent = "Selected: " + name;
-  document.getElementById("av-voice-list-wrap").style.display = "none";
-  document.getElementById("av-voice-toggle").textContent = "Change ▾";
+  var gender = el.dataset.gender || "";
+  document.getElementById("av-voice-selected-name").textContent = name;
+  document.getElementById("av-voice-selected-gender").textContent = gender;
+  document.getElementById("av-voice-selected-preview").style.display = "flex";
+  document.getElementById("av-voice-grid-section").style.display = "none";
+}
+
+function avOpenVoiceGrid(){
+  document.getElementById("av-voice-selected-preview").style.display = "none";
+  document.getElementById("av-voice-grid-section").style.display = "block";
 }
 
 var avAudio = null;
