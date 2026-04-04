@@ -1278,10 +1278,13 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <!-- Selected state -->
     <div id="av-voice-selected-preview" style="display:none;align-items:center;gap:14px;margin-bottom:14px">
       <div style="width:50px;height:50px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">🎙</div>
-      <div>
+      <div style="flex:1">
         <div id="av-voice-selected-name" style="font-size:.9rem;font-weight:600;color:var(--text)"></div>
-        <div id="av-voice-selected-gender" style="font-size:.75rem;color:var(--muted);margin-bottom:6px"></div>
-        <button onclick="avOpenVoiceGrid()" style="padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer">Change Voice</button>
+        <div id="av-voice-selected-gender" style="font-size:.75rem;color:var(--muted);margin-bottom:8px"></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="av-voice-play-btn" onclick="avPlaySelectedVoice()" style="padding:5px 14px;border-radius:20px;background:var(--gold);border:none;color:#000;font-size:.75rem;font-weight:600;cursor:pointer">▶ Preview</button>
+          <button onclick="avOpenVoiceGrid()" style="padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer">Change Voice</button>
+        </div>
       </div>
     </div>
     <!-- Voice grid -->
@@ -4684,15 +4687,37 @@ function avFilterVoiceGender(gender, btn){
   avRenderVoices(gender);
 }
 
+var avSelectedVoiceAudio = null;
+
 function avSelectVoice(el, isAuto){
   avSelectedVoice = el.dataset.id;
   var name = el.dataset.name || el.dataset.id;
   var gender = el.dataset.gender || "";
-  if(!isAuto) avVoiceManualOverride = true; // User chose manually
+  // Store audio URL from the preview button inside the card
+  var audioBtn = el.querySelector("button[data-audio]");
+  avSelectedVoiceAudio = audioBtn ? audioBtn.dataset.audio : null;
+  if(!isAuto) avVoiceManualOverride = true;
   document.getElementById("av-voice-selected-name").textContent = name;
   document.getElementById("av-voice-selected-gender").textContent = isAuto ? gender + " · Auto-matched to avatar" : gender;
   document.getElementById("av-voice-selected-preview").style.display = "flex";
   document.getElementById("av-voice-grid-section").style.display = "none";
+  // Show/hide play button based on audio availability
+  var playBtn = document.getElementById("av-voice-play-btn");
+  if(playBtn) playBtn.style.display = avSelectedVoiceAudio ? "inline-block" : "none";
+}
+
+function avPlaySelectedVoice(){
+  if(!avSelectedVoiceAudio) return;
+  var btn = document.getElementById("av-voice-play-btn");
+  if(avAudio && !avAudio.paused){
+    avAudio.pause(); avAudio = null;
+    if(btn) btn.textContent = "▶ Preview";
+    return;
+  }
+  avAudio = new Audio(avSelectedVoiceAudio);
+  avAudio.play();
+  if(btn) btn.textContent = "⏸ Stop";
+  avAudio.onended = function(){ if(btn) btn.textContent = "▶ Preview"; avAudio = null; };
 }
 
 function avOpenVoiceGrid(){
