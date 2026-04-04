@@ -4462,11 +4462,61 @@ window.addEventListener('scroll',()=>{
 // -- AVATAR STUDIO --
 var HEYGEN_KEY = "sk_V2_hgu_kCjIfbAddDe_IAvx1OOYPoVPFoiTi68YQT38qvvFEBWF";
 var avSelectedAvatar = null;
+var avSelectedAvatarGender = null;
 var avSelectedVoice = null;
 var avAllAvatars = [];
 var avAllVoices = [];
 var avCurrentGender = "all";
 var avCurrentVoiceGender = "all";
+var avDetectedTone = "professional";
+var avVoiceManualOverride = false;
+
+// Voice profile config: tone -> preferred voice IDs
+var VOICE_PROFILES = {
+  excited:      ["453c20e1525a429080e2ad9e4b26f2cd", "f8c69e517f424cafaecde32dde57096b"],
+  professional: ["d92994ae0de34b2e8659b456a2f388b8", "7e157ec62c9c45f1adca12faae72c86f"],
+  casual:       ["f8c69e517f424cafaecde32dde57096b", "453c20e1525a429080e2ad9e4b26f2cd"],
+  persuasive:   ["7e157ec62c9c45f1adca12faae72c86f", "d92994ae0de34b2e8659b456a2f388b8"]
+};
+
+// Core voice selection function
+function avSelectBestVoice(avatarGender, tone, voices){
+  if(!voices || voices.length === 0) return null;
+  var preferred = VOICE_PROFILES[tone] || [];
+  // Step 1: gender + tone match
+  if(avatarGender){
+    var genderToneMatch = voices.filter(function(v){
+      return (v.gender||"").toLowerCase() === avatarGender.toLowerCase()
+        && preferred.indexOf(v.voice_id) !== -1;
+    });
+    if(genderToneMatch.length > 0) return genderToneMatch[0];
+    // Step 2: gender match only
+    var genderMatch = voices.filter(function(v){
+      return (v.gender||"").toLowerCase() === avatarGender.toLowerCase();
+    });
+    if(genderMatch.length > 0) return genderMatch[0];
+  }
+  // Step 3: tone match only
+  var toneMatch = voices.filter(function(v){ return preferred.indexOf(v.voice_id) !== -1; });
+  if(toneMatch.length > 0) return toneMatch[0];
+  // Fallback
+  return voices[0];
+}
+
+// Apply voice recommendation to UI
+function avApplyVoiceRecommendation(){
+  if(avVoiceManualOverride) return; // User already chose manually
+  if(avAllVoices.length === 0) return;
+  var best = avSelectBestVoice(avSelectedAvatarGender, avDetectedTone, avAllVoices);
+  if(!best) return;
+  // Sort voice list: recommended first
+  var sorted = [best].concat(avAllVoices.filter(function(v){ return v.voice_id !== best.voice_id; }));
+  avAllVoices = sorted;
+  avRenderVoices(avCurrentVoiceGender);
+  // Auto-select the recommended voice
+  var vcard = document.querySelector("#av-voice-list [data-id='" + best.voice_id + "']");
+  if(vcard) avSelectVoice(vcard, true); // true = auto, not manual
+}
 
 async function initAvatarStudio(){
   var grid = document.getElementById("av-avatar-grid");
@@ -4481,7 +4531,6 @@ async function initAvatarStudio(){
   } catch(e){
     grid.innerHTML = "<div style='color:var(--red)'>Failed to load avatars</div>";
   }
-  // Load voices
   var vlist = document.getElementById("av-voice-list");
   vlist.innerHTML = "<div style='color:var(--muted);font-size:.85rem;padding:10px'>Loading voices...</div>";
   try {
@@ -4517,7 +4566,8 @@ function avRenderPersons(gender){
     var a = persons[p];
     var img = a.preview_image_url || "";
     var first = (a.avatar_name||"").split(" ")[0];
-    html += "<div data-first='" + first + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
+    var ag = (a.gender||"").toLowerCase();
+    html += "<div data-first='" + first + "' data-gender='" + ag + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
     if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block' loading='lazy'>"; }
     else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
     html += "<div style='font-size:.78rem;padding:6px 4px;text-align:center;color:var(--text);font-weight:600'>" + first + "</div>";
@@ -4525,11 +4575,11 @@ function avRenderPersons(gender){
   }
   grid.innerHTML = html;
   grid.querySelectorAll("div[data-first]").forEach(function(el){
-    el.addEventListener("click", function(){ avShowLooks(this.dataset.first); });
+    el.addEventListener("click", function(){ avShowLooks(this.dataset.first, this.dataset.gender); });
   });
 }
 
-function avShowLooks(firstName){
+function avShowLooks(firstName, gender){
   var looksGrid = document.getElementById("av-looks-grid");
   var looks = avAllAvatars.filter(function(a){ return (a.avatar_name||"").split(" ")[0] === firstName; });
   document.getElementById("av-looks-title").textContent = firstName + " — pick a look";
@@ -4540,7 +4590,8 @@ function avShowLooks(firstName){
     var name = a.avatar_name || a.avatar_id;
     var id = a.avatar_id;
     var lookName = name.split(" ").slice(1).join(" ") || name;
-    html += "<div data-id='" + id + "' data-name='" + name.replace(/'/g,"") + "' data-img='" + img + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
+    var ag = (a.gender||gender||"").toLowerCase();
+    html += "<div data-id='" + id + "' data-name='" + name.replace(/'/g,"") + "' data-img='" + img + "' data-gender='" + ag + "' style='cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid transparent;background:var(--panel);transition:border-color .15s'>";
     if(img){ html += "<img src='" + img + "' style='width:100%;aspect-ratio:3/4;object-fit:cover;display:block' loading='lazy'>"; }
     else { html += "<div style='width:100%;aspect-ratio:3/4;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:2rem'>👤</div>"; }
     html += "<div style='font-size:.72rem;padding:5px 4px;text-align:center;color:var(--text)'>" + lookName + "</div>";
@@ -4569,6 +4620,7 @@ function avFilterGender(gender, btn){
 
 function avSelectAvatar(el){
   avSelectedAvatar = el.dataset.id;
+  avSelectedAvatarGender = el.dataset.gender || null;
   var name = el.dataset.name || el.dataset.id;
   var img = el.dataset.img || "";
   document.getElementById("av-selected-img").src = img;
@@ -4576,6 +4628,9 @@ function avSelectAvatar(el){
   document.getElementById("av-selected-preview").style.display = "flex";
   document.getElementById("av-looks-section").style.display = "none";
   document.getElementById("av-grid-section").style.display = "none";
+  // Auto-suggest voice based on avatar gender + current tone
+  avVoiceManualOverride = false;
+  avApplyVoiceRecommendation();
 }
 
 function avOpenGrid(){
@@ -4593,6 +4648,7 @@ function avRenderVoices(gender){
     return (v.gender||"").toLowerCase() === gender;
   });
   if(list.length === 0){ vlist.innerHTML = "<div style='color:var(--muted);padding:20px'>No voices found</div>"; return; }
+  var best = avSelectBestVoice(avSelectedAvatarGender, avDetectedTone, avAllVoices);
   var html = "";
   for(var j=0; j<list.length; j++){
     var v = list[j];
@@ -4600,7 +4656,12 @@ function avRenderVoices(gender){
     var vname = v.display_name || v.name || vid;
     var vgender = v.gender || "";
     var vaudio = v.preview_audio || "";
-    html += "<div data-id='" + vid + "' data-name='" + vname.replace(/'/g,"") + "' data-gender='" + vgender + "' style='cursor:pointer;border-radius:10px;border:2px solid var(--border);background:var(--panel);transition:border-color .15s;padding:14px;text-align:center'>";
+    var isRecommended = best && vid === best.voice_id;
+    var border = isRecommended ? "2px solid var(--gold)" : "2px solid var(--border)";
+    html += "<div data-id='" + vid + "' data-name='" + vname.replace(/'/g,"") + "' data-gender='" + vgender + "' style='cursor:pointer;border-radius:10px;border:" + border + ";background:var(--panel);transition:border-color .15s;padding:14px;text-align:center;position:relative'>";
+    if(isRecommended){
+      html += "<div style='position:absolute;top:6px;right:6px;background:var(--gold);color:#000;font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:10px'>★ Best Match</div>";
+    }
     html += "<div style='font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:3px'>" + vname + "</div>";
     html += "<div style='font-size:.72rem;color:var(--muted);margin-bottom:10px'>" + vgender + "</div>";
     if(vaudio){ html += "<button data-audio='" + vaudio + "' style='background:var(--gold);border:none;border-radius:20px;padding:5px 12px;cursor:pointer;color:#000;font-size:.75rem;font-weight:600'>▶ Preview</button>"; }
@@ -4608,7 +4669,7 @@ function avRenderVoices(gender){
   }
   vlist.innerHTML = html;
   vlist.querySelectorAll("div[data-id]").forEach(function(el){
-    el.addEventListener("click", function(){ avSelectVoice(this); });
+    el.addEventListener("click", function(){ avSelectVoice(this, false); });
   });
   vlist.querySelectorAll("button[data-audio]").forEach(function(btn){
     btn.addEventListener("click", function(e){ e.stopPropagation(); avPlayVoice(this.dataset.audio); });
@@ -4623,12 +4684,13 @@ function avFilterVoiceGender(gender, btn){
   avRenderVoices(gender);
 }
 
-function avSelectVoice(el){
+function avSelectVoice(el, isAuto){
   avSelectedVoice = el.dataset.id;
   var name = el.dataset.name || el.dataset.id;
   var gender = el.dataset.gender || "";
+  if(!isAuto) avVoiceManualOverride = true; // User chose manually
   document.getElementById("av-voice-selected-name").textContent = name;
-  document.getElementById("av-voice-selected-gender").textContent = gender;
+  document.getElementById("av-voice-selected-gender").textContent = isAuto ? gender + " · Auto-matched to avatar" : gender;
   document.getElementById("av-voice-selected-preview").style.display = "flex";
   document.getElementById("av-voice-grid-section").style.display = "none";
 }
@@ -4643,59 +4705,6 @@ function avPlayVoice(url){
   if(avAudio){ avAudio.pause(); avAudio = null; }
   avAudio = new Audio(url); avAudio.play();
 }
-
-
-async function avEnhanceScript(){
-  var script = document.getElementById("av-script").value.trim();
-  if(!script){ toast("Please write a script first","error"); return; }
-  var aiEnabled = document.getElementById("av-ai-toggle").checked;
-  var btn = document.getElementById("av-enhance-btn");
-  var status = document.getElementById("av-enhance-status");
-  btn.disabled = true;
-  btn.textContent = "Enhancing...";
-  status.textContent = "";
-  try {
-    var res = await fetch("https://tvshyswdwgwunzzrsqca.supabase.co/functions/v1/enhance-script", {
-      method: "POST",
-      headers: {"Content-Type":"application/json","Authorization":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2c2h5c3dkd2d3dW56enJzcWNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI0MTQzMzUsImV4cCI6MjA1Nzk5MDMzNX0.xMLtHOjSgFHHNJpSlWRyiCIBvDFDUFRxOXbvQIFLDZM"},
-      body: JSON.stringify({raw_script: script, ai_enabled: aiEnabled})
-    });
-    var data = await res.json();
-    if(data.error) throw new Error(data.error);
-    // Update script box with enhanced version
-    document.getElementById("av-script").value = data.enhanced_script;
-    // Show tone badge
-    if(data.tone){
-      document.getElementById("av-tone-label").textContent = data.tone.charAt(0).toUpperCase() + data.tone.slice(1);
-      document.getElementById("av-tone-reason").textContent = data.tone_reason || "";
-      document.getElementById("av-tone-badge").style.display = "block";
-    }
-    // Auto-select recommended voice if user hasnt picked one
-    if(data.recommended_voice_id && !avSelectedVoice){
-      avSelectedVoice = data.recommended_voice_id;
-      // Find and highlight the voice card
-      var vcard = document.querySelector("#av-voice-list [data-id='" + data.recommended_voice_id + "']");
-      if(vcard){ avSelectVoice(vcard); }
-      else {
-        // Voice not rendered yet - store and show label
-        avSelectedVoice = data.recommended_voice_id;
-        document.getElementById("av-voice-selected-name").textContent = data.recommended_voice_name || "AI Recommended";
-        document.getElementById("av-voice-selected-gender").textContent = "Auto-selected based on tone";
-        document.getElementById("av-voice-selected-preview").style.display = "flex";
-        document.getElementById("av-voice-grid-section").style.display = "none";
-      }
-    }
-    status.textContent = data.ai_enhanced ? "Script enhanced ✦" : "Original script kept";
-    toast("Script enhanced ✦","success");
-  } catch(e){
-    status.textContent = "Enhancement failed - original kept";
-    console.error("enhance-script error:", e);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "✦ Enhance Script";
-  }
-}
-
 // -- BATCH VIDEO GENERATION --
 var avBatchCount = 3;
 var avBatchJobs = [];
