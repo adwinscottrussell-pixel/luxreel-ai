@@ -3352,6 +3352,7 @@ async function generateThumbnail(){
   const platform = document.getElementById('thumb-platform')?.value || 'youtube';
   const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
   const tone    = profile.tone || localStorage.getItem('lx_tone') || 'professional';
+  const referenceImageUrl = document.getElementById('thumb-reference-url')?.value.trim()||'';
 
   if(!niche){ toast('Enter your niche first','error'); return; }
 
