@@ -1682,7 +1682,36 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       <div class="prompt-label" style="margin-bottom:6px">Reference Thumbnail URL <span style="color:var(--muted);font-weight:400">(optional — match its style)</span></div>
       <input id="thumb-reference-url" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="https://example.com/thumbnail.jpg">
     </div>
-    <button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
+    <div style="margin-bottom:14px">
+  <div class="prompt-label" style="margin-bottom:6px">Clone Thumbnail Style <span style="color:var(--muted);font-weight:400">(optional — paste URL or upload)</span></div>
+  <div style="display:flex;gap:0;background:var(--panel);border-radius:8px;padding:3px;margin-bottom:10px;width:fit-content">
+    <button id="ref-tab-url" onclick="switchRefTab('url')" style="padding:5px 16px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;background:var(--gold);color:#000;transition:all .18s">🔗 URL</button>
+    <button id="ref-tab-upload" onclick="switchRefTab('upload')" style="padding:5px 16px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);transition:all .18s">⬆ Upload</button>
+  </div>
+  <div id="ref-pane-url">
+    <input id="thumb-reference-url" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="https://i.ytimg.com/vi/... paste any thumbnail URL" oninput="clearRefUpload()">
+  </div>
+  <div id="ref-pane-upload" style="display:none">
+    <div class="upload-area" id="ref-upload-area" onclick="document.getElementById('ref-image-input').click()" style="padding:16px;margin-bottom:0">
+      <input type="file" id="ref-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleRefImageUpload(this)">
+      <div id="ref-upload-placeholder">
+        <div class="upload-icon" style="font-size:1.4rem">🖼</div>
+        <div class="upload-title" style="font-size:.82rem">Drop or click to upload reference thumbnail</div>
+        <div class="upload-sub">JPG, PNG or WEBP · max 10MB</div>
+      </div>
+      <div id="ref-upload-preview" style="display:none;text-align:center">
+        <img id="ref-upload-img" style="max-height:100px;max-width:100%;border-radius:8px;object-fit:contain;margin-bottom:6px">
+        <div style="font-size:.72rem;color:var(--gold)" id="ref-upload-name"></div>
+        <button class="btn btn-ghost btn-sm" style="font-size:.65rem;margin-top:4px" onclick="event.stopPropagation();clearRefUpload()">Remove ✕</button>
+      </div>
+    </div>
+  </div>
+  <div id="ref-style-profile" style="display:none;margin-top:10px;padding:10px 14px;background:var(--panel);border:1px solid var(--gold3);border-radius:8px">
+    <div style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px">✦ Style Detected</div>
+    <div id="ref-style-profile-text" style="font-size:.78rem;color:var(--muted);line-height:1.7"></div>
+  </div>
+</div>
+<button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
 
     <div id="thumb-gen-loading" style="display:none;text-align:center;padding:24px">
       <div class="spin-ring" style="margin:0 auto 10px"></div>
