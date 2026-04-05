@@ -3344,6 +3344,10 @@ let generatedThumbUrl = '';
 let selectedThumbStyle = 'bold';
 let selectedThumbPlatform = 'youtube';
 
+let refImageBase64='';let refImageMime='';
+function switchRefTab(tab){const isUrl=tab==='url';document.getElementById('ref-pane-url').style.display=isUrl?'block':'none';document.getElementById('ref-pane-upload').style.display=isUrl?'none':'block';const tu=document.getElementById('ref-tab-url');const tup=document.getElementById('ref-tab-upload');tu.style.background=isUrl?'var(--gold)':'transparent';tu.style.color=isUrl?'#000':'var(--muted)';tup.style.background=isUrl?'transparent':'var(--gold)';tup.style.color=isUrl?'var(--muted)':'#000';if(isUrl)clearRefUpload();}
+function handleRefImageUpload(input){const file=input.files[0];if(!file)return;if(file.size>10*1024*1024){toast('Image too large — max 10MB','error');return;}const reader=new FileReader();reader.onload=(e)=>{refImageBase64=e.target.result.split(',')[1];refImageMime=file.type;document.getElementById('ref-upload-placeholder').style.display='none';document.getElementById('ref-upload-preview').style.display='block';document.getElementById('ref-upload-img').src=e.target.result;document.getElementById('ref-upload-name').textContent=file.name;document.getElementById('ref-upload-area').classList.add('has-image');const urlInput=document.getElementById('thumb-reference-url');if(urlInput)urlInput.value='';toast('Reference image ready ✦','success');};reader.readAsDataURL(file);}
+function clearRefUpload(){refImageBase64='';refImageMime='';const input=document.getElementById('ref-image-input');if(input)input.value='';document.getElementById('ref-upload-placeholder').style.display='block';document.getElementById('ref-upload-preview').style.display='none';document.getElementById('ref-upload-area')?.classList.remove('has-image');document.getElementById('ref-style-profile').style.display='none';}
 async function generateThumbnail(){
   const niche   = document.getElementById('thumb-niche')?.value.trim();
   const title   = document.getElementById('thumb-title')?.value.trim();
