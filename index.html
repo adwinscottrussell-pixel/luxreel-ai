@@ -3407,7 +3407,7 @@ async function generateThumbnail(){
         'Content-Type':  'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ niche, title, subject, style, platform, tone, referenceImageUrl: document.getElementById('thumb-reference-url')?.value.trim() || '' })
+      body: JSON.stringify({ niche, title, subject, style, platform, tone, referenceImage: window._thumbReferenceImage || document.getElementById('thumb-reference-url')?.value.trim() || null })
     });
 
     const data = await res.json();
