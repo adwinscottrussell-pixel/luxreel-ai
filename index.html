@@ -1832,49 +1832,34 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     </div>
 
     <!-- SCREEN 2 — Tell us about your brand -->
-    <div id="ob-screen-2" style="display:none">
-      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px" id="ob-screen2-title">Tell us about your brand</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:28px">We use this to craft your content angles, hook styles and CTAs.</div>
-
-      <div style="margin-bottom:18px">
-        <div class="prompt-label" style="margin-bottom:8px" id="ob-niche-label">Your niche</div>
-        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:12px 16px;font-size:.9rem" placeholder="e.g. fitness coaching, mindset, business strategy…">
+    <div<div id="ob-screen-2" style="display:none">
+      <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Step 2 of 3</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px" id="ob-screen2-title">What do you want to create content about?</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:4px" id="ob-screen2-sub">We'll use this to generate your content plan.</div>
+      <div style="font-size:.78rem;color:var(--gold);margin-bottom:24px">Takes 10 seconds</div>
+      <div style="margin-bottom:24px">
+        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:14px 16px;font-size:.95rem;border:1px solid var(--border2);transition:border-color .2s,box-shadow .2s" placeholder="e.g. fitness coaching, mindset, business strategy…" onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 3px rgba(212,168,83,.15)'" onblur="this.style.borderColor='var(--border2)';this.style.boxShadow='none'">
       </div>
-
-      <div style="margin-bottom:18px">
-        <div class="prompt-label" style="margin-bottom:8px">Target audience</div>
-        <input id="ob-audience" class="prompt-textarea" style="height:auto;padding:12px 16px;font-size:.9rem" placeholder="e.g. beginners, CEOs, busy moms, entrepreneurs…">
-      </div>
-
-      <div style="margin-bottom:18px">
-        <div class="prompt-label" style="margin-bottom:8px">Your goal</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="ob-goals">
+      <div style="margin-bottom:28px">
+        <div style="font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Optional: What's your goal?</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="ob-goals">
           <button class="tone-btn" data-goal="followers" onclick="selectGoal(this)">📈 Grow followers</button>
           <button class="tone-btn" data-goal="clients" onclick="selectGoal(this)">🤝 Get clients</button>
           <button class="tone-btn" data-goal="authority" onclick="selectGoal(this)">👑 Build authority</button>
+          <button class="tone-btn" data-goal="sales" onclick="selectGoal(this)">💰 Drive sales</button>
         </div>
       </div>
-
-      <div style="margin-bottom:28px">
-        <div class="prompt-label" style="margin-bottom:8px">Content tone</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-          <button class="tone-btn" data-tone="educational" onclick="selectObTone(this)">🎓 Educational</button>
-          <button class="tone-btn" data-tone="motivational" onclick="selectObTone(this)">🔥 Motivational</button>
-          <button class="tone-btn" data-tone="bold" onclick="selectObTone(this)">⚡ Bold</button>
-          <button class="tone-btn" data-tone="luxury" onclick="selectObTone(this)">💎 Luxury</button>
-          <button class="tone-btn" data-tone="playful" onclick="selectObTone(this)">🎉 Playful</button>
-          <button class="tone-btn" data-tone="minimal" onclick="selectObTone(this)">◻ Minimal</button>
-        </div>
-      </div>
-
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline btn-md" onclick="goObScreen(1)">← Back</button>
-        <button class="btn btn-gold btn-md" style="flex:1" onclick="goObScreen(3)">Next → Review Profile</button>
+        <button class="btn btn-gold btn-md" style="flex:1" id="ob-generate-btn" onclick="obGeneratePlan()">Generate My 7-Day Plan →</button>
       </div>
+      <div style="text-align:center;font-size:.72rem;color:var(--muted2);margin-top:10px">No planning or editing required</div>
       <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
+      <div id="ob-loading" style="display:none;text-align:center;padding:20px 0">
+        <div class="spin-ring" style="margin:0 auto 12px"></div>
+        <div id="ob-loading-text" style="font-size:.85rem;color:var(--gold)">Creating your content plan…</div>
+      </div>
     </div>
-
-    <!-- SCREEN 3 — Your Content Profile -->
     <div id="ob-screen-3" style="display:none">
       <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Your Content Profile ✦</div>
       <div style="font-size:.85rem;color:var(--muted);margin-bottom:24px">Here's what we've built for you. We'll use this to generate your 7-day plan.</div>
@@ -2600,7 +2585,7 @@ function goObScreen(n){
   if(n===3) buildProfileSummary();
 }
 
-function selectMode(mode){
+function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating…','Day 2 generating…','Day 3 generating…','Day 4 generating…','Day 5 generating…','Day 6 generating…','Day 7 generating…'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan…';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';generateContentPlan();},5000);} function selectMode(mode){
   selectedMode=mode;
   document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('mode-'+mode).classList.add('selected');
@@ -2624,7 +2609,7 @@ function selectMode(mode){
   goalsEl.innerHTML=goals.map(g=>`<button class="tone-btn" data-goal="${g.val}" onclick="selectGoal(this)">${g.label}</button>`).join('');
   selectedGoal=goals[0].val;
 
-  setTimeout(()=>goObScreen(2),150);
+  const headlines={personal:'What do you want to create content about?',local:'What business are you promoting?',product:'What product are you selling?',realestate:'What property are you promoting?'};const placeholders={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. coffee shop in Brooklyn, hair salon in London…',product:'e.g. skincare brand, fitness supplements, fashion line…',realestate:'e.g. Luxury villa in Miami, 2-bed apartment in London'};const h=document.getElementById('ob-screen2-title');const p=document.getElementById('ob-niche');if(h)h.textContent=headlines[mode]||headlines.personal;if(p)p.placeholder=placeholders[mode]||placeholders.personal;setTimeout(()=>goObScreen(2),150);
 }
 
 function selectGoal(btn){
