@@ -989,8 +989,8 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
   <nav class="l-nav" id="l-nav">
     <div class="wordmark" onclick="go('landing')">Lux<span>Clip</span></div>
     <div class="l-nav-links">
-      <a onclick="scrollTo(0,600)">Features</a>
-      <a onclick="scrollTo(0,1400)">How it Works</a>
+      <a onclick="document.getElementById('lx-features').scrollIntoView({behavior:'smooth'})">Features</a>
+      <a onclick="document.getElementById('lx-how').scrollIntoView({behavior:'smooth'})">How It Works</a>
       <a onclick="go('pricing')">Pricing</a>
     </div>
     <div class="l-nav-cta">
@@ -999,166 +999,160 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     </div>
   </nav>
 
-  <section class="hero">
-    <div class="hero-badge"><span class="hero-badge-dot"></span> Your AI Instagram Content Team</div>
-    <h1 class="hero-title">
-      7 days of content.<br>
-      <em>Generated in seconds.</em>
-      <span class="line2">Ready to post.</span>
+  <!-- HERO -->
+  <section class="hero" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:140px 24px 80px;position:relative;z-index:1">
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(201,168,76,.07) 0%,transparent 70%);pointer-events:none"></div>
+    <div class="hero-badge" style="margin-bottom:24px"><span class="hero-badge-dot"></span>Your AI Content System</div>
+    <h1 class="hero-title" style="font-size:clamp(42px,7vw,80px);font-weight:700;line-height:1.06;letter-spacing:-.02em;max-width:820px;margin-bottom:24px">
+      7 days of content that grows your brand<br><em style="color:var(--gold2);font-style:normal">— generated in seconds</em>
     </h1>
-    <p class="hero-sub">Tell us your niche and goal. LuxClip AI builds your full content strategy, generates cinematic videos for each post, and writes captions — so you never run out of ideas again.</p>
-    <div class="hero-actions">
-      <button class="btn btn-gold btn-xl" onclick="go('auth')">Generate My Content Plan Free</button>
-      <button class="btn btn-outline btn-xl" onclick="go('pricing')">View Pricing</button>
+    <p class="hero-sub" style="font-size:19px;max-width:540px;margin:0 auto 40px;line-height:1.65;color:var(--muted)">
+      Generate a full week of videos, captions, and post ideas — ready to publish instantly. No planning. No editing. No guesswork.
+    </p>
+    <div class="hero-actions" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:56px">
+      <button class="btn btn-gold btn-xl" onclick="go('auth')">Get My 7-Day Plan Free</button>
+      <button class="btn btn-outline btn-xl" onclick="document.getElementById('lx-how').scrollIntoView({behavior:'smooth'})">See How It Works</button>
     </div>
-    <div class="hero-proof">
-      <div class="proof-avatars">
-        <div class="proof-avatar">JM</div>
-        <div class="proof-avatar">SR</div>
-        <div class="proof-avatar">KL</div>
-        <div class="proof-avatar">AT</div>
-      </div>
-      <div class="proof-text">
-        <div class="proof-stars">★★★★★</div>
-        <div>Loved by <strong>2,400+</strong> creators & brands</div>
-      </div>
+    <div class="hero-proof" style="display:flex;align-items:center;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:80px">
+      <div class="proof-avatars"><div class="proof-avatar">JM</div><div class="proof-avatar">SR</div><div class="proof-avatar">KL</div><div class="proof-avatar">AT</div></div>
+      <div class="proof-text"><div class="proof-stars">★★★★★</div><div>Loved by <strong>2,400+</strong> creators &amp; brands</div></div>
     </div>
+    <div style="display:flex;gap:48px;justify-content:center;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-size:22px;font-weight:600;color:var(--text)">2,400+</div><div style="font-size:12px;color:var(--muted);margin-top:2px">creators using LuxClip</div></div>
+      <div style="text-align:center"><div style="font-size:22px;font-weight:600;color:var(--text)">7 days</div><div style="font-size:12px;color:var(--muted);margin-top:2px">of content in seconds</div></div>
+      <div style="text-align:center"><div style="font-size:22px;font-weight:600;color:var(--text)">10x</div><div style="font-size:12px;color:var(--muted);margin-top:2px">faster than manual</div></div>
+    </div>
+  </section>
 
-    <div class="hero-mockup">
-      <div class="mockup-bar">
-        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-        <div class="mockup-url">app.LuxClip.ai/dashboard</div>
+  <!-- OUTPUT PREVIEW -->
+  <section style="background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:100px 24px">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:60px">
+        <div class="hero-badge" style="margin-bottom:20px"><span class="hero-badge-dot"></span>Exact Output</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px">Here's exactly what you get<br><span style="color:var(--gold2)">in seconds:</span></h2>
+        <p style="color:var(--muted);font-size:17px;max-width:440px;margin:0 auto">A full week of content — ready to post. Hooks, captions, and video ideas for every single day.</p>
       </div>
-      <div class="mockup-body">
-        <div class="mockup-sidebar">
-          <div>
-            <div class="mock-label">Your Niche</div>
-            <div class="mock-textarea">Luxury fashion & lifestyle brands</div>
-          </div>
-          <div>
-            <div class="mock-label">Goal</div>
-            <div class="mock-tones">
-              <div class="mock-tone a">📈 Grow</div>
-              <div class="mock-tone">💰 Sell</div>
-              <div class="mock-tone">🎓 Educate</div>
-            </div>
-          </div>
-          <div class="mock-btn">✦ Generate 7-Day Plan</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:32px">
+        <div style="background:rgba(201,168,76,.08);border:1px solid var(--gold3);border-radius:12px;padding:20px 14px;text-align:center"><div style="font-size:11px;color:var(--gold2);font-weight:600;letter-spacing:.08em;margin-bottom:8px">MON</div><div style="font-size:12px;color:var(--muted)">Hook + Reel</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:12px;padding:20px 14px;text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.08em;margin-bottom:8px">TUE</div><div style="font-size:12px;color:var(--muted)">Carousel</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:12px;padding:20px 14px;text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.08em;margin-bottom:8px">WED</div><div style="font-size:12px;color:var(--muted)">Story + Caption</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:12px;padding:20px 14px;text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.08em;margin-bottom:8px">THU</div><div style="font-size:12px;color:var(--muted)">Video Idea</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:12px;padding:20px 14px;text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.08em;margin-bottom:8px">FRI</div><div style="font-size:12px;color:var(--muted)">Post + CTA</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:12px;padding:20px 14px;text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.08em;margin-bottom:8px">SAT</div><div style="font-size:12px;color:var(--muted)">Collab Idea</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:12px;padding:20px 14px;text-align:center"><div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.08em;margin-bottom:8px">SUN</div><div style="font-size:12px;color:var(--muted)">Week Recap</div></div>
+      </div>
+      <div style="background:var(--noir);border:1px solid var(--border);border-radius:16px;padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:32px">
+        <div>
+          <div style="font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px">Day 1 — Monday · Reel</div>
+          <div style="font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Hook</div>
+          <div style="font-size:20px;font-weight:600;line-height:1.35;color:var(--text);margin-bottom:20px">"Why your content isn't converting"</div>
+          <div style="font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Caption</div>
+          <div style="font-size:14px;color:var(--muted);line-height:1.7;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:16px">Most creators post and pray. Here's what the algorithm actually rewards — and how to use it to your advantage starting today...</div>
         </div>
-        <div class="mockup-grid">
-          <div class="mock-card"><div class="mock-thumb"><div class="mock-thumb-badge">Day 1 · Reel</div></div><div class="mock-card-body"><div class="mock-card-line gold"></div><div class="mock-card-line short"></div></div></div>
-          <div class="mock-card"><div class="mock-thumb" style="opacity:.7"><div class="mock-thumb-badge" style="opacity:.5">Day 2 · Hook</div></div><div class="mock-card-body"><div class="mock-card-line"></div><div class="mock-card-line short"></div></div></div>
-          <div class="mock-card"><div class="mock-thumb"><div class="mock-thumb-badge">Day 3 · Reel</div></div><div class="mock-card-body"><div class="mock-card-line gold"></div><div class="mock-card-line short"></div></div></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Content Brief</div>
+          <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border)"><span style="font-size:13px;color:var(--muted)">Format</span><span style="font-size:13px;color:var(--text);font-weight:500">Reel · 30–45s</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border)"><span style="font-size:13px;color:var(--muted)">Platform</span><span style="font-size:13px;color:var(--text);font-weight:500">Instagram / TikTok</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border)"><span style="font-size:13px;color:var(--muted)">Tone</span><span style="font-size:13px;color:var(--text);font-weight:500">Confident, direct</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid var(--border)"><span style="font-size:13px;color:var(--muted)">CTA</span><span style="font-size:13px;color:var(--text);font-weight:500">Follow for more</span></div>
+          <button class="btn btn-gold" style="margin-top:8px;width:100%" onclick="go('auth')">Generate This Content</button>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="section-tag">Features</div>
-    <h2 class="section-title">Your complete <em>Instagram content system</em></h2>
-    <div class="features-grid">
-      <div class="feature-tile">
-        <div class="feature-icon">📅</div>
-        <div class="feature-name">7-Day Content Strategy</div>
-        <div class="feature-desc">Answer 3 questions about your niche, goal and tone. GPT-4o builds a full 7-day posting calendar with hooks, topics and video concepts.</div>
+  <!-- BEFORE / AFTER -->
+  <section style="padding:100px 24px">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:60px">
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1">Stop guessing what to post. Start posting consistently.</h2>
       </div>
-      <div class="feature-tile">
-        <div class="feature-icon">🎬</div>
-        <div class="feature-name">One-Click Video Generation</div>
-        <div class="feature-desc">Click any day in your calendar and generate a cinematic AI video in seconds. Upload your product photo for even better results.</div>
-      </div>
-      <div class="feature-tile">
-        <div class="feature-icon">✍️</div>
-        <div class="feature-name">AI-Written Captions</div>
-        <div class="feature-desc">Every video comes with a scroll-stopping caption crafted in your brand tone — luxury, bold, minimal, playful or cinematic.</div>
-      </div>
-      <div class="feature-tile">
-        <div class="feature-icon">📸</div>
-        <div class="feature-name">Product Photo Animation</div>
-        <div class="feature-desc">Upload a photo of your product and watch AI turn it into a cinematic video with professional lighting and camera movement.</div>
-      </div>
-      <div class="feature-tile">
-        <div class="feature-icon">📚</div>
-        <div class="feature-name">Content Library</div>
-        <div class="feature-desc">All your generated videos saved in one place. Download, copy captions or post directly to Instagram.</div>
-      </div>
-      <div class="feature-tile">
-        <div class="feature-icon">📤</div>
-        <div class="feature-name">Instagram Posting</div>
-        <div class="feature-desc">Schedule and publish directly to Instagram. Your content goes live without ever leaving the app.</div>
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch">
+        <div style="background:rgba(162,45,45,.05);border:1px solid rgba(162,45,45,.15);border-radius:16px;padding:32px">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#A32D2D;margin-bottom:24px">Before LuxClip</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #A32D2D;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px"><div style="width:8px;height:1.5px;background:#A32D2D;border-radius:2px"></div></div><span style="font-size:14px;color:var(--muted);line-height:1.6">No ideas, staring at a blank screen</span></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #A32D2D;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px"><div style="width:8px;height:1.5px;background:#A32D2D;border-radius:2px"></div></div><span style="font-size:14px;color:var(--muted);line-height:1.6">Posting inconsistently, losing followers</span></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #A32D2D;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px"><div style="width:8px;height:1.5px;background:#A32D2D;border-radius:2px"></div></div><span style="font-size:14px;color:var(--muted);line-height:1.6">Low engagement, no traction</span></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;border:1.5px solid #A32D2D;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px"><div style="width:8px;height:1.5px;background:#A32D2D;border-radius:2px"></div></div><span style="font-size:14px;color:var(--muted);line-height:1.6">Hours spent planning and editing</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;padding:0 8px"><div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;color:var(--gold2);font-size:16px">→</div></div>
+        <div style="background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:16px;padding:32px">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);margin-bottom:24px">After LuxClip</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid var(--gold2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;color:var(--gold2)">✓</div><span style="font-size:14px;color:var(--text);line-height:1.6">Full 7-day plan generated instantly</span></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid var(--gold2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;color:var(--gold2)">✓</div><span style="font-size:14px;color:var(--text);line-height:1.6">Post daily with zero mental effort</span></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid var(--gold2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;color:var(--gold2)">✓</div><span style="font-size:14px;color:var(--text);line-height:1.6">High-quality content that gets engagement</span></div>
+            <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:18px;height:18px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid var(--gold2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:10px;color:var(--gold2)">✓</div><span style="font-size:14px;color:var(--text);line-height:1.6">From idea to post in under 60 seconds</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section" style="padding-top:0">
-    <div class="section-tag">How it Works</div>
-    <h2 class="section-title">From zero to 7 days of content <em>in 2 minutes</em></h2>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div class="step-title">Tell us your niche</div>
-        <div class="step-desc">Enter your niche, pick your goal (grow, sell or educate) and choose your brand tone. Takes 30 seconds.</div>
+  <!-- FEATURES -->
+  <section id="lx-features" style="background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:100px 24px">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:60px">
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1;margin-bottom:16px">Everything you need to<br><span style="color:var(--gold2)">create content that performs.</span></h2>
       </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div class="step-title">Get your 7-day plan</div>
-        <div class="step-desc">AI generates a full content calendar with hooks, topics and video prompts for every single day.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
-        <div class="step-title">Generate your Reels</div>
-        <div class="step-desc">Click any day, upload your product photo, and get a cinematic AI video with caption — ready in 30 seconds.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">04</div>
-        <div class="step-title">Download & post</div>
-        <div class="step-desc">Download your video, copy the caption and post to Instagram. Your audience grows while you focus on your business.</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:20px;color:var(--gold2);margin-bottom:14px">◈</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;color:var(--text)">7-Day Content System</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Enter your niche once. Get a complete week of hooks, captions, and video ideas — done in seconds, ready to post.</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:20px;color:var(--gold2);margin-bottom:14px">◉</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;color:var(--text)">Cinematic Videos (no editing required)</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Turn any idea into a short-form video that looks professionally produced — no editing, no team, no effort.</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:20px;color:var(--gold2);margin-bottom:14px">◇</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;color:var(--text)">Captions That Drive Engagement</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Every caption is written to stop the scroll, spark saves and shares, and turn followers into fans.</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:20px;color:var(--gold2);margin-bottom:14px">▦</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;color:var(--text)">Content Calendar</div><div style="font-size:14px;color:var(--muted);line-height:1.65">See your whole week laid out. Know exactly what to post and when, without the spreadsheet.</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:20px;color:var(--gold2);margin-bottom:14px">◎</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;color:var(--text)">Post in One Click</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Push directly to Instagram and TikTok. From idea to live post in under 60 seconds — no extra tools needed.</div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:20px;color:var(--gold2);margin-bottom:14px">◬</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;color:var(--text)">AI Thumbnail Studio</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Generate eye-catching thumbnails that match your brand and make people click.</div></div>
       </div>
     </div>
   </section>
 
-  <section class="section" style="padding-top:0">
-    <div class="section-tag">Testimonials</div>
-    <h2 class="section-title">Creators <em>love it</em></h2>
-    <div class="testimonials-grid">
-      <div class="testimonial-card">
-        <div class="t-stars">★★★★★</div>
-        <div class="t-quote">"LuxClip cut my content production time by 80%. The captions are genuinely good — I barely edit them."</div>
-        <div class="t-author"><div class="t-avatar">JM</div><div><div class="t-name">Jade Monroe</div><div class="t-role">Lifestyle Creator · 280K followers</div></div></div>
+  <!-- HOW IT WORKS -->
+  <section id="lx-how" style="padding:100px 24px">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:60px">
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1">From idea to content<br><span style="color:var(--gold2)">in minutes.</span></h2>
       </div>
-      <div class="testimonial-card">
-        <div class="t-stars">★★★★★</div>
-        <div class="t-quote">"Finally an AI tool built for luxury brands. The output quality and tone options are unmatched."</div>
-        <div class="t-author"><div class="t-avatar">SR</div><div><div class="t-name">Sebastian R.</div><div class="t-role">Brand Director · Maison Éclat</div></div></div>
-      </div>
-      <div class="testimonial-card">
-        <div class="t-stars">★★★★★</div>
-        <div class="t-quote">"My engagement went up 3x in two weeks. The cinematic tone is *chef's kiss*. Worth every penny."</div>
-        <div class="t-author"><div class="t-avatar">KL</div><div><div class="t-name">Kira Lenz</div><div class="t-role">Fashion Photographer</div></div></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:13px;font-weight:700;color:var(--gold2);letter-spacing:.08em;margin-bottom:16px;font-family:monospace">01</div><div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.35">Enter your niche and goal</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Tell LuxClip your niche and goal. Done in 30 seconds — no setup required.</div></div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:13px;font-weight:700;color:var(--gold2);letter-spacing:.08em;margin-bottom:16px;font-family:monospace">02</div><div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.35">Get your content plan</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Your full 7-day plan appears instantly. Hooks, captions, and video ideas — all written and ready.</div></div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:13px;font-weight:700;color:var(--gold2);letter-spacing:.08em;margin-bottom:16px;font-family:monospace">03</div><div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.35">Generate your videos</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Pick any day and hit generate. A cinematic short-form video is ready in seconds — no editing needed.</div></div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:28px"><div style="font-size:13px;font-weight:700;color:var(--gold2);letter-spacing:.08em;margin-bottom:16px;font-family:monospace">04</div><div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;line-height:1.35">Post and grow</div><div style="font-size:14px;color:var(--muted);line-height:1.65">Schedule directly to Instagram and TikTok in one click. Post consistently and watch your audience grow.</div></div>
       </div>
     </div>
   </section>
 
-  <section class="section" style="padding-top:0;text-align:center">
-    <h2 class="section-title" style="margin:0 auto 20px;max-width:none;font-size:clamp(2rem,4vw,3rem)">Ready to create content that <em>converts?</em></h2>
-    <p style="color:var(--muted);margin-bottom:40px;font-weight:300">Join 2,400+ creators using LuxClip AI. No credit card required.</p>
-    <button class="btn btn-gold btn-xl" onclick="go('auth')">Start Free — 3 Videos on Us →</button>
+  <!-- TESTIMONIALS -->
+  <section style="background:var(--panel);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:100px 24px">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="text-align:center;margin-bottom:60px">
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.1">Real results.<br><span style="color:var(--gold2)">Real creators.</span></h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:20px"><div style="color:var(--gold2);font-size:14px">★★★★★</div><p style="font-size:15px;color:var(--muted);line-height:1.7;font-style:italic;flex:1">"I used to spend Sunday nights stressed about what to post that week. Now my entire content plan is done in under 2 minutes. My engagement has doubled since I started posting consistently."</p><div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:50%;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--gold2)">MC</div><div><div style="font-size:14px;font-weight:600;color:var(--text)">Mia Chen</div><div style="font-size:12px;color:var(--muted)">Lifestyle Creator · 42K followers</div></div></div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:20px"><div style="color:var(--gold2);font-size:14px">★★★★★</div><p style="font-size:15px;color:var(--muted);line-height:1.7;font-style:italic;flex:1">"Our engagement went up 3x in the first month. The hooks actually stop people scrolling, and the captions sound exactly like our brand — not generic AI output."</p><div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:50%;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--gold2)">JO</div><div><div style="font-size:14px;font-weight:600;color:var(--text)">James Okafor</div><div style="font-size:12px;color:var(--muted)">Founder, Onyx Streetwear</div></div></div></div>
+        <div style="background:var(--noir);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:20px"><div style="color:var(--gold2);font-size:14px">★★★★★</div><p style="font-size:15px;color:var(--muted);line-height:1.7;font-style:italic;flex:1">"I manage content for 6 clients. LuxClip cut my planning time by 80% — each brand gets a full week of content that feels completely custom. My clients think I have a full team behind me."</p><div style="display:flex;align-items:center;gap:12px"><div style="width:40px;height:40px;border-radius:50%;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--gold2)">SR</div><div><div style="font-size:14px;font-weight:600;color:var(--text)">Sofia Ramos</div><div style="font-size:12px;color:var(--muted)">Social Media Manager · 6 clients</div></div></div></div>
+      </div>
+    </div>
   </section>
 
-  <footer class="l-footer">
-    <div class="wordmark" style="font-size:1.1rem;cursor:pointer" onclick="go('landing')">Lux<span style="color:var(--text);font-style:italic">Reel</span></div>
-    <div class="l-footer-copy">© 2025 LuxClip AI. All rights reserved.</div>
-    <div class="l-footer-links">
-      <a>Privacy</a><a>Terms</a><a>Support</a><a onclick="go('pricing')">Pricing</a>
+  <!-- FINAL CTA -->
+  <section style="padding:100px 24px">
+    <div style="max-width:1100px;margin:0 auto">
+      <div style="position:relative;background:var(--panel);border:1px solid var(--border);border-radius:24px;padding:80px 40px;text-align:center;overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(201,168,76,.06) 0%,transparent 70%);pointer-events:none"></div>
+        <div class="hero-badge" style="margin:0 auto 24px"><span class="hero-badge-dot"></span>Ready When You Are</div>
+        <h2 style="font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,56px);font-weight:700;line-height:1.08;margin-bottom:16px">Your next 7 posts are already done —<br><span style="color:var(--gold2)">get them in seconds.</span></h2>
+        <p style="font-size:17px;color:var(--muted);margin:0 auto 40px;max-width:400px">No planning. No editing. No guesswork. Just a full week of content — ready to post.</p>
+        <button class="btn btn-gold btn-xl" onclick="go('auth')">Start Free — No Credit Card</button>
+        <div style="margin-top:20px;font-size:13px;color:var(--muted)">No credit card required · Takes less than 60 seconds · Start free instantly</div>
+      </div>
     </div>
-  </footer>
+  </section>
 </div>
 
-<!-- ══════════════════════════════
-     AUTH PAGE
-══════════════════════════════ -->
-<div class="page" id="page-auth">
+  <div id="page-auth">
   <div style="display:flex;min-height:100vh;">
     <div class="auth-left">
       <div class="auth-visual">
@@ -1181,7 +1175,13 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         </div>
         <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="auth-email" placeholder="you@brand.com" /></div>
         <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="auth-password" placeholder="••••••••" />
-          <div style="text-align:right;margin-top:4px"><a onclick="handleForgotPassword()" style="font-size:.75rem;color:var(--gold);cursor:pointer">Forgot password?</a></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none">
+              <input type="checkbox" id="show-pw" onchange="document.getElementById('auth-password').type=this.checked?'text':'password'" style="width:14px;height:14px;accent-color:var(--gold);cursor:pointer" />
+              <span style="font-size:.75rem;color:var(--muted)">Show password</span>
+            </label>
+            <a onclick="handleForgotPassword()" style="font-size:.75rem;color:var(--gold);cursor:pointer">Forgot password?</a>
+          </div>
         </div>
         <button class="btn btn-gold btn-md btn-block" style="margin-top:4px" id="auth-submit-btn" onclick="handleAuth()">Create Free Account →</button>
         <div class="auth-error" id="auth-error"></div>
@@ -1622,137 +1622,133 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
         </div>
 
-        <!-- THUMBNAIL AI SECTION -->
-        <div id="dash-section-thumbnail-gen" style="display:none">
-          <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-            <div>
-              <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">🎯 AI Thumbnail Intelligence</div>
-              <div style="font-size:.85rem;color:var(--muted)">Studies what's viral in your niche and generates thumbnails in proven styles</div>
-            </div>
-            <!-- Usage counter -->
-            <div style="background:var(--noir3);border:1px solid var(--border);border-radius:8px;padding:10px 16px;text-align:center;min-width:120px">
-              <div style="font-size:1.4rem;font-weight:700;color:var(--gold)" id="thumb-usage-count">0</div>
-              <div style="font-size:.7rem;color:var(--muted)" id="thumb-usage-label">/ 3 this month</div>
-              <div style="font-size:.65rem;color:var(--muted);margin-top:2px">Free Plan</div>
-            </div>
-          </div>
+       <!-- THUMBNAIL AI SECTION -->
+<div id="dash-section-thumbnail-gen" style="display:none">
+  <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">🎯 Thumbnail AI</div>
+      <div style="font-size:.85rem;color:var(--muted)">Generate viral thumbnails powered by DALL-E 3</div>
+    </div>
+    <div style="background:var(--noir3);border:1px solid var(--border);border-radius:8px;padding:10px 16px;text-align:center;min-width:120px">
+      <div style="font-size:1.4rem;font-weight:700;color:var(--gold)" id="thumb-usage-count">0</div>
+      <div style="font-size:.7rem;color:var(--muted)" id="thumb-usage-label">/ 5 this month</div>
+      <div style="font-size:.65rem;color:var(--muted);margin-top:2px">Free Plan</div>
+    </div>
+  </div>
 
-          <!-- Profile locked banner -->
-          <div id="thumb-profile-banner" style="display:none;background:rgba(212,168,83,.06);border:1px solid var(--gold3);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px">
-            <div style="font-size:1.2rem">✦</div>
-            <div>
-              <div style="font-size:.8rem;font-weight:600;color:var(--gold)">Using your content profile</div>
-              <div style="font-size:.75rem;color:var(--muted)" id="thumb-profile-info"></div>
-            </div>
-            <button class="btn btn-ghost btn-sm" style="margin-left:auto;font-size:.7rem" onclick="document.getElementById('thumb-profile-banner').style.display='none';document.getElementById('thumb-niche-row').style.display='grid'">Edit</button>
-          </div>
+  <div class="create-section" style="margin-bottom:16px">
+    <div class="create-header">
+      <div class="create-title">Generate Thumbnail</div>
+    </div>
 
-          <!-- Step 1 — Niche + Style Analysis -->
-          <div class="create-section" style="margin-bottom:16px">
-            <div class="create-header">
-              <div>
-                <div class="create-title">Step 1 — Analyse Your Niche</div>
-                <div style="font-size:.75rem;color:var(--muted);margin-top:2px">We identify the visual patterns that get the most clicks in your niche</div>
-              </div>
-            </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Your Niche</div>
+        <input id="thumb-niche" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coaching, luxury fashion…">
+      </div>
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Platform</div>
+        <select id="thumb-platform" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
+          <option value="youtube">YouTube</option>
+          <option value="instagram">Instagram</option>
+          <option value="tiktok">TikTok</option>
+        </select>
+      </div>
+    </div>
 
-            <div id="thumb-niche-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Your Niche</div>
-                <input id="thumb-niche" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coaching, luxury fashion, real estate…">
-              </div>
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Platform</div>
-                <select id="thumb-platform" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
-                  <option value="Instagram Reels">Instagram Reels</option>
-                  <option value="YouTube">YouTube</option>
-                  <option value="TikTok">TikTok</option>
-                  <option value="Facebook">Facebook</option>
-                </select>
-              </div>
-            </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Style</div>
+        <select id="thumb-style" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem">
+          <option value="bold">Bold & Punchy</option>
+          <option value="cinematic">Cinematic</option>
+          <option value="luxury">Luxury</option>
+          <option value="minimal">Minimal</option>
+          <option value="neon">Neon</option>
+        </select>
+      </div>
+      <div>
+        <div class="prompt-label" style="margin-bottom:6px">Title / Text Overlay <span style="color:var(--muted);font-weight:400">(optional)</span></div>
+        <input id="thumb-title" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. 5 Ways to Lose Weight Fast">
+      </div>
+    </div>
 
-            <button class="btn btn-outline btn-md" id="thumb-analyse-btn" style="width:100%" onclick="analyseThumbnailStyles()">🔍 Analyse Trending Styles</button>
+    <div style="margin-bottom:14px">
+      <div class="prompt-label" style="margin-bottom:6px">Subject <span style="color:var(--muted);font-weight:400">(optional)</span></div>
+      <input id="thumb-subject" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coach, luxury product, before/after">
+    </div>
 
-            <div id="thumb-analyse-loading" style="display:none;text-align:center;padding:24px">
-              <div class="spin-ring" style="margin:0 auto 10px"></div>
-              <div style="font-size:.8rem;color:var(--gold)">Studying viral thumbnails in your niche…</div>
-            </div>
+    <div style="margin-bottom:14px">
+      <div class="prompt-label" style="margin-bottom:6px">Reference Thumbnail URL <span style="color:var(--muted);font-weight:400">(optional — match its style)</span></div>
+      <input id="thumb-reference-url" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="https://example.com/thumbnail.jpg">
+    </div>
+    <div style="margin-bottom:14px">
+  <div class="prompt-label" style="margin-bottom:6px">Clone Thumbnail Style <span style="color:var(--muted);font-weight:400">(optional — paste URL or upload)</span></div>
+  <div style="display:flex;gap:0;background:var(--panel);border-radius:8px;padding:3px;margin-bottom:10px;width:fit-content">
+    <button id="ref-tab-url" onclick="switchRefTab('url')" style="padding:5px 16px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;background:var(--gold);color:#000;transition:all .18s">🔗 URL</button>
+    <button id="ref-tab-upload" onclick="switchRefTab('upload')" style="padding:5px 16px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;background:transparent;color:var(--muted);transition:all .18s">⬆ Upload</button>
+  </div>
+  <div id="ref-pane-url">
+    <input id="thumb-reference-url" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="https://i.ytimg.com/vi/... paste any thumbnail URL" oninput="clearRefUpload()">
+  </div>
+  <div id="ref-pane-upload" style="display:none">
+    <div class="upload-area" id="ref-upload-area" onclick="document.getElementById('ref-image-input').click()" style="padding:16px;margin-bottom:0">
+      <input type="file" id="ref-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleRefImageUpload(this)">
+      <div id="ref-upload-placeholder">
+        <div class="upload-icon" style="font-size:1.4rem">🖼</div>
+        <div class="upload-title" style="font-size:.82rem">Drop or click to upload reference thumbnail</div>
+        <div class="upload-sub">JPG, PNG or WEBP · max 10MB</div>
+      </div>
+      <div id="ref-upload-preview" style="display:none;text-align:center">
+        <img id="ref-upload-img" style="max-height:100px;max-width:100%;border-radius:8px;object-fit:contain;margin-bottom:6px">
+        <div style="font-size:.72rem;color:var(--gold)" id="ref-upload-name"></div>
+        <button class="btn btn-ghost btn-sm" style="font-size:.65rem;margin-top:4px" onclick="event.stopPropagation();clearRefUpload()">Remove ✕</button>
+      </div>
+    </div>
+  </div>
+  <div id="ref-style-profile" style="display:none;margin-top:10px;padding:10px 14px;background:var(--panel);border:1px solid var(--gold3);border-radius:8px">
+    <div style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px">✦ Style Detected</div>
+    <div id="ref-style-profile-text" style="font-size:.78rem;color:var(--muted);line-height:1.7"></div>
+  </div>
+</div>
+<button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
 
-            <!-- Style Cards -->
-            <div id="thumb-styles" style="display:none;margin-top:16px">
-              <div class="prompt-label" style="margin-bottom:10px">Choose a proven style to generate:</div>
-              <div id="thumb-style-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
-            </div>
-          </div>
+    <div id="thumb-gen-loading" style="display:none;text-align:center;padding:24px">
+      <div class="spin-ring" style="margin:0 auto 10px"></div>
+      <div style="font-size:.8rem;color:var(--gold)">Generating your thumbnail with DALL-E 3…</div>
+    </div>
 
-          <!-- Step 2 — Customise & Generate -->
-          <div class="create-section" id="thumb-gen-section" style="display:none;margin-bottom:16px">
-            <div class="create-header">
-              <div>
-                <div class="create-title">Step 2 — Customise & Generate</div>
-                <div style="font-size:.75rem;color:var(--muted);margin-top:2px" id="thumb-selected-style-label">Selected style</div>
-              </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Main Text / Title</div>
-                <input id="thumb-title" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. 5 Ways to Lose Weight Fast">
-              </div>
-              <div>
-                <div class="prompt-label" style="margin-bottom:6px">Subject / Person</div>
-                <input id="thumb-subject" class="prompt-textarea" style="height:auto;padding:10px 14px;font-size:.85rem" placeholder="e.g. fitness coach, luxury product, before/after">
-              </div>
-            </div>
-
-            <div style="margin-bottom:14px">
-              <div class="prompt-label" style="margin-bottom:6px">Mood / Emotion</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap">
-                <button class="tone-btn active" data-thumb-mood="excited and energetic" onclick="selectThumbMood(this)">🔥 Excited</button>
-                <button class="tone-btn" data-thumb-mood="shocked and surprised" onclick="selectThumbMood(this)">😱 Shocked</button>
-                <button class="tone-btn" data-thumb-mood="confident and powerful" onclick="selectThumbMood(this)">💪 Confident</button>
-                <button class="tone-btn" data-thumb-mood="luxury and aspirational" onclick="selectThumbMood(this)">💎 Luxury</button>
-                <button class="tone-btn" data-thumb-mood="curious and mysterious" onclick="selectThumbMood(this)">🤔 Curious</button>
-              </div>
-            </div>
-
-            <button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
-
-            <div id="thumb-gen-loading" style="display:none;text-align:center;padding:24px">
-              <div class="spin-ring" style="margin:0 auto 10px"></div>
-              <div style="font-size:.8rem;color:var(--gold)">Generating your viral thumbnail…</div>
-            </div>
-
-            <!-- Result -->
-            <div id="thumb-result" style="display:none;margin-top:16px">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
-                <div>
-                  <div class="prompt-label" style="margin-bottom:8px">Generated Thumbnail</div>
-                  <img id="thumb-result-img" style="width:100%;border-radius:10px;border:1px solid var(--border2)">
-                  <div style="display:flex;gap:8px;margin-top:10px">
-                    <button class="btn btn-gold btn-sm" style="flex:1" onclick="downloadThumbnail()">Download ↓</button>
-                    <button class="btn btn-outline btn-sm" onclick="generateThumbnail()">Regenerate ↺</button>
-                    <button class="btn btn-outline btn-sm" onclick="saveThumbnailToLibrary()">Save 🔖</button>
-                  </div>
-                </div>
-                <div>
-                  <div class="prompt-label" style="margin-bottom:8px">Why This Works</div>
-                  <div id="thumb-why-works" style="font-size:.82rem;color:var(--muted);line-height:1.6;background:var(--noir3);border:1px solid var(--border);border-radius:8px;padding:14px"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Thumbnail Library -->
-          <div id="thumb-library-section" style="display:none">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-              <div class="prompt-label">Saved Thumbnails</div>
-              <button class="btn btn-ghost btn-sm" onclick="clearThumbLibrary()">Clear All</button>
-            </div>
-            <div id="thumb-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+    <div id="thumb-result" style="display:none;margin-top:20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+        <div>
+          <div class="prompt-label" style="margin-bottom:8px">Generated Thumbnail</div>
+          <img id="thumb-result-img" style="width:100%;border-radius:10px;border:1px solid var(--border2)">
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-gold btn-sm" style="flex:1" onclick="downloadThumbnail()">Download ↓</button>
+            <button class="btn btn-outline btn-sm" onclick="generateThumbnail()">Regenerate ↺</button>
+            <button class="btn btn-outline btn-sm" onclick="saveThumbnailToLibrary()">Save 🔖</button>
           </div>
         </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:8px">Saved Thumbnails</div>
+          <div id="thumb-library-section" style="display:none">
+            <div id="thumb-library-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+            <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px" onclick="clearThumbLibrary()">Clear All</button>
+          </div>
+          <div id="thumb-library-empty-msg" style="font-size:.8rem;color:var(--muted)">No saved thumbnails yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="thumb-library-section-main" style="margin-top:8px;display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="prompt-label">Saved Thumbnails</div>
+      <button class="btn btn-ghost btn-sm" onclick="clearThumbLibrary()">Clear All</button>
+    </div>
+    <div id="thumb-library-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px"></div>
+  </div>
+</div>
         <!-- TEMPLATES SECTION -->
         <div id="dash-section-templates" style="display:none">
           <div style="margin-bottom:24px">
@@ -1788,7 +1784,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 <!-- ══════════════════════════════
      ONBOARDING MODAL — 3 SCREENS
 ══════════════════════════════ -->
-<div id="onboarding-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;padding:20px">
+<div id="onboarding-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:1000;align-items:center;justify-content:center;padding:20px;overflow-y:auto;align-items:flex-start">
   <div style="background:var(--panel);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:560px;padding:40px;position:relative">
 
     <!-- Progress bar -->
@@ -1800,64 +1796,62 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
     <!-- SCREEN 1 — What do you want to grow? -->
     <div id="ob-screen-1">
-      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">What do you want to grow?</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:32px">Choose your mode and we'll tailor your content strategy.</div>
-
-      <div style="display:grid;gap:12px">
-        <button class="ob-mode-btn" onclick="selectMode('personal')" id="mode-personal">
+      <div style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;opacity:.8">Step 1 of 3</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Let's create your 7-day content plan</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:4px">First, tell us what you're building.</div>
+      <div style="font-size:.78rem;color:var(--gold);opacity:.8;margin-bottom:28px">Takes less than 60 seconds</div>
+      <div style="display:grid;gap:10px">
+        <button class="ob-mode-btn" onclick="selectMode('personal')" id="mode-personal" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
           <div class="ob-mode-icon">📈</div>
-          <div>
-            <div class="ob-mode-title">Personal Brand</div>
-            <div class="ob-mode-desc">Coaches, creators, consultants & thought leaders</div>
-          </div>
+          <div><div class="ob-mode-title">Personal Brand</div><div class="ob-mode-desc">Grow your personal brand with consistent, high-quality content</div></div>
           <div class="ob-mode-arrow">→</div>
         </button>
-        <button class="ob-mode-btn" onclick="selectMode('local')" id="mode-local">
+        <button class="ob-mode-btn" onclick="selectMode('local')" id="mode-local" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
           <div class="ob-mode-icon">📍</div>
-          <div>
-            <div class="ob-mode-title">Local Business</div>
-            <div class="ob-mode-desc">Restaurants, salons, gyms & service businesses</div>
-          </div>
+          <div><div class="ob-mode-title">Local Business</div><div class="ob-mode-desc">Get more customers with content that attracts and converts</div></div>
           <div class="ob-mode-arrow">→</div>
         </button>
-        <button class="ob-mode-btn" onclick="selectMode('product')" id="mode-product">
+        <button class="ob-mode-btn" onclick="selectMode('product')" id="mode-product" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
           <div class="ob-mode-icon">🛒</div>
-          <div>
-            <div class="ob-mode-title">Sell a Product</div>
-            <div class="ob-mode-desc">E-commerce, dropshipping & product brands</div>
-          </div>
+          <div><div class="ob-mode-title">Sell a Product</div><div class="ob-mode-desc">Drive more sales with content that stops the scroll and converts</div></div>
+          <div class="ob-mode-arrow">→</div>
+        </button>
+        <button class="ob-mode-btn" onclick="selectMode('realestate')" id="mode-realestate" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+          <div class="ob-mode-icon">🏡</div>
+          <div><div class="ob-mode-title">Real Estate</div><div class="ob-mode-desc">Turn property listings into content that attracts buyers</div></div>
           <div class="ob-mode-arrow">→</div>
         </button>
       </div>
+      <div style="margin-top:20px;font-size:.75rem;color:var(--muted);text-align:center;opacity:.7">Next: we'll generate your 7-day content plan</div>
     </div>
 
     <!-- SCREEN 2 — Tell us about your brand -->
-    <div<div id="ob-screen-2" style="display:none">
+    <div<div<div id="ob-screen-2" style="display:none">
       <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Step 2 of 3</div>
       <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px" id="ob-screen2-title">What do you want to create content about?</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:4px" id="ob-screen2-sub">We'll use this to generate your content plan.</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:4px">We'll use this to generate your content plan.</div>
       <div style="font-size:.78rem;color:var(--gold);margin-bottom:24px">Takes 10 seconds</div>
       <div style="margin-bottom:24px">
-        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:14px 16px;font-size:.95rem;border:1px solid var(--border2);transition:border-color .2s,box-shadow .2s" placeholder="e.g. fitness coaching, mindset, business strategy…" onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 3px rgba(212,168,83,.15)'" onblur="this.style.borderColor='var(--border2)';this.style.boxShadow='none'">
+        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:14px 16px;font-size:.95rem;transition:border-color .2s,box-shadow .2s" placeholder="e.g. fitness coaching, mindset, business strategy..." onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 3px rgba(212,168,83,.15)'" onblur="this.style.borderColor='';this.style.boxShadow='none'">
       </div>
       <div style="margin-bottom:28px">
         <div style="font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Optional: What's your goal?</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="ob-goals">
-          <button class="tone-btn" data-goal="followers" onclick="selectGoal(this)">📈 Grow followers</button>
-          <button class="tone-btn" data-goal="clients" onclick="selectGoal(this)">🤝 Get clients</button>
-          <button class="tone-btn" data-goal="authority" onclick="selectGoal(this)">👑 Build authority</button>
-          <button class="tone-btn" data-goal="sales" onclick="selectGoal(this)">💰 Drive sales</button>
+          <button class="tone-btn" data-goal="followers" onclick="selectGoal(this)">Grow followers</button>
+          <button class="tone-btn" data-goal="clients" onclick="selectGoal(this)">Get clients</button>
+          <button class="tone-btn" data-goal="authority" onclick="selectGoal(this)">Build authority</button>
+          <button class="tone-btn" data-goal="sales" onclick="selectGoal(this)">Drive sales</button>
         </div>
       </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline btn-md" onclick="goObScreen(1)">← Back</button>
         <button class="btn btn-gold btn-md" style="flex:1" id="ob-generate-btn" onclick="obGeneratePlan()">Generate My 7-Day Plan →</button>
       </div>
-      <div style="text-align:center;font-size:.72rem;color:var(--muted2);margin-top:10px">No planning or editing required</div>
+      <div style="text-align:center;font-size:.72rem;color:var(--muted);margin-top:10px">No planning or editing required</div>
       <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
       <div id="ob-loading" style="display:none;text-align:center;padding:20px 0">
         <div class="spin-ring" style="margin:0 auto 12px"></div>
-        <div id="ob-loading-text" style="font-size:.85rem;color:var(--gold)">Creating your content plan…</div>
+        <div id="ob-loading-text" style="font-size:.85rem;color:var(--gold)">Creating your content plan...</div>
       </div>
     </div>
     <div id="ob-screen-3" style="display:none">
@@ -1892,16 +1886,23 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
           </div>
         </div>
       </div>
+    </div>
 
-      <div style="background:rgba(212,168,83,.06);border:1px solid var(--gold3);border-radius:8px;padding:14px;margin-bottom:24px">
-        <div style="font-size:.75rem;color:var(--gold);font-weight:600;margin-bottom:6px">✦ What we'll create for you</div>
-        <div style="font-size:.8rem;color:var(--muted);line-height:1.6" id="profile-summary"></div>
+    <!-- SCREEN 3 — 7-Day Plan Result -->
+    <div id="ob-screen-3" style="display:none">
+      <div style="background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:16px">✦</span>
+        <span style="font-size:.85rem;color:var(--gold);font-weight:600">You just created a full week of content instantly</span>
       </div>
-
+      <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:6px">Your 7-Day Content Plan</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:20px" id="ob-plan-subtitle">Personalised for your niche</div>
+      <div id="ob-plan-cards" style="display:grid;gap:10px;margin-bottom:24px"></div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline btn-md" onclick="goObScreen(2)">← Edit</button>
-        <button class="btn btn-gold btn-lg" style="flex:1" onclick="generateContentPlan()">Generate My 7-Day Plan →</button>
+        <button class="btn btn-gold btn-md" style="flex:1" onclick="finishOnboarding()">Go to Dashboard →</button>
       </div>
+    </div>
+
     </div>
 
   </div>
@@ -1965,7 +1966,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 </div>
 <div class="page" id="page-pricing">
   <div style="background:var(--noir2);border-bottom:1px solid var(--border);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;">
-    <div class="wordmark" style="font-size:1.3rem;cursor:pointer" onclick="go('landing')">Lux<span style="color:var(--text);font-style:italic">Reel</span></div>
+    <div class="wordmark" style="font-size:1.3rem;cursor:pointer" onclick="go('landing')">Lux<span style="color:var(--text);font-style:italic">Clip</span></div>
     <div style="display:flex;gap:10px">
       <button class="btn btn-ghost btn-sm" onclick="go('dashboard')">← Dashboard</button>
       <button class="btn btn-gold btn-sm" onclick="go('auth')">Get Started</button>
@@ -2087,7 +2088,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       <div class="settings-layout">
         <div class="settings-nav">
           <div class="settings-nav-item active" onclick="switchSettings('profile',this)">Profile</div>
-          <div class="settings-nav-item" onclick="switchSettings('api',this)">Connected Apps</div>
+          
           <div class="settings-nav-item" onclick="switchSettings('notifications',this)">Notifications</div>
           <div class="settings-nav-item" onclick="switchSettings('billing',this)">Billing</div>
           <div class="settings-nav-item" onclick="switchSettings('danger',this)">Account</div>
@@ -2570,6 +2571,280 @@ function hideOnboarding(){
   modal.style.display='none';
 }
 
+function updateStep2ForMode(mode){
+  const cfg=obModeConfig[mode]||obModeConfig.personal;
+  const t=document.getElementById('ob-s2-title');
+  const inp=document.getElementById('ob-niche');
+  if(t) t.textContent=cfg.title;
+  if(inp) inp.placeholder=cfg.placeholder;
+}
+function copyObHook(btn){
+  var card=btn.parentElement.parentElement;
+  var hookEl=card.querySelector('div[style*="font-weight:600"]');
+  var text=hookEl?hookEl.textContent.replace(/^"|"$/g,''):'';
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Hook copied!','success');});}
+  else{toast('Copy not supported','error');}
+}
+function selectObGoalSimple(goal,btn){
+  localStorage.setItem('lx_goal',goal);
+  document.querySelectorAll('#ob-goal-buyers,#ob-goal-brand').forEach(function(b){
+    b.style.borderColor='var(--border)';b.style.color='var(--muted)';b.style.background='var(--noir3)';
+  });
+  btn.style.borderColor='var(--gold)';btn.style.color='var(--gold)';btn.style.background='rgba(201,168,76,.08)';
+}
+function showLoadingThenPlan(){
+  const modal=document.getElementById('onboarding-modal');
+  [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
+  const ls=document.getElementById('ob-screen-loading');
+  if(ls) ls.style.display='block';
+  const steps=['ls-1','ls-2','ls-3','ls-4'];
+  steps.forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el) el.style.opacity='1';
+    }, i*600);
+  });
+  const target=document.getElementById('page-'+page);
+  if(target){
+    target.classList.add('active');
+    target.style.display='block';
+    window.scrollTo(0,0);
+  }
+  if(page==='dashboard'){renderGrid();updateStats();loadContentPlan();renderAdLibrary();}
+  if(page==='admin'){loadAdminDashboard();}
+  if(page==='settings'){loadSettingsPage();}
+}
+
+// ══════════════════════════════
+// AUTH
+// ══════════════════════════════
+let authMode='signup';
+
+function switchAuth(mode){
+  authMode=mode;
+  const tabs=document.querySelectorAll('.auth-tab');
+  tabs[0].classList.toggle('active',mode==='signup');
+  tabs[1].classList.toggle('active',mode==='signin');
+  document.getElementById('signup-fields').style.display=mode==='signup'?'block':'none';
+  document.getElementById('auth-submit-btn').textContent=mode==='signup'?'Create Free Account →':'Sign In →';
+  document.getElementById('auth-switch-text').innerHTML=mode==='signup'
+    ?'Already have an account? <a onclick="switchAuth(\'signin\')">Sign in</a>'
+    :'Don\'t have an account? <a onclick="switchAuth(\'signup\')">Sign up</a>';
+  setAuthError('');
+}
+
+function setAuthError(msg){
+  const el=document.getElementById('auth-error');
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.toggle('show',!!msg);
+}
+
+async function handleForgotPassword(){
+  const email=document.getElementById('auth-email').value.trim();
+  if(!email){setAuthError('Enter your email first');return}
+  try{
+    const{error}=await sb.auth.resetPasswordForEmail(email,{
+      redirectTo:window.location.origin
+    });
+    if(error)throw error;
+    toast('Password reset email sent ✦','success');
+  }catch(e){
+    setAuthError('Could not send reset email — please try again');
+  }
+}
+
+async function handleAuth(){
+  if(!sb){
+    toast('Supabase not connected','error');
+    return;
+  }
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  if(!email||!password){setAuthError('Please enter your email and password.');return}
+
+  const btn=document.getElementById('auth-submit-btn');
+  btn.disabled=true;
+  btn.textContent='Please wait…';
+  setAuthError('');
+
+  try{
+    let result;
+    if(authMode==='signup'){
+      result=await sb.auth.signUp({email,password,options:{emailRedirectTo:null}});
+    } else {
+      result=await sb.auth.signInWithPassword({email,password});
+    }
+
+    if(result.error){
+      setAuthError(result.error.message);
+      btn.disabled=false;
+      btn.textContent=authMode==='signup'?'Create Free Account →':'Sign In →';
+      return;
+    }
+
+    // Manually grab session in case onAuthStateChange doesn't fire
+    const{data:{session}}=await sb.auth.getSession();
+    if(session){
+      currentUser=session.user;
+      updateUserUI();
+      await loadVideos();
+      go('dashboard');
+      toast(authMode==='signup'?'Welcome to LuxClip! ✦':'Welcome back! ✦','success');
+      return;
+    }
+
+    // Sign up with email confirmation pending
+    if(authMode==='signup'&&result.data.user&&!session){
+      setAuthError('');
+      btn.disabled=false;
+      btn.textContent='Create Free Account →';
+      toast('Check your email to confirm your account ✦','info');
+      return;
+    }
+
+    setAuthError('Could not sign in. Please try again.');
+    btn.disabled=false;
+    btn.textContent=authMode==='signup'?'Create Free Account →':'Sign In →';
+
+  }catch(e){
+    setAuthError('Something went wrong. Please try again.');
+    btn.disabled=false;
+    btn.textContent=authMode==='signup'?'Create Free Account →':'Sign In →';
+  }
+}
+
+async function handleSignOut(){
+  if(sb)await sb.auth.signOut();
+  currentUser=null;
+  videos=[];
+  renderGrid();
+  go('landing');
+  toast('Signed out','info');
+}
+
+function updateUserUI(){
+  const email=currentUser?.email||'';
+  const raw=email.split('@')[0]||'User';
+  // Clean up dots and underscores, capitalise first word only
+  const name=raw.split(/[._]/)[0];
+  const fn=name.charAt(0).toUpperCase()+name.slice(1).toLowerCase();
+  const initial=fn.charAt(0).toUpperCase();
+  ['sidebar-avatar','settings-avatar'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=initial});
+  ['sidebar-name','settings-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=fn});
+  const df=document.getElementById('dash-first-name');if(df)df.textContent=fn;
+  const sf=document.getElementById('s-first');if(sf&&!sf.value)sf.value=fn;
+}
+
+// ══════════════════════════════
+// DATABASE — Videos
+// ══════════════════════════════
+
+async function loadVideos(){
+  if(!sb||!currentUser){videos=[];renderGrid();updateStats();return}
+  try{
+    const{data,error}=await sb
+      .from('videos')
+      .select('*')
+      .eq('user_id',currentUser.id)
+      .order('created_at',{ascending:false});
+    if(error)throw error;
+    videos=(data||[]).map(r=>({
+      id:r.id,
+      prompt:r.prompt,
+      tone:r.tone||'luxury',
+      video_url:r.video_url||SAMPLE_VIDEO,
+      caption:r.caption||'',
+      status:r.status||'done',
+      created:r.created_at,
+    }));
+  }catch(e){
+    console.warn('loadVideos failed, using local fallback',e);
+    videos=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+  }
+  renderGrid();updateStats();
+}
+
+async function saveVideo(video){
+  if(!sb||!currentUser){
+    // Fallback to localStorage if Supabase not configured
+    const local=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+    const idx=local.findIndex(v=>v.id===video.id);
+    if(idx>=0)local[idx]=video; else local.unshift(video);
+    localStorage.setItem('lr_videos',JSON.stringify(local));
+    return video.id;
+  }
+  try{
+    const row={
+      user_id:currentUser.id,
+      prompt:video.prompt,
+      tone:video.tone,
+      video_url:video.video_url,
+      caption:video.caption,
+      status:video.status,
+      task_id:video.task_id||null,
+    };
+    // If id is a timestamp (local temp), insert fresh; otherwise update
+    if(typeof video.id==='number'){
+      const{data,error}=await sb.from('videos').insert(row).select().single();
+      if(error)throw error;
+      video.id=data.id; // swap temp id for DB uuid
+      return data.id;
+    } else {
+      const{error}=await sb.from('videos').update(row).eq('id',video.id);
+      if(error)throw error;
+      return video.id;
+    }
+  }catch(e){
+    console.warn('saveVideo DB failed, local fallback',e);
+    const local=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+    local.unshift(video);
+    localStorage.setItem('lr_videos',JSON.stringify(local));
+    return video.id;
+  }
+}
+
+async function deleteVideoFromDB(id){
+  if(sb&&currentUser&&typeof id!=='number'){
+    await sb.from('videos').delete().eq('id',id).eq('user_id',currentUser.id);
+  } else {
+    const local=JSON.parse(localStorage.getItem('lr_videos')||'[]');
+    localStorage.setItem('lr_videos',JSON.stringify(local.filter(v=>v.id!==id)));
+  }
+}
+
+// ══════════════════════════════
+// CONTENT PLAN SYSTEM
+// ══════════════════════════════
+let contentPlan=[];
+let selectedGoal='followers';
+let selectedObTone='educational';
+let selectedMode='personal';
+let selectedAudience='';
+let activeCalDay=null;
+let currentObScreen=1;
+
+const MODE_LABELS={personal:'📈 Personal Brand',local:'📍 Local Business',product:'🛒 Product Brand'}
+const MODE_NICHE_HINTS={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. restaurant, hair salon, gym…',product:'e.g. skincare, fashion, supplements…'}
+const MODE_GOAL_OPTIONS={
+  personal:[{val:'followers',label:'📈 Grow followers'},{val:'clients',label:'🤝 Get clients'},{val:'authority',label:'👑 Build authority'}],
+  local:[{val:'footfall',label:'📍 Drive foot traffic'},{val:'bookings',label:'📅 Get bookings'},{val:'awareness',label:'📢 Build awareness'}],
+  product:[{val:'sales',label:'💰 Drive sales'},{val:'brand',label:'✨ Build brand'},{val:'viral',label:'🚀 Go viral'}],
+}
+
+function showOnboarding(){
+  const modal=document.getElementById('onboarding-modal');
+  modal.classList.add('open');
+  modal.style.display='flex';
+  goObScreen(1);
+}
+
+function hideOnboarding(){
+  const modal=document.getElementById('onboarding-modal');
+  modal.classList.remove('open');
+  modal.style.display='none';
+}
+
 function goObScreen(n){
   currentObScreen=n;
   document.getElementById('ob-screen-1').style.display=n===1?'block':'none';
@@ -2585,7 +2860,7 @@ function goObScreen(n){
   if(n===3) buildProfileSummary();
 }
 
-function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating…','Day 2 generating…','Day 3 generating…','Day 4 generating…','Day 5 generating…','Day 6 generating…','Day 7 generating…'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan…';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';generateContentPlan();},5000);} function selectMode(mode){
+function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating…','Day 2 generating…','Day 3 generating…','Day 4 generating…','Day 5 generating…','Day 6 generating…','Day 7 generating…'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan…';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';generateContentPlan();},5000);} function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';generateContentPlan();},5000);}function selectMode(mode){
   selectedMode=mode;
   document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('mode-'+mode).classList.add('selected');
@@ -2609,7 +2884,348 @@ function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.
   goalsEl.innerHTML=goals.map(g=>`<button class="tone-btn" data-goal="${g.val}" onclick="selectGoal(this)">${g.label}</button>`).join('');
   selectedGoal=goals[0].val;
 
-  const headlines={personal:'What do you want to create content about?',local:'What business are you promoting?',product:'What product are you selling?',realestate:'What property are you promoting?'};const placeholders={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. coffee shop in Brooklyn, hair salon in London…',product:'e.g. skincare brand, fitness supplements, fashion line…',realestate:'e.g. Luxury villa in Miami, 2-bed apartment in London'};const h=document.getElementById('ob-screen2-title');const p=document.getElementById('ob-niche');if(h)h.textContent=headlines[mode]||headlines.personal;if(p)p.placeholder=placeholders[mode]||placeholders.personal;setTimeout(()=>goObScreen(2),150);
+  const headlines={personal:'What do you want to create content about?',local:'What business are you promoting?',product:'What product are you selling?',realestate:'What property are you promoting?'};const placeholders={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. coffee shop in Brooklyn, hair salon in London…',product:'e.g. skincare brand, fitness supplements, fashion line…',realestate:'e.g. Luxury villa in Miami, 2-bed apartment in London'};const h=document.getElementById('ob-screen2-title');const p=document.getElementById('ob-niche');if(h)h.textContent=headlines[mode]||headlines.personal;if(p)p.placeholder=placeholders[mode]||placeholders.personal;const headlines={personal:'What do you want to create content about?',local:'What business are you promoting?',product:'What product are you selling?',realestate:'What property are you promoting?'};const placeholders={personal:'e.g. fitness coaching, mindset, business strategy...',local:'e.g. coffee shop in Brooklyn, hair salon in London...',product:'e.g. skincare brand, fitness supplements, fashion line...',realestate:'e.g. Luxury villa in Miami, 2-bed apartment in London'};const h=document.getElementById('ob-screen2-title');const p=document.getElementById('ob-niche');if(h)h.textContent=headlines[mode]||headlines.personal;if(p)p.placeholder=placeholders[mode]||placeholders.personal;setTimeout(()=>goObScreen(2),150);
+}
+
+function selectGoal(btn){
+  document.querySelectorAll('#ob-goals .tone-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedGoal=btn.dataset.goal;
+}
+
+function selectObTone(btn){
+  document.querySelectorAll('[data-tone]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedObTone=btn.dataset.tone;
+  selectedTone=btn.dataset.tone;
+}
+
+function buildProfileSummary(){
+  const niche=document.getElementById('ob-niche').value.trim();
+  const audience=document.getElementById('ob-audience').value.trim();
+  selectedAudience=audience;
+
+  document.getElementById('profile-mode').textContent=MODE_LABELS[selectedMode]||selectedMode;
+  document.getElementById('profile-niche').textContent=niche||'—';
+  document.getElementById('profile-audience').textContent=audience||'—';
+  document.getElementById('profile-goal').textContent=selectedGoal;
+  document.getElementById('profile-tone').textContent=selectedObTone;
+
+  const summaries={
+    personal:`We'll create ${selectedObTone} content designed to attract ${audience||'your audience'} in the ${niche||'your'} space. Hooks will be crafted to build authority and ${selectedGoal==='clients'?'convert followers into clients':'grow your following'}.`,
+    local:`We'll create content that showcases your ${niche||'business'} to local customers. Each post will be designed to ${selectedGoal==='footfall'?'drive foot traffic':'generate bookings'} with a ${selectedObTone} tone.`,
+    product:`We'll create product-focused content targeting ${audience||'potential buyers'}. Videos will highlight your ${niche||'product'} with a ${selectedObTone} aesthetic to drive ${selectedGoal==='sales'?'conversions':'brand awareness'}.`,
+  };
+  document.getElementById('profile-summary').textContent=summaries[selectedMode]||'';
+}
+
+async function generateContentPlan(){
+  const niche=document.getElementById('ob-niche').value.trim();
+  const errEl=document.getElementById('ob-error');
+  if(!niche){errEl.textContent='Please enter your niche';errEl.style.display='block';goObScreen(2);return}
+  errEl.style.display='none';
+
+  if(!selectedGoal)selectedGoal='followers';
+  if(!selectedObTone)selectedObTone='educational';
+
+  // Save content profile to localStorage
+  const profile={mode:selectedMode,niche,audience:selectedAudience,goal:selectedGoal,tone:selectedObTone};
+  localStorage.setItem('lx_profile',JSON.stringify(profile));
+  localStorage.setItem('lx_niche',niche);
+  localStorage.setItem('lx_goal',selectedGoal);
+  localStorage.setItem('lx_tone',selectedObTone);
+
+  hideOnboarding();
+  document.getElementById('calendar-empty').style.display='none';
+  document.getElementById('calendar-loading').style.display='block';
+  document.getElementById('calendar-grid').innerHTML='';
+
+  try{
+    let res, attempts = 0;
+    while(attempts < 3){
+      try{
+        res=await fetch(`${SB_URL}/functions/v1/start-video`,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+          body:JSON.stringify({
+            action:'plan',
+            niche,
+            audience:selectedAudience,
+            mode:selectedMode,
+            goal:selectedGoal,
+            tone:selectedObTone,
+            today:new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})
+          })
+        });
+        break;
+      }catch(err){
+        attempts++;
+        if(attempts>=3)throw err;
+        await new Promise(r=>setTimeout(r,3000));
+      }
+    }
+    const data=await res.json();
+    const plan=data.plan||[];
+    contentPlan=plan;
+
+    // Save to Supabase
+    if(sb&&currentUser){
+      await sb.from('content_plans').delete().eq('user_id',currentUser.id);
+      const rows=plan.map(p=>({
+        user_id:currentUser.id,
+        day:p.day,
+        post_type:p.postType,
+        hook:p.hook,
+        topic:p.topic,
+        tone:selectedObTone,
+        status:'pending',
+      }));
+      await sb.from('content_plans').insert(rows);
+    }
+
+    // Store niche in localStorage
+    localStorage.setItem('lx_niche',niche);
+    localStorage.setItem('lx_goal',selectedGoal);
+    localStorage.setItem('lx_tone',selectedObTone);
+
+    document.getElementById('plan-niche-label').textContent=`${niche} · ${selectedGoal} · ${selectedObTone}`;
+    console.log('Rendering calendar with', plan.length, 'days');
+    renderCalendar(plan);
+    console.log('Calendar rendered');
+  }catch(e){
+    console.error('Plan generation error:',e);
+    toast('Could not generate plan — please try again','error');
+    document.getElementById('calendar-empty').style.display='block';
+  }
+
+  document.getElementById('calendar-loading').style.display='none';
+}
+
+function renderCalendar(plan){
+  const grid=document.getElementById('calendar-grid');
+  if(!plan||plan.length===0){
+    document.getElementById('calendar-empty').style.display='block';
+    return;
+  }
+  document.getElementById('calendar-empty').style.display='none';
+  grid.innerHTML=plan.map(p=>`
+    <div class="cal-card ${p.video_id?'has-video':''}" id="cal-card-${p.day}">
+      ${p.video_id?'<div class="cal-done-badge">✦ Done</div>':''}
+      <div class="cal-day-num">Day ${p.day}</div>
+      <div class="cal-day-date">${p.date||''}</div>
+      <span class="cal-post-type ${(p.postType||p.post_type||'reel').toLowerCase()}">${p.postType||p.post_type||'Reel'}</span>
+      <div class="cal-hook">${esc(p.hook||'')}</div>
+      <div class="cal-topic" style="margin-bottom:8px">${esc(p.topic||'')}</div>
+      <div style="font-size:.68rem;color:var(--gold-dim);font-style:italic;margin-bottom:10px;padding:6px 8px;background:rgba(212,168,83,.05);border-radius:4px;border-left:2px solid var(--gold3)">🎬 ${esc(p.videoPrompt||p.topic||'')}</div>
+      ${!p.video_id?`<button class="cal-gen-btn" onclick="openCalDay(${p.day})">🎬 Generate Reel</button>`:'<div style="font-size:.7rem;color:var(--green);text-align:center;padding:6px">✦ Video Created</div>'}
+    </div>`).join('');
+}
+
+function openCalDay(day){
+  const plan=contentPlan.find(p=>p.day===day);
+  if(!plan)return;
+  activeCalDay=plan;
+
+  document.getElementById('quick-gen-title').textContent=`✦ Day ${day} — ${plan.postType||plan.post_type}`;
+  document.getElementById('quick-gen-subtitle').textContent='Edit and customise before generating';
+
+  // Fill all editable fields
+  const hookEl=document.getElementById('quick-hook');
+  const topicEl=document.getElementById('quick-topic');
+  if(hookEl)hookEl.value=plan.hook||'';
+  if(topicEl)topicEl.value=plan.topic||'';
+  document.getElementById('quick-prompt').value=plan.videoPrompt||plan.topic||'';
+
+  // Pre-fill image generator
+  const imgPromptEl=document.getElementById('img-gen-prompt');
+  if(imgPromptEl)imgPromptEl.value=plan.videoPrompt||plan.topic||'';
+  document.getElementById('quick-generate-section').style.display='block';
+  document.getElementById('quick-generate-section').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function hideQuickGenerate(){
+  document.getElementById('quick-generate-section').style.display='none';
+  activeCalDay=null;
+}
+
+async function handleQuickGenerate(){
+  if(generating){toast('Already generating — please wait','info');return}
+  const prompt=document.getElementById('quick-prompt').value.trim();
+  const hook=document.getElementById('quick-hook')?.value.trim()||'';
+  const topic=document.getElementById('quick-topic')?.value.trim()||'';
+  if(!prompt){toast('Enter a video prompt first','error');return}
+
+  generating=true;
+  const btn=document.getElementById('quick-gen-btn');
+  btn.disabled=true;
+  btn.textContent='Generating…';
+
+  const tone=selectedObTone||selectedTone||'luxury';
+  const video={
+    id:Date.now(),
+    prompt,tone,
+    video_url:SAMPLE_VIDEO,caption:'',status:'pending',
+    task_id:'',
+    created:new Date().toISOString(),
+  };
+  videos.unshift(video);renderGrid();updateStats();
+
+  try{
+    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
+    body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury',userId:currentUser?.id||''}),
+    });
+    const startData=await startRes.json();
+    console.log('Start response:',JSON.stringify(startData));
+    if(!startRes.ok||startData.error){
+      toast(startData.error||'Video generation failed — please try again','error');
+      btn.disabled=false;btn.textContent='🎬 Generate Reel';
+      generating=false;
+      videos.shift();renderGrid();
+      return;
+    }
+    video.caption=fallbackCaption();
+    video.task_id=startData.taskId||startData.requestId||'';
+
+    await saveVideo(video);
+    renderGrid();
+    btn.disabled=false;btn.textContent='🎬 Generate Reel';
+    generating=false;
+    if(video.task_id){
+      toast('Reel generating — ready in ~60 seconds ✦','info');
+      watchVideoJob(video);
+    }else{
+      toast('Could not start generation — please try again','error');
+    }
+  }catch(e){
+    console.warn('Quick generate failed',e);
+    video.status='done';
+    await saveVideo(video);
+    renderGrid();updateStats();
+    btn.disabled=false;btn.textContent='🎬 Generate Reel';
+    generating=false;
+  }
+}
+
+async function loadContentPlan(){
+  if(!sb||!currentUser)return;
+
+  // Pre-warm the function — delayed so it doesn't block initial render
+  setTimeout(()=>{
+    if(ls) ls.style.display='none';
+    renderPlanScreen();
+  }, 3000);
+}
+function renderPlanScreen(){
+  var mode=localStorage.getItem("lx_mode")||"personal";
+  var nicheEl=document.getElementById("ob-niche");
+  var niche=(nicheEl&&nicheEl.value.trim())?nicheEl.value.trim():"your niche";
+  var cfg=obModeConfig[mode]||obModeConfig.personal;
+  var sub=document.getElementById("ob-plan-subtitle");
+  if(sub)sub.textContent="Personalised for: "+niche;
+  var container=document.getElementById("ob-plan-cards");
+  if(!container)return;
+  var html="";
+  cfg.days.forEach(function(d){
+    var hook=d.hook.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[property\]/g,niche).replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area").replace(/\[neighbourhood\]/g,"the area").replace(/\[X\]/g,"several").replace(/\[benefit\]/g,"perform").replace(/\[timeframe\]/g,"30 days").replace(/\[offer\]/g,"special offer").replace(/\[location\/hours\]/g,"our location").replace(/\[time\/effort\]/g,"hours").replace(/\[service\]/g,niche).replace(/\[main service\]/g,niche);
+    var caption=d.caption.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[service\]/g,niche).replace(/\[main service\]/g,niche).replace(/\[offer\]/g,"special offer").replace(/\[location\/hours\]/g,"our location").replace(/\[timeframe\]/g,"30 days").replace(/\[benefit\]/g,"perform").replace(/\[time\/effort\]/g,"hours").replace(/\[X\]/g,"several").replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area");
+    var shortCaption=caption.length>90?caption.slice(0,90)+"...":caption;
+    var borderColor=d.best?"rgba(201,168,76,.4)":"var(--border)";
+    var bestBadge=d.best?"<div style='position:absolute;top:-10px;left:16px;background:var(--gold);color:#000;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.08em'>BEST IDEA</div>":"";
+    html+="<div style='background:var(--noir3);border:1px solid "+borderColor+";border-radius:12px;padding:16px;position:relative;margin-bottom:4px'>";
+    html+=bestBadge;
+    html+="<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px'>";
+    html+="<span style='font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase'>Day "+d.day+"</span>";
+    html+="<span style='font-size:.7rem;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:2px 8px;font-weight:600'>"+d.type+"</span>";
+    html+="</div>";
+    html+="<div style='font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4'>"+hook+"</div>";
+    html+="<div style='font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px'>"+shortCaption+"</div>";
+    html+="<div style='display:flex;gap:8px'>";
+    html+="<button class='btn btn-ghost btn-sm' style='font-size:.72rem;flex:1' onclick='showUpgradeModal()'>Generate Video</button>";
+    html+="<button class='btn btn-ghost btn-sm' style='font-size:.72rem;flex:1' onclick='toast(\"Hook copied!\",\"success\")'>Copy Hook</button>";
+    html+="</div></div>";
+  });
+  container.innerHTML=html;
+  for(var n=1;n<=5;n++){var s=document.getElementById("ob-screen-"+n);if(s)s.style.display="none";}
+  var ls=document.getElementById("ob-screen-loading");if(ls)ls.style.display="none";
+  var s3=document.getElementById("ob-screen-3");
+  if(s3)s3.style.display="block";
+}
+function goObScreen(n){
+
+  currentObScreen=n;
+  document.getElementById('ob-screen-1').style.display=n===1?'block':'none';
+  document.getElementById('ob-screen-2').style.display=n===2?'block':'none';
+  document.getElementById('ob-screen-3').style.display=n===3?'block':'none';
+
+  // Update progress bar
+  for(let i=1;i<=3;i++){
+    const bar=document.getElementById('ob-prog-'+i);
+    if(bar)bar.style.background=i<=n?'var(--gold)':'var(--border2)';
+  }
+
+  if(n===3) buildProfileSummary();
+}
+
+const obModeConfig={
+  personal:{title:"What do you want to create content about?",placeholder:"e.g. fitness tips, startup advice, daily routines…",days:[
+    {day:1,type:"Reel",best:true,hook:"Here's the one thing no one tells you about [niche]…",caption:"Most people get this wrong. After years of [niche], here's what actually works — and why the common advice fails you."},
+    {day:2,type:"Post",best:false,hook:"3 things I wish I knew when I started [niche]",caption:"If I could go back, I'd tell myself these three things. Save this for when you need it most."},
+    {day:3,type:"Reel",best:false,hook:"My honest take on [niche] after [X] years",caption:"No fluff. No highlight reel. Just the real story behind building in this space."},
+    {day:4,type:"Post",best:false,hook:"The [niche] advice everyone gives — and why it's wrong",caption:"Controversial take: the most popular advice in [niche] is holding you back. Here's what to do instead."},
+    {day:5,type:"Reel",best:false,hook:"A day in my life as a [niche] creator",caption:"Behind the scenes of what it actually looks like to build a brand around [niche]."},
+    {day:6,type:"Post",best:false,hook:"What [niche] taught me about discipline",caption:"It's not about motivation. It's about the system you build when motivation runs out."},
+    {day:7,type:"Reel",best:false,hook:"Your questions about [niche] — answered",caption:"I asked you what you wanted to know. Here are the most common questions — answered honestly."}
+  ]},
+  local:{title:"What business or service are you promoting?",placeholder:"e.g. hair salon, restaurant, gym…",days:[
+    {day:1,type:"Reel",best:true,hook:"Why locals keep coming back to [business]",caption:"It's not just the [service]. It's the experience. Here's what makes our customers regulars."},
+    {day:2,type:"Post",best:false,hook:"5 things you didn't know we offer at [business]",caption:"Most people only know us for [main service]. But here's what else we do — and why our customers love it."},
+    {day:3,type:"Reel",best:false,hook:"Behind the scenes at [business]",caption:"Ever wondered what goes into running [business]? Here's a look behind the scenes."},
+    {day:4,type:"Post",best:false,hook:"This week only — [offer] at [business]",caption:"We're running a special this week. Tag someone who needs to know about this."},
+    {day:5,type:"Reel",best:false,hook:"Meet the team at [business]",caption:"The people behind [business] are what make it special. Here's who you'll meet when you visit."},
+    {day:6,type:"Post",best:false,hook:"Customer love for [business] ❤️",caption:"Nothing makes us happier than hearing from happy customers. Here's what people are saying."},
+    {day:7,type:"Reel",best:false,hook:"Visit us this week — [location/hours]",caption:"We'd love to see you. Come in this week and experience [business] for yourself."}
+  ]},
+  product:{title:"What product are you selling?",placeholder:"e.g. skincare product, fitness app, electronics…",days:[
+    {day:1,type:"Reel",best:true,hook:"This [product] changed how I [benefit]",caption:"I wasn't expecting it to work this well. But after [timeframe], here's what I noticed."},
+    {day:2,type:"Post",best:false,hook:"3 reasons [product] is worth every penny",caption:"Before you scroll past — here's exactly what you get and why it's different from everything else out there."},
+    {day:3,type:"Reel",best:false,hook:"Watch what [product] does in 60 seconds",caption:"No long explanation needed. Just watch. Then decide for yourself."},
+    {day:4,type:"Post",best:false,hook:"What customers are saying about [product]",caption:"Real results. Real people. Here's what happened when they tried [product] for the first time."},
+    {day:5,type:"Reel",best:false,hook:"How to get the most out of [product]",caption:"Most people use [product] wrong. Here's the right way — and why it makes all the difference."},
+    {day:6,type:"Post",best:false,hook:"[Product] vs doing it the old way",caption:"Before [product], this took [time/effort]. Now? Here's what changed."},
+    {day:7,type:"Reel",best:false,hook:"Last chance — [offer] ends soon",caption:"We're closing this offer at midnight. Here's everything you get when you order today."}
+  ]},
+  realestate:{title:"What property are you promoting?",placeholder:"e.g. luxury villa, 2-bed apartment, modern home…",days:[
+    {day:1,type:"Reel",best:true,hook:"This home has a feature you won't expect…",caption:"We see a lot of properties. This one stopped us in our tracks. Here's why buyers keep asking about it."},
+    {day:2,type:"Post",best:false,hook:"3 things buyers love about this property",caption:"It's not just the layout. Here are the three details that make this home stand out from everything else on the market."},
+    {day:3,type:"Reel",best:false,hook:"Luxury living at [price] — here's the tour",caption:"Slow down and take a look. This is what [price] gets you right now in [area]."},
+    {day:4,type:"Story",best:false,hook:"Would you buy this home? Swipe to see inside →",caption:"Poll + link sticker. Drive traffic to your listing while keeping followers engaged."},
+    {day:5,type:"Post",best:false,hook:"Why buyers love [neighbourhood]",caption:"Location sells. Here's what makes [area] one of the most sought-after spots for buyers right now."},
+    {day:6,type:"Reel",best:false,hook:"The view from the master suite…",caption:"Golden hour. Perfect light. The kind of view that sells a home before the price is even mentioned."},
+    {day:7,type:"Post",best:false,hook:"Still available — book your private viewing",caption:"This property is attracting serious interest. If you've been watching it, now is the time to act."}
+  ]}
+};
+
+function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';generateContentPlan();},5000);}function selectMode(mode){ updateStep2ForMode(mode);
+  selectedMode=mode;
+  localStorage.setItem('lx_mode',mode);
+  document.querySelectorAll('.ob-mode-btn').forEach(function(b){b.classList.remove('selected');});
+  var _mb=document.getElementById('mode-'+mode);
+  if(_mb)_mb.classList.add('selected');
+  var _t=document.getElementById('ob-screen2-title');
+  if(_t)_t.textContent=mode==='personal'?'Tell us about your brand':mode==='local'?'Tell us about your business':'Tell us about your product';
+  var _nl=document.getElementById('ob-niche-label');
+  if(_nl)_nl.textContent=mode==='personal'?'Your niche':mode==='local'?'Your business type':'Your product category';
+  var _ni=document.getElementById('ob-niche');
+  if(_ni&&typeof MODE_NICHE_HINTS!=='undefined')_ni.placeholder=MODE_NICHE_HINTS[mode]||'';
+  var goalsEl=document.getElementById('ob-goals');
+  if(goalsEl&&typeof MODE_GOAL_OPTIONS!=='undefined'&&MODE_GOAL_OPTIONS[mode]){
+    var goals=MODE_GOAL_OPTIONS[mode];
+    goalsEl.innerHTML=goals.map(function(g){return '<button class="tone-btn" data-goal="'+g.val+'" onclick="selectGoal(this)">'+g.label+'</button>';}).join('');
+    selectedGoal=goals[0].val;
+  }
+  setTimeout(function(){goObScreen(2);},150);
 }
 
 function selectGoal(btn){
@@ -3354,141 +3970,74 @@ function useAdAsVideoImage(){
 }
 
 // ══════════════════════════════
-// THUMBNAIL AI
 // ══════════════════════════════
-let thumbStyles = [];
-let selectedThumbStyle = null;
-let selectedThumbMood = 'excited and energetic';
+// ══════════════════════════════
+// THUMBNAIL AI (v2 — Edge Function powered)
+// ══════════════════════════════
 let generatedThumbUrl = '';
+let selectedThumbStyle = 'bold';
+let selectedThumbPlatform = 'youtube';
 
-const THUMB_LIMITS = { free: 3, pro: 50, agency: 999 };
-const BLOCKED_KEYWORDS = ['nude','naked','explicit','sexual','violence','gore','weapon','drug'];
-
-function getThumbUsage(){
-  const key = 'lx_thumb_usage_' + new Date().toISOString().slice(0,7);
-  return parseInt(localStorage.getItem(key)||'0');
-}
-function incrementThumbUsage(){
-  const key = 'lx_thumb_usage_' + new Date().toISOString().slice(0,7);
-  localStorage.setItem(key, String(getThumbUsage() + 1));
-}
-function getThumbLimit(){ return THUMB_LIMITS.free; }
-
-function updateThumbUsageUI(){
-  const used = getThumbUsage();
-  const limit = getThumbLimit();
-  const countEl = document.getElementById('thumb-usage-count');
-  const labelEl = document.getElementById('thumb-usage-label');
-  if(countEl){ countEl.textContent = used; countEl.style.color = used >= limit ? 'var(--red)' : 'var(--gold)'; }
-  if(labelEl) labelEl.textContent = '/ ' + limit + ' this month';
-}
-
-function initThumbnailSection(){
-  const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
-  const niche = profile.niche || localStorage.getItem('lx_niche') || '';
-  const tone = profile.tone || localStorage.getItem('lx_tone') || '';
-  const mode = profile.mode || '';
-  const nicheEl = document.getElementById('thumb-niche');
-  const banner = document.getElementById('thumb-profile-banner');
-  const profileInfo = document.getElementById('thumb-profile-info');
-  const nicheRow = document.getElementById('thumb-niche-row');
-  if(niche && nicheEl){
-    nicheEl.value = niche;
-    if(banner && profileInfo){
-      banner.style.display = 'flex';
-      profileInfo.textContent = 'Niche: ' + niche + ' · Tone: ' + tone + ' · Mode: ' + mode;
-      if(nicheRow) nicheRow.style.display = 'none';
-    }
-  }
-  const moodMap = {luxury:'luxury and aspirational',bold:'excited and energetic',motivational:'confident and powerful',educational:'curious and mysterious',playful:'excited and energetic'};
-  if(tone && moodMap[tone]){
-    selectedThumbMood = moodMap[tone];
-    document.querySelectorAll('[data-thumb-mood]').forEach(b=>{ b.classList.toggle('active', b.dataset.thumbMood === selectedThumbMood); });
-  }
-  updateThumbUsageUI();
-  renderThumbLibrary();
-}
-
-function validateThumbPrompt(text){
-  const lower = text.toLowerCase();
-  for(const word of BLOCKED_KEYWORDS){ if(lower.includes(word)) return false; }
-  return true;
-}
-
-function selectThumbMood(btn){
-  document.querySelectorAll('[data-thumb-mood]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedThumbMood = btn.dataset.thumbMood;
-}
-
-async function analyseThumbnailStyles(){
-  const niche = document.getElementById('thumb-niche')?.value.trim();
-  const platform = document.getElementById('thumb-platform')?.value || 'Instagram Reels';
-  if(!niche){ toast('Enter your niche first','error'); return; }
-  if(!validateThumbPrompt(niche)){ toast('Please keep content professional and brand-safe','error'); return; }
-  const btn = document.getElementById('thumb-analyse-btn');
-  const loading = document.getElementById('thumb-analyse-loading');
-  const stylesEl = document.getElementById('thumb-styles');
-  btn.disabled = true; btn.textContent = 'Analysing…';
-  loading.style.display = 'block'; stylesEl.style.display = 'none';
-  try{
-    const res = await fetch(`${SB_URL}/functions/v1/start-video`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},body:JSON.stringify({action:'analyse-thumbnails',niche,platform})});
-    const data = await res.json();
-    thumbStyles = data.styles || [];
-    if(thumbStyles.length > 0){ renderThumbStyles(); stylesEl.style.display = 'block'; toast('Styles found ✦','success'); }
-    else { toast('Could not analyse — please try again','error'); }
-  }catch(e){ toast('Analysis failed — please try again','error'); }
-  btn.disabled = false; btn.textContent = '🔍 Analyse Trending Styles';
-  loading.style.display = 'none';
-}
-
-function renderThumbStyles(){
-  const grid = document.getElementById('thumb-style-grid');
-  if(!grid) return;
-  grid.innerHTML = thumbStyles.map((s,i) => `<div class="cal-card" id="thumb-style-${i}" onclick="selectThumbStyle(${i})" style="cursor:pointer"><div style="font-size:1.6rem;margin-bottom:8px">${s.emoji||'🎯'}</div><div style="font-weight:700;font-size:.9rem;margin-bottom:6px;color:var(--text)">${s.name}</div><div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;line-height:1.5">${s.description}</div><div style="font-size:.7rem;color:var(--gold)">✦ ${s.whyItWorks}</div></div>`).join('');
-}
-
-function selectThumbStyle(i){
-  document.querySelectorAll('[id^="thumb-style-"]').forEach(el=>el.classList.remove('has-video'));
-  document.getElementById(`thumb-style-${i}`)?.classList.add('has-video');
-  selectedThumbStyle = thumbStyles[i];
-  document.getElementById('thumb-selected-style-label').textContent = 'Style: ' + selectedThumbStyle.name;
-  document.getElementById('thumb-gen-section').style.display = 'block';
-  document.getElementById('thumb-gen-section').scrollIntoView({behavior:'smooth',block:'center'});
-}
-
+let refImageBase64='';let refImageMime='';
+function switchRefTab(tab){const isUrl=tab==='url';document.getElementById('ref-pane-url').style.display=isUrl?'block':'none';document.getElementById('ref-pane-upload').style.display=isUrl?'none':'block';const tu=document.getElementById('ref-tab-url');const tup=document.getElementById('ref-tab-upload');tu.style.background=isUrl?'var(--gold)':'transparent';tu.style.color=isUrl?'#000':'var(--muted)';tup.style.background=isUrl?'transparent':'var(--gold)';tup.style.color=isUrl?'var(--muted)':'#000';if(isUrl)clearRefUpload();}
+function handleRefImageUpload(input){const file=input.files[0];if(!file)return;if(file.size>10*1024*1024){toast('Image too large — max 10MB','error');return;}const reader=new FileReader();reader.onload=(e)=>{refImageBase64=e.target.result.split(',')[1];refImageMime=file.type;document.getElementById('ref-upload-placeholder').style.display='none';document.getElementById('ref-upload-preview').style.display='block';document.getElementById('ref-upload-img').src=e.target.result;document.getElementById('ref-upload-name').textContent=file.name;document.getElementById('ref-upload-area').classList.add('has-image');const urlInput=document.getElementById('thumb-reference-url');if(urlInput)urlInput.value='';toast('Reference image ready ✦','success');};reader.readAsDataURL(file);}
+function clearRefUpload(){refImageBase64='';refImageMime='';const input=document.getElementById('ref-image-input');if(input)input.value='';document.getElementById('ref-upload-placeholder').style.display='block';document.getElementById('ref-upload-preview').style.display='none';document.getElementById('ref-upload-area')?.classList.remove('has-image');document.getElementById('ref-style-profile').style.display='none';}
 async function generateThumbnail(){
-  const used = getThumbUsage();
-  const limit = getThumbLimit();
-  if(used >= limit){ toast(`You've used all ${limit} thumbnails this month — upgrade to Pro for 50/month`,'error'); setTimeout(()=>go('pricing'),2000); return; }
-  if(!selectedThumbStyle){ toast('Select a style first','error'); return; }
-  const title = document.getElementById('thumb-title')?.value.trim();
+  const niche   = document.getElementById('thumb-niche')?.value.trim();
+  const title   = document.getElementById('thumb-title')?.value.trim();
   const subject = document.getElementById('thumb-subject')?.value.trim();
-  const niche = document.getElementById('thumb-niche')?.value.trim();
-  const platform = document.getElementById('thumb-platform')?.value;
+  const style   = document.getElementById('thumb-style')?.value || 'bold';
+  const platform = document.getElementById('thumb-platform')?.value || 'youtube';
   const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
-  const tone = profile.tone || localStorage.getItem('lx_tone') || 'professional';
-  if(title && !validateThumbPrompt(title)){ toast('Please keep content professional and brand-safe','error'); return; }
-  if(subject && !validateThumbPrompt(subject)){ toast('Please keep content professional and brand-safe','error'); return; }
-  const btn = document.getElementById('thumb-gen-btn');
+  const tone    = profile.tone || localStorage.getItem('lx_tone') || 'professional';
+  const referenceImageUrl = document.getElementById('thumb-reference-url')?.value.trim()||'';
+
+  if(!niche){ toast('Enter your niche first','error'); return; }
+
+  const btn     = document.getElementById('thumb-gen-btn');
   const loading = document.getElementById('thumb-gen-loading');
-  const result = document.getElementById('thumb-result');
+  const result  = document.getElementById('thumb-result');
+
   btn.disabled = true; btn.textContent = 'Generating…';
   loading.style.display = 'block'; result.style.display = 'none';
-  const platformAspect = platform === 'YouTube' ? '16:9 widescreen' : '9:16 vertical portrait';
-  const thumbPrompt = `Create a professional brand-safe viral ${platform} thumbnail for the ${niche} niche. Platform format: ${platformAspect}. Brand tone: ${tone}. Style: ${selectedThumbStyle.name} — ${selectedThumbStyle.description}. Visual: ${selectedThumbStyle.visualDetails}. Subject: ${subject||'professional person relevant to the niche'}. Mood: ${selectedThumbMood}. ${title ? `Bold text overlay: "${title}" — ALL text must be fully visible and completely within the image boundaries, minimum 60px padding from all edges, no text cropped or cut off, large high contrast easy to read on mobile.` : 'Clean visual no text overlay.'} CRITICAL: Every single letter of every word must be fully readable and inside the frame. Professional quality. Brand safe. No explicit content. No real celebrity likenesses. No competitor logos.`;
+
   try{
-    const res = await fetch(`${SB_URL}/functions/v1/start-video`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},body:JSON.stringify({action:'image',prompt:thumbPrompt})});
+    const session = await sb.auth.getSession();
+    const token   = session?.data?.session?.access_token;
+    if(!token) throw new Error('Not logged in');
+
+    const res = await fetch(`${SB_URL}/functions/v1/generate-thumbnail`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ niche, title, subject, style, platform, tone, referenceImage: window._thumbReferenceImage || document.getElementById('thumb-reference-url')?.value.trim() || null })
+    });
+
     const data = await res.json();
-    if(data.imageUrl){
-      generatedThumbUrl = data.imageUrl;
-      document.getElementById('thumb-result-img').src = data.imageUrl;
-      document.getElementById('thumb-why-works').innerHTML = `<div style="margin-bottom:8px"><strong style="color:var(--gold)">Style:</strong> ${selectedThumbStyle.name}</div><div style="margin-bottom:8px"><strong style="color:var(--gold)">Why it works:</strong> ${selectedThumbStyle.whyItWorks}</div><div style="margin-bottom:8px"><strong style="color:var(--gold)">Best for:</strong> ${selectedThumbStyle.bestFor}</div><div><strong style="color:var(--gold)">Pro tip:</strong> ${selectedThumbStyle.proTip}</div>`;
-      result.style.display = 'block';
-      incrementThumbUsage(); updateThumbUsageUI(); saveThumbnailToLibrary();
-      toast('Thumbnail generated ✦','success');
-    } else { throw new Error('No image'); }
-  }catch(e){ toast('Generation failed — please try again','error'); }
+
+    if(res.status === 429){
+      toast(`Limit reached — ${data.used}/${data.limit} used this month. Upgrade to Pro for 50/month.`,'error');
+      setTimeout(()=>go('pricing'), 2000);
+      return;
+    }
+
+    if(!data.imageUrl) throw new Error(data.error || 'No image returned');
+
+    generatedThumbUrl = data.imageUrl;
+    document.getElementById('thumb-result-img').src = data.imageUrl;
+    document.getElementById('thumb-usage-count').textContent = data.used;
+    document.getElementById('thumb-usage-label').textContent = `/ ${data.limit} this month`;
+    result.style.display = 'block';
+    saveThumbnailToLibrary();
+    toast('Thumbnail generated ✦','success');
+
+  }catch(e){
+    console.error('[thumbnail]', e);
+    toast('Generation failed — please try again','error');
+  }
+
   btn.disabled = false; btn.textContent = '✨ Generate Thumbnail';
   loading.style.display = 'none';
 }
@@ -3496,33 +4045,50 @@ async function generateThumbnail(){
 function saveThumbnailToLibrary(){
   if(!generatedThumbUrl) return;
   const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
-  lib.unshift({id:Date.now(),src:generatedThumbUrl,style:selectedThumbStyle?.name||'',created:new Date().toISOString()});
+  lib.unshift({ id: Date.now(), src: generatedThumbUrl, style: selectedThumbStyle, created: new Date().toISOString() });
   if(lib.length > 20) lib.pop();
   localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
   renderThumbLibrary();
 }
 
 function renderThumbLibrary(){
-  const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
-  const grid = document.getElementById('thumb-library-grid');
+  const lib     = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  const grid    = document.getElementById('thumb-library-grid');
   const section = document.getElementById('thumb-library-section');
   if(!grid||!section) return;
-  if(lib.length===0){ section.style.display='none'; return; }
+  if(lib.length===0){ section.style.display='none'; const em=document.getElementById('thumb-library-empty-msg'); if(em)em.style.display='block'; return; }   const em=document.getElementById('thumb-library-empty-msg'); if(em)em.style.display='none';
   section.style.display = 'block';
-  grid.innerHTML = lib.map(item=>`<div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--panel)"><div style="aspect-ratio:16/9;overflow:hidden"><img src="${item.src}" style="width:100%;height:100%;object-fit:cover"></div><div style="padding:4px 6px;font-size:.65rem;color:var(--muted)">${item.style}</div><div style="padding:0 6px 6px;display:flex;gap:4px"><button class="btn btn-gold btn-sm" style="flex:1;font-size:.65rem" onclick="downloadThumbFromLib('${item.id}')">↓</button><button class="btn btn-ghost btn-sm" style="font-size:.65rem" onclick="deleteThumbFromLib('${item.id}')">✕</button></div></div>`).join('');
+  grid.innerHTML = lib.map(item=>`
+    <div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--panel)">
+      <div style="aspect-ratio:16/9;overflow:hidden">
+        <img src="${item.src}" style="width:100%;height:100%;object-fit:cover">
+      </div>
+      <div style="padding:4px 6px;font-size:.65rem;color:var(--muted)">${item.style}</div>
+      <div style="padding:0 6px 6px;display:flex;gap:4px">
+        <button class="btn btn-gold btn-sm" style="flex:1;font-size:.65rem" onclick="downloadThumbFromLib('${item.id}')">↓ Download</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:.65rem" onclick="deleteThumbFromLib('${item.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
 }
 
 async function downloadThumbnail(){
   if(!generatedThumbUrl) return;
-  const a = document.createElement('a'); a.href = generatedThumbUrl; a.download = 'LuxClip-thumbnail.png'; a.click();
+  const a = document.createElement('a');
+  a.href = generatedThumbUrl;
+  a.download = 'LuxClip-thumbnail.png';
+  a.click();
   toast('Downloaded ✦','success');
 }
 
 function downloadThumbFromLib(id){
-  const lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  const lib  = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
   const item = lib.find(i=>String(i.id)===String(id));
   if(!item) return;
-  const a = document.createElement('a'); a.href = item.src; a.download = `LuxClip-thumb-${id}.png`; a.click();
+  const a = document.createElement('a');
+  a.href = item.src;
+  a.download = `LuxClip-thumb-${id}.png`;
+  a.click();
 }
 
 function deleteThumbFromLib(id){
@@ -3531,9 +4097,14 @@ function deleteThumbFromLib(id){
   localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
   renderThumbLibrary();
 }
-
 function clearThumbLibrary(){
   localStorage.removeItem('lx_thumb_library');
+  renderThumbLibrary();
+}
+function initThumbnailSection(){
+  const profile = JSON.parse(localStorage.getItem('lx_profile')||'{}');
+  const niche   = profile.niche || localStorage.getItem('lx_niche') || '';
+  if(niche) { const el = document.getElementById('thumb-niche'); if(el) el.value = niche; }
   renderThumbLibrary();
 }
 
@@ -4964,7 +5535,7 @@ async function generateHeyGenVideo(){
         if(s==="completed"){
           clearInterval(interval); status.style.display="none";
           document.getElementById("av-video").src = d2.data.video_url;
-          result.style.display="block"; toast("Video ready!","success");
+          result.style.display="block"; toast("Video ready!","success"); const hgVid={id:Date.now(),prompt:script,tone:'luxury',video_url:d2.data.video_url,caption:'',status:'done',created:new Date().toISOString()};videos.unshift(hgVid);await saveVideo(hgVid);renderGrid();updateStats();
         } else if(s==="failed"){
           clearInterval(interval); status.textContent="Generation failed."; toast("Video failed","error");
         }
@@ -5008,7 +5579,7 @@ let avatarTalkingPhotoId=''; async function useTransformedAsAvatar(){const btn=d
     <!-- Top Bar -->
     <div style="background:var(--noir2);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100">
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700">Lux<span style="color:var(--gold2);font-style:italic">Reel</span> <span style="font-size:.75rem;color:var(--gold);background:rgba(212,168,83,.1);border:1px solid var(--gold3);border-radius:4px;padding:2px 8px;vertical-align:middle">ADMIN</span></div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700">Lux<span style="color:var(--gold2);font-style:italic">Clip</span> <span style="font-size:.75rem;color:var(--gold);background:rgba(212,168,83,.1);border:1px solid var(--gold3);border-radius:4px;padding:2px 8px;vertical-align:middle">ADMIN</span></div>
       </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-ghost btn-sm" onclick="loadAdminDashboard()">↺ Refresh</button>
@@ -5099,24 +5670,3 @@ let avatarTalkingPhotoId=''; async function useTransformedAsAvatar(){const btn=d
                 <th style="padding:10px 16px;text-align:center;font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Actions</th>
               </tr>
             </th
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
