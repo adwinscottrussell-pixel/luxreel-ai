@@ -2669,7 +2669,7 @@ async function handleAuth(){
   setAuthError('');
 
   try{
-    let result;
+    result;
     if(authMode==='signup'){
       result=await sb.auth.signUp({email,password,options:{emailRedirectTo:null}});
     } else {
@@ -2821,9 +2821,8 @@ selectedGoal='followers';
 selectedObTone='educational';
 selectedMode='personal';
 selectedAudience='';
-let activeCalDay=null;
-let currentObScreen=1;
-
+activeCalDay=null;
+let currentObScreen
 const MODE_LABELS={personal:'📈 Personal Brand',local:'📍 Local Business',product:'🛒 Product Brand'}
 const MODE_NICHE_HINTS={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. restaurant, hair salon, gym…',product:'e.g. skincare, fashion, supplements…'}
 const MODE_GOAL_OPTIONS={
@@ -2860,7 +2859,7 @@ function goObScreen(n){
   if(n===3) buildProfileSummary();
 }
 
-function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating…','Day 2 generating…','Day 3 generating…','Day 4 generating…','Day 5 generating…','Day 6 generating…','Day 7 generating…'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan…';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);} function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);}function selectMode(mode){
+function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating…','Day 2 generating…','Day 3 generating…','Day 4 generating…','Day 5 generating…','Day 6 generating…','Day 7 generating…'];let i=0;i lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan…';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);} function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;considocument.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);}function selectMode(mode){
   selectedMode=mode;
   document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('mode-'+mode).classList.add('selected');
@@ -3160,8 +3159,7 @@ function goObScreen(n){
   document.getElementById('ob-screen-3').style.display=n===3?'block':'none';
 
   // Update progress bar
-  for(let i=1;i<=3;i++){
-    const bar=document.getElementById('ob-prog-'+i);
+  for(let i=1;i<=3;i++i   const bar=document.getElementById('ob-prog-'+i);
     if(bar)bar.style.background=i<=n?'var(--gold)':'var(--border2)';
   }
 
@@ -3207,7 +3205,7 @@ const obModeConfig={
   ]}
 };
 
-function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);}function selectMode(mode){ updateStep2ForMode(mode);
+function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;const lt=doci.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);}function selectMode(mode){ updateStep2ForMode(mode);
   selectedMode=mode;
   localStorage.setItem('lx_mode',mode);
   document.querySelectorAll('.ob-mode-btn').forEach(function(b){b.classList.remove('selected');});
@@ -3283,7 +3281,7 @@ async function generateContentPlan(){
 
   try{
     let res, attempts = 0;
-    while(attempts < 3){
+resle(attempts < 3){
       try{
         res=await fetch(`${SB_URL}/functions/v1/start-video`,{
           method:'POST',
@@ -4092,7 +4090,7 @@ function downloadThumbFromLib(id){
 }
 
 function deleteThumbFromLib(id){
-  let lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
+  let lib = JSON.parse(localStlibetItem('lx_thumb_library')||'[]');
   lib = lib.filter(i=>String(i.id)!==String(id));
   localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
   renderThumbLibrary();
