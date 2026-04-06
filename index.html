@@ -1204,17 +1204,19 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <aside class="app-sidebar">
       <div class="sidebar-logo" onclick="go('landing')">Lux<span>Clip</span></div>
       <nav class="sidebar-nav">
-        <div class="nav-section-label">Studio</div>
-        <div class="nav-item active" onclick="setNavActive(this);showDashSection('main')"><span class="nav-item-icon">◈</span> Dashboard</div>
-        <div class="nav-item" onclick="setNavActive(this);showDashSection('video-library')"><span class="nav-item-icon">▦</span> Video Library</div>
-        <div class="nav-item" onclick="setNavActive(this);showDashSection('image-library')"><span class="nav-item-icon">🖼</span> Image Library</div>
+        <div class="nav-section-label">Create</div>
+        <div class="nav-item active" onclick="setNavActive(this);showDashSection('main')"><span class="nav-item-icon">◈</span> Content Plan</div>
+        <div class="nav-item" onclick="showOnboarding()"><span class="nav-item-icon">+</span> New Plan</div>
+        <div class="nav-section-label">Generate</div>
+        <div class="nav-item" onclick="setNavActive(this);showDashSection('video-library')"><span class="nav-item-icon">▦</span> Video Studio</div>
+        <div class="nav-item" onclick="setNavActive(this);showDashSection('avatar-studio');initAvatarStudio()"><span class="nav-item-icon">◎</span> Avatar Studio</div>
+        <div class="nav-item" onclick="setNavActive(this);showDashSection('image-library')"><span class="nav-item-icon">🖼</span> Image Studio</div>
         <div class="nav-item" onclick="setNavActive(this);showDashSection('thumbnail-gen')"><span class="nav-item-icon">🎯</span> Thumbnail AI</div>
-        <div class="nav-item" onclick="setNavActive(this);showDashSection('templates')"><span class="nav-item-icon">✦</span> Templates</div>
-        <div class="nav-item" onclick="setNavActive(this);showDashSection('avatar-studio');initAvatarStudio()"><span class="nav-item-icon">◎</span> Avatar Studio</div>         <div class="nav-section-label">Publish</div>
+        <div class="nav-section-label">Post &amp; Schedule</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">📤</span> Instagram</div>
         <div class="nav-item" onclick="setNavActive(this)"><span class="nav-item-icon">📅</span> Scheduler</div>
         <div class="nav-section-label">Account</div>
-        <div class="nav-item" onclick="go('pricing')"><span class="nav-item-icon">⬆</span> Upgrade</div>
+        <div class="nav-item" onclick="go('pricing')" style="color:var(--gold);font-weight:600"><span class="nav-item-icon">✦</span> Upgrade to Pro</div>
         <div class="nav-item" onclick="go('settings')"><span class="nav-item-icon">⚙</span> Settings</div>
       </nav>
       <div class="sidebar-bottom">
