@@ -1824,66 +1824,46 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       </div>
       <div style="margin-top:20px;font-size:.75rem;color:var(--muted);text-align:center;opacity:.7">Next: we'll generate your 7-day content plan</div>
     </div>
-
-    <!-- SCREEN 2 — Tell us about your brand -->
-    <div<div<div id="ob-screen-2" style="display:none">
-      <div style="font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Step 2 of 3</div>
-      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px" id="ob-screen2-title">What do you want to create content about?</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:4px">We'll use this to generate your content plan.</div>
-      <div style="font-size:.78rem;color:var(--gold);margin-bottom:24px">Takes 10 seconds</div>
-      <div style="margin-bottom:24px">
-        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:14px 16px;font-size:.95rem;transition:border-color .2s,box-shadow .2s" placeholder="e.g. fitness coaching, mindset, business strategy..." onfocus="this.style.borderColor='var(--gold)';this.style.boxShadow='0 0 0 3px rgba(212,168,83,.15)'" onblur="this.style.borderColor='';this.style.boxShadow='none'">
+    <div   id="ob-screen-2" style="display:none">
+      <div style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;opacity:.8">Step 2 of 3</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:6px" id="ob-s2-title">What do you want to create content about?</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:2px">This helps us personalise your content.</div>
+      <div style="font-size:.78rem;color:var(--gold);opacity:.8;margin-bottom:24px">Takes 10 seconds</div>
+      <div style="margin-bottom:20px">
+        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:14px 16px;font-size:.95rem;width:100%" placeholder="e.g. fitness tips, startup advice, daily routines…">
       </div>
-      <div style="margin-bottom:28px">
-        <div style="font-size:.72rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">Optional: What's your goal?</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="ob-goals">
-          <button class="tone-btn" data-goal="followers" onclick="selectGoal(this)">Grow followers</button>
-          <button class="tone-btn" data-goal="clients" onclick="selectGoal(this)">Get clients</button>
-          <button class="tone-btn" data-goal="authority" onclick="selectGoal(this)">Build authority</button>
-          <button class="tone-btn" data-goal="sales" onclick="selectGoal(this)">Drive sales</button>
+      <div style="margin-bottom:24px">
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Your goal <span style="opacity:.5">(optional)</span></div>
+        <div style="display:flex;gap:8px">
+          <button id="ob-goal-buyers" onclick="selectObGoalSimple('buyers',this)" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--noir3);color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif">Get buyers</button>
+          <button id="ob-goal-brand" onclick="selectObGoalSimple('brand',this)" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--noir3);color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif">Build brand</button>
         </div>
       </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline btn-md" onclick="goObScreen(1)">← Back</button>
-        <button class="btn btn-gold btn-md" style="flex:1" id="ob-generate-btn" onclick="obGeneratePlan()">Generate My 7-Day Plan →</button>
+        <button class="btn btn-gold btn-md" style="flex:1" onclick="showLoadingThenPlan()">Generate My Plan →</button>
       </div>
-      <div style="text-align:center;font-size:.72rem;color:var(--muted);margin-top:10px">No planning or editing required</div>
       <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
-      <div id="ob-loading" style="display:none;text-align:center;padding:20px 0">
-        <div class="spin-ring" style="margin:0 auto 12px"></div>
-        <div id="ob-loading-text" style="font-size:.85rem;color:var(--gold)">Creating your content plan...</div>
-      </div>
     </div>
-    <div id="ob-screen-3" style="display:none">
-      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Your Content Profile ✦</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:24px">Here's what we've built for you. We'll use this to generate your 7-day plan.</div>
-
-      <div style="background:var(--noir3);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px">
-        <div style="display:grid;gap:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Mode</span>
-            <span style="font-size:.85rem;font-weight:600;color:var(--text)" id="profile-mode"></span>
-          </div>
-          <div style="height:1px;background:var(--border)"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Niche</span>
-            <span style="font-size:.85rem;font-weight:600;color:var(--text)" id="profile-niche"></span>
-          </div>
-          <div style="height:1px;background:var(--border)"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Audience</span>
-            <span style="font-size:.85rem;font-weight:600;color:var(--text)" id="profile-audience"></span>
-          </div>
-          <div style="height:1px;background:var(--border)"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Goal</span>
-            <span style="font-size:.85rem;font-weight:600;color:var(--gold)" id="profile-goal"></span>
-          </div>
-          <div style="height:1px;background:var(--border)"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em">Tone</span>
-            <span style="font-size:.85rem;font-weight:600;color:var(--gold)" id="profile-tone"></span>
-          </div>
+    id="ob-screen-loading" style="display:none;text-align:center;padding:40px 0">
+      <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:8px;color:var(--text)">Creating your content plan…</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:32px">Personalising for your niche</div>
+      <div id="ob-loading-steps" style="display:grid;gap:10px;max-width:280px;margin:0 auto">
+        <div class="ob-load-step" id="ls-1" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--noir3);border:1px solid var(--border);border-radius:8px;opacity:.4;transition:opacity .4s">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0"></div>
+          <span style="font-size:.82rem;color:var(--text)">Day 1 — generating hook…</span>
+        </div>
+        <div class="ob-load-step" id="ls-2" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--noir3);border:1px solid var(--border);border-radius:8px;opacity:.4;transition:opacity .4s">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0"></div>
+          <span style="font-size:.82rem;color:var(--text)">Day 2 — writing caption…</span>
+        </div>
+        <div class="ob-load-step" id="ls-3" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--noir3);border:1px solid var(--border);border-radius:8px;opacity:.4;transition:opacity .4s">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0"></div>
+          <span style="font-size:.82rem;color:var(--text)">Day 3 — choosing content type…</span>
+        </div>
+        <div class="ob-load-step" id="ls-4" style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--noir3);border:1px solid var(--border);border-radius:8px;opacity:.4;transition:opacity .4s">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0"></div>
+          <span style="font-size:.82rem;color:var(--text)">Day 4–7 — finalising plan…</span>
         </div>
       </div>
     </div>
@@ -2549,6 +2529,7 @@ let selectedMode='personal';
 let selectedAudience='';
 let activeCalDay=null;
 let currentObScreen=1;
+
 const MODE_LABELS={personal:'📈 Personal Brand',local:'📍 Local Business',product:'🛒 Product Brand'}
 const MODE_NICHE_HINTS={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. restaurant, hair salon, gym…',product:'e.g. skincare, fashion, supplements…'}
 const MODE_GOAL_OPTIONS={
@@ -2570,273 +2551,32 @@ function hideOnboarding(){
   modal.style.display='none';
 }
 
-function goObScreen(n){
-  currentObScreen=n;
-  document.getElementById('ob-screen-1').style.display=n===1?'block':'none';
-  document.getElementById('ob-screen-2').style.display=n===2?'block':'none';
-  document.getElementById('ob-screen-3').style.display=n===3?'block':'none';
-
-  // Update progress bar
-  for(let i=1;i<=3;i++){
-    const bar=document.getElementById('ob-prog-'+i);
-    if(bar)bar.style.background=i<=n?'var(--gold)':'var(--border2)';
-  }
-
-  if(n===3) buildProfileSummary();
+function updateStep2ForMode(mode){
+  const cfg=obModeConfig[mode]||obModeConfig.personal;
+  const t=document.getElementById('ob-s2-title');
+  const inp=document.getElementById('ob-niche');
+  if(t) t.textContent=cfg.title;
+  if(inp) inp.placeholder=cfg.placeholder;
 }
-
-function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating…','Day 2 generating…','Day 3 generating…','Day 4 generating…','Day 5 generating…','Day 6 generating…','Day 7 generating…'];let i=0;const lt=document.getElementById('ob-loading-text');lt.textContent='Creating your content plan…';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);} function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;considocument.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);}function selectMode(mode){
-  selectedMode=mode;
-  document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
-  document.getElementById('mode-'+mode).classList.add('selected');
-
-  // Update screen 2 for the mode
-  document.getElementById('ob-screen2-title').textContent=
-    mode==='personal'?'Tell us about your brand':
-    mode==='local'?'Tell us about your business':
-    'Tell us about your product';
-
-  document.getElementById('ob-niche-label').textContent=
-    mode==='personal'?'Your niche':
-    mode==='local'?'Your business type':
-    'Your product category';
-
-  document.getElementById('ob-niche').placeholder=MODE_NICHE_HINTS[mode];
-
-  // Update goal buttons for mode
-  const goals=MODE_GOAL_OPTIONS[mode];
-  const goalsEl=document.getElementById('ob-goals');
-  goalsEl.innerHTML=goals.map(g=>`<button class="tone-btn" data-goal="${g.val}" onclick="selectGoal(this)">${g.label}</button>`).join('');
-  selectedGoal=goals[0].val;
-
-  const headlines={personal:'What do you want to create content about?',local:'What business are you promoting?',product:'What product are you selling?',realestate:'What property are you promoting?'};const placeholders={personal:'e.g. fitness coaching, mindset, business strategy…',local:'e.g. coffee shop in Brooklyn, hair salon in London…',product:'e.g. skincare brand, fitness supplements, fashion line…',realestate:'e.g. Luxury villa in Miami, 2-bed apartment in London'};const h=document.getElementById('ob-screen2-title');const p=document.getElementById('ob-niche');if(h)h.textContent=headlines[mode]||headlines.personal;if(p)p.placeholder=placeholders[mode]||placeholders.personal;const headlines={personal:'What do you want to create content about?',local:'What business are you promoting?',product:'What product are you selling?',realestate:'What property are you promoting?'};const placeholders={personal:'e.g. fitness coaching, mindset, business strategy...',local:'e.g. coffee shop in Brooklyn, hair salon in London...',product:'e.g. skincare brand, fitness supplements, fashion line...',realestate:'e.g. Luxury villa in Miami, 2-bed apartment in London'};const h=document.getElementById('ob-screen2-title');const p=document.getElementById('ob-niche');if(h)h.textContent=headlines[mode]||headlines.personal;if(p)p.placeholder=placeholders[mode]||placeholders.personal;setTimeout(()=>goObScreen(2),150);
+function copyObHook(btn){
+  var card=btn.parentElement.parentElement;
+  var hookEl=card.querySelector('div[style*="font-weight:600"]');
+  var text=hookEl?hookEl.textContent.replace(/^"|"$/g,''):'';
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Hook copied!','success');});}
+  else{toast('Copy not supported','error');}
 }
-
-function selectGoal(btn){
-  document.querySelectorAll('#ob-goals .tone-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedGoal=btn.dataset.goal;
-}
-
-function selectObTone(btn){
-  document.querySelectorAll('[data-tone]').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  selectedObTone=btn.dataset.tone;
-  selectedTone=btn.dataset.tone;
-}
-
-function buildProfileSummary(){
-  const niche=document.getElementById('ob-niche').value.trim();
-  const audience=document.getElementById('ob-audience').value.trim();
-  selectedAudience=audience;
-
-  document.getElementById('profile-mode').textContent=MODE_LABELS[selectedMode]||selectedMode;
-  document.getElementById('profile-niche').textContent=niche||'—';
-  document.getElementById('profile-audience').textContent=audience||'—';
-  document.getElementById('profile-goal').textContent=selectedGoal;
-  document.getElementById('profile-tone').textContent=selectedObTone;
-
-  const summaries={
-    personal:`We'll create ${selectedObTone} content designed to attract ${audience||'your audience'} in the ${niche||'your'} space. Hooks will be crafted to build authority and ${selectedGoal==='clients'?'convert followers into clients':'grow your following'}.`,
-    local:`We'll create content that showcases your ${niche||'business'} to local customers. Each post will be designed to ${selectedGoal==='footfall'?'drive foot traffic':'generate bookings'} with a ${selectedObTone} tone.`,
-    product:`We'll create product-focused content targeting ${audience||'potential buyers'}. Videos will highlight your ${niche||'product'} with a ${selectedObTone} aesthetic to drive ${selectedGoal==='sales'?'conversions':'brand awareness'}.`,
-  };
-  document.getElementById('profile-summary').textContent=summaries[selectedMode]||'';
-}
-
-async function generateContentPlan(){
-  const niche=document.getElementById('ob-niche').value.trim();
-  const errEl=document.getElementById('ob-error');
-  if(!niche){errEl.textContent='Please enter your niche';errEl.style.display='block';goObScreen(2);return}
-  errEl.style.display='none';
-
-  if(!selectedGoal)selectedGoal='followers';
-  if(!selectedObTone)selectedObTone='educational';
-
-  // Save content profile to localStorage
-  const profile={mode:selectedMode,niche,audience:selectedAudience,goal:selectedGoal,tone:selectedObTone};
-  localStorage.setItem('lx_profile',JSON.stringify(profile));
-  localStorage.setItem('lx_niche',niche);
-  localStorage.setItem('lx_goal',selectedGoal);
-  localStorage.setItem('lx_tone',selectedObTone);
-
-  hideOnboarding();
-  document.getElementById('calendar-empty').style.display='none';
-  document.getElementById('calendar-loading').style.display='block';
-  document.getElementById('calendar-grid').innerHTML='';
-
-  try{
-    let res, attempts = 0;
-    while(attempts < 3){
-      try{
-        res=await fetch(`${SB_URL}/functions/v1/start-video`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-          body:JSON.stringify({
-            action:'plan',
-            niche,
-            audience:selectedAudience,
-            mode:selectedMode,
-            goal:selectedGoal,
-            tone:selectedObTone,
-            today:new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})
-          })
-        });
-        break;
-      }catch(err){
-        attempts++;
-        if(attempts>=3)throw err;
-        await new Promise(r=>setTimeout(r,3000));
-      }
-    }
-    const data=await res.json();
-    const plan=data.plan||[];
-    contentPlan=plan;
-
-    // Save to Supabase
-    if(sb&&currentUser){
-      await sb.from('content_plans').delete().eq('user_id',currentUser.id);
-      const rows=plan.map(p=>({
-        user_id:currentUser.id,
-        day:p.day,
-        post_type:p.postType,
-        hook:p.hook,
-        topic:p.topic,
-        tone:selectedObTone,
-        status:'pending',
-      }));
-      await sb.from('content_plans').insert(rows);
-    }
-
-    // Store niche in localStorage
-    localStorage.setItem('lx_niche',niche);
-    localStorage.setItem('lx_goal',selectedGoal);
-    localStorage.setItem('lx_tone',selectedObTone);
-
-    document.getElementById('plan-niche-label').textContent=`${niche} · ${selectedGoal} · ${selectedObTone}`;
-    console.log('Rendering calendar with', plan.length, 'days');
-    renderCalendar(plan);
-    console.log('Calendar rendered');
-  }catch(e){
-    console.error('Plan generation error:',e);
-    toast('Could not generate plan — please try again','error');
-    document.getElementById('calendar-empty').style.display='block';
-  }
-
-  document.getElementById('calendar-loading').style.display='none';
-}
-
-function renderCalendar(plan){
-  const grid=document.getElementById('calendar-grid');
-  if(!plan||plan.length===0){
-    document.getElementById('calendar-empty').style.display='block';
-    return;
-  }
-  document.getElementById('calendar-empty').style.display='none';
-  grid.innerHTML=plan.map(p=>`
-    <div class="cal-card ${p.video_id?'has-video':''}" id="cal-card-${p.day}">
-      ${p.video_id?'<div class="cal-done-badge">✦ Done</div>':''}
-      <div class="cal-day-num">Day ${p.day}</div>
-      <div class="cal-day-date">${p.date||''}</div>
-      <span class="cal-post-type ${(p.postType||p.post_type||'reel').toLowerCase()}">${p.postType||p.post_type||'Reel'}</span>
-      <div class="cal-hook">${esc(p.hook||'')}</div>
-      <div class="cal-topic" style="margin-bottom:8px">${esc(p.topic||'')}</div>
-      <div style="font-size:.68rem;color:var(--gold-dim);font-style:italic;margin-bottom:10px;padding:6px 8px;background:rgba(212,168,83,.05);border-radius:4px;border-left:2px solid var(--gold3)">🎬 ${esc(p.videoPrompt||p.topic||'')}</div>
-      ${!p.video_id?`<button class="cal-gen-btn" onclick="openCalDay(${p.day})">🎬 Generate Reel</button>`:'<div style="font-size:.7rem;color:var(--green);text-align:center;padding:6px">✦ Video Created</div>'}
-    </div>`).join('');
-}
-
-function openCalDay(day){
-  const plan=contentPlan.find(p=>p.day===day);
-  if(!plan)return;
-  activeCalDay=plan;
-
-  document.getElementById('quick-gen-title').textContent=`✦ Day ${day} — ${plan.postType||plan.post_type}`;
-  document.getElementById('quick-gen-subtitle').textContent='Edit and customise before generating';
-
-  // Fill all editable fields
-  const hookEl=document.getElementById('quick-hook');
-  const topicEl=document.getElementById('quick-topic');
-  if(hookEl)hookEl.value=plan.hook||'';
-  if(topicEl)topicEl.value=plan.topic||'';
-  document.getElementById('quick-prompt').value=plan.videoPrompt||plan.topic||'';
-
-  // Pre-fill image generator
-  const imgPromptEl=document.getElementById('img-gen-prompt');
-  if(imgPromptEl)imgPromptEl.value=plan.videoPrompt||plan.topic||'';
-  document.getElementById('quick-generate-section').style.display='block';
-  document.getElementById('quick-generate-section').scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-function hideQuickGenerate(){
-  document.getElementById('quick-generate-section').style.display='none';
-  activeCalDay=null;
-}
-
-async function handleQuickGenerate(){
-  if(generating){toast('Already generating — please wait','info');return}
-  const prompt=document.getElementById('quick-prompt').value.trim();
-  const hook=document.getElementById('quick-hook')?.value.trim()||'';
-  const topic=document.getElementById('quick-topic')?.value.trim()||'';
-  if(!prompt){toast('Enter a video prompt first','error');return}
-
-  generating=true;
-  const btn=document.getElementById('quick-gen-btn');
-  btn.disabled=true;
-  btn.textContent='Generating…';
-
-  const tone=selectedObTone||selectedTone||'luxury';
-  const video={
-    id:Date.now(),
-    prompt,tone,
-    video_url:SAMPLE_VIDEO,caption:'',status:'pending',
-    task_id:'',
-    created:new Date().toISOString(),
-  };
-  videos.unshift(video);renderGrid();updateStats();
-
-  try{
-    const startRes=await fetch(`${SB_URL}/functions/v1/start-video`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SB_ANON}`},
-    body:JSON.stringify({prompt:prompt,tone:selectedObTone||selectedTone||'luxury',duration:6,action:'video',niche:localStorage.getItem('lx_niche')||'luxury',userId:currentUser?.id||''}),
-    });
-    const startData=await startRes.json();
-    console.log('Start response:',JSON.stringify(startData));
-    if(!startRes.ok||startData.error){
-      toast(startData.error||'Video generation failed — please try again','error');
-      btn.disabled=false;btn.textContent='🎬 Generate Reel';
-      generating=false;
-      videos.shift();renderGrid();
-      return;
-    }
-    video.caption=fallbackCaption();
-    video.task_id=startData.taskId||startData.requestId||'';
-
-    await saveVideo(video);
-    renderGrid();
-    btn.disabled=false;btn.textContent='🎬 Generate Reel';
-    generating=false;
-    if(video.task_id){
-      toast('Reel generating — ready in ~60 seconds ✦','info');
-      watchVideoJob(video);
-    }else{
-      toast('Could not start generation — please try again','error');
-    }
-  }catch(e){
-    console.warn('Quick generate failed',e);
-    video.status='done';
-    await saveVideo(video);
-    renderGrid();updateStats();
-    btn.disabled=false;btn.textContent='🎬 Generate Reel';
-    generating=false;
-  }
-}
-
-async function loadContentPlan(){
-  if(!sb||!currentUser)return;
-
-  // Pre-warm the function — delayed so it doesn't block initial render
+function showLoadingThenPlan(){
+  const modal=document.getElementById('onboarding-modal');
+  [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
+  const ls=document.getElementById('ob-screen-loading');
+  if(ls) ls.style.display='block';
+  const steps=['ls-1','ls-2','ls-3','ls-4'];
+  steps.forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el) el.style.opacity='1';
+    }, i*600);
+  });
   setTimeout(()=>{
     if(ls) ls.style.display='none';
     renderPlanScreen();
@@ -2885,7 +2625,8 @@ function goObScreen(n){
   document.getElementById('ob-screen-3').style.display=n===3?'block':'none';
 
   // Update progress bar
-  for(let i=1;i<=3;i++i   const bar=document.getElementById('ob-prog-'+i);
+  for(let i=1;i<=3;i++){
+    const bar=document.getElementById('ob-prog-'+i);
     if(bar)bar.style.background=i<=n?'var(--gold)':'var(--border2)';
   }
 
@@ -2931,7 +2672,7 @@ const obModeConfig={
   ]}
 };
 
-function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';const btn=document.getElementById('ob-generate-btn');const loading=document.getElementById('ob-loading');btn.style.display='none';loading.style.display='block';const days=['Day 1 generating...','Day 2 generating...','Day 3 generating...','Day 4 generating...','Day 5 generating...','Day 6 generating...','Day 7 generating...'];let i=0;const lt=doci.getElementById('ob-loading-text');lt.textContent='Creating your content plan...';const seq=setInterval(()=>{if(i<days.length){lt.textContent=days[i];i++;}else{clearInterval(seq);}},600);setTimeout(()=>{clearInterval(seq);btn.style.display='';loading.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';generateContentPlan();},5000);}function selectMode(mode){ updateStep2ForMode(mode);
+function selectMode(mode){ updateStep2ForMode(mode);
   selectedMode=mode;
   localStorage.setItem('lx_mode',mode);
   document.querySelectorAll('.ob-mode-btn').forEach(function(b){b.classList.remove('selected');});
@@ -3007,7 +2748,7 @@ async function generateContentPlan(){
 
   try{
     let res, attempts = 0;
-resle(attempts < 3){
+    while(attempts < 3){
       try{
         res=await fetch(`${SB_URL}/functions/v1/start-video`,{
           method:'POST',
@@ -3816,7 +3557,7 @@ function downloadThumbFromLib(id){
 }
 
 function deleteThumbFromLib(id){
-  let lib = JSON.parse(localStlibetItem('lx_thumb_library')||'[]');
+  let lib = JSON.parse(localStorage.getItem('lx_thumb_library')||'[]');
   lib = lib.filter(i=>String(i.id)!==String(id));
   localStorage.setItem('lx_thumb_library', JSON.stringify(lib));
   renderThumbLibrary();
