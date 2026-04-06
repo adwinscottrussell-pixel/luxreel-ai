@@ -2589,35 +2589,6 @@ function showLoadingThenPlan(){
     renderPlanScreen();
   }, 3000);
 }
-function renderPlanScreen(){
-  const mode=localStorage.getItem('lx_mode')||'personal';
-  const niche=document.getElementById('ob-niche')?.value||'your niche';
-  const cfg=obModeConfig[mode]||obModeConfig.personal;
-  const sub=document.getElementById('ob-plan-subtitle');
-  if(sub) sub.textContent='Personalised for: '+niche;
-  const container=document.getElementById('ob-plan-cards');
-  if(!container) return;
-  container.innerHTML=cfg.days.map(d=>{
-    const hook=d.hook.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[property\]/g,niche);
-    const caption=d.caption.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche);
-    return `<div style="background:var(--noir3);border:1px solid ${d.best?'rgba(201,168,76,.4)':'var(--border)'};border-radius:12px;padding:16px;position:relative">
-      ${d.best?`<div style="position:absolute;top:-10px;left:16px;background:var(--gold);color:#000;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.08em">★ BEST IDEA</div>`:""}
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span style="font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">Day ${d.day}</span>
-        <span style="font-size:.7rem;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:2px 8px;font-weight:600">${d.type}</span>
-      </div>
-      <div style="font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4">"${hook}"</div>
-      <div style="font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px">${caption.slice(0,90)}…</div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" style="font-size:.72rem;flex:1" onclick="showUpgradeModal()">▶ Generate Video</button>
-        <button class="btn btn-ghost btn-sm" style="font-size:.72rem;flex:1" onclick="navigator.clipboard.writeText('${hook}');toast('Hook copied!','success')">Copy Hook</button>
-      </div>
-    </div>`;
-  }).join('');
-  [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
-  const s3=document.getElementById('ob-screen-3');
-  if(s3) s3.style.display='block';
-}
 function goObScreen(n){
   currentObScreen=n;
   document.getElementById('ob-screen-1').style.display=n===1?'block':'none';
