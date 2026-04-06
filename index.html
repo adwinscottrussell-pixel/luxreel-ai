@@ -2572,6 +2572,13 @@ function updateStep2ForMode(mode){
   if(t) t.textContent=cfg.title;
   if(inp) inp.placeholder=cfg.placeholder;
 }
+function copyObHook(btn){
+  var card=btn.parentElement.parentElement;
+  var hookEl=card.querySelector('div[style*="font-weight:600"]');
+  var text=hookEl?hookEl.textContent.replace(/^"|"$/g,''):'';
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Hook copied!','success');});}
+  else{toast('Copy not supported','error');}
+}
 function showLoadingThenPlan(){
   const modal=document.getElementById('onboarding-modal');
   [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
