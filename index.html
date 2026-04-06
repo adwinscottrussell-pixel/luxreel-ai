@@ -2689,28 +2689,22 @@ const obModeConfig={
 function selectMode(mode){ updateStep2ForMode(mode);
   selectedMode=mode;
   localStorage.setItem('lx_mode',mode);
-  document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.ob-mode-btn').forEach(function(b){b.classList.remove('selected');});
   var _mb=document.getElementById('mode-'+mode);
   if(_mb)_mb.classList.add('selected');
-  // Update screen 2 for the mode
   var _t=document.getElementById('ob-screen2-title');
   if(_t)_t.textContent=mode==='personal'?'Tell us about your brand':mode==='local'?'Tell us about your business':'Tell us about your product';
-  
-
-  document.getElementById('ob-niche-label').textContent=
-    mode==='personal'?'Your niche':
-    mode==='local'?'Your business type':
-    'Your product category';
-
-  document.getElementById('ob-niche').placeholder=MODE_NICHE_HINTS[mode];
-
-  // Update goal buttons for mode
-  const goals=MODE_GOAL_OPTIONS[mode];
-  const goalsEl=document.getElementById('ob-goals');
-  goalsEl.innerHTML=goals.map(g=>`<button class="tone-btn" data-goal="${g.val}" onclick="selectGoal(this)">${g.label}</button>`).join('');
-  selectedGoal=goals[0].val;
-
-  setTimeout(()=>goObScreen(2),150);
+  var _nl=document.getElementById('ob-niche-label');
+  if(_nl)_nl.textContent=mode==='personal'?'Your niche':mode==='local'?'Your business type':'Your product category';
+  var _ni=document.getElementById('ob-niche');
+  if(_ni&&typeof MODE_NICHE_HINTS!=='undefined')_ni.placeholder=MODE_NICHE_HINTS[mode]||'';
+  var goalsEl=document.getElementById('ob-goals');
+  if(goalsEl&&typeof MODE_GOAL_OPTIONS!=='undefined'&&MODE_GOAL_OPTIONS[mode]){
+    var goals=MODE_GOAL_OPTIONS[mode];
+    goalsEl.innerHTML=goals.map(function(g){return '<button class="tone-btn" data-goal="'+g.val+'" onclick="selectGoal(this)">'+g.label+'</button>';}).join('');
+    selectedGoal=goals[0].val;
+  }
+  setTimeout(function(){goObScreen(2);},150);
 }
 
 function selectGoal(btn){
