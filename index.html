@@ -1846,6 +1846,12 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
         <button class="btn btn-gold btn-md" style="flex:1" onclick="obGeneratePlan()">Generate My 7-Day Plan →</button>
       </div>
       <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
+    <div id="ob-progress-wrap" style="display:none;margin-top:16px">
+      <div style="font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:6px" id="ob-progress-label">Generating your plan…</div>
+      <div style="background:rgba(255,255,255,.08);border-radius:100px;height:3px;overflow:hidden">
+        <div id="ob-progress-fill" style="height:100%;width:0%;background:var(--gold);border-radius:100px;transition:width .4s ease"></div>
+      </div>
+    </div>
     </div>
     <div id="ob-screen-loading" style="display:none;text-align:center;padding:40px 0">
       <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:8px;color:var(--text)">Creating your content plan…</div>
@@ -2565,6 +2571,21 @@ function copyObHook(btn){
   else{toast('Copy not supported','error');}
 }
 function selectObGoalSimple(goal,btn){selectedGoal=goal;document.querySelectorAll('#ob-goal-buyers,#ob-goal-brand').forEach(function(b){b.style.borderColor='var(--border)';b.style.color='var(--muted)';b.style.background='var(--noir3)';});btn.style.borderColor='var(--gold)';btn.style.color='var(--gold)';btn.style.background='rgba(201,168,76,.08)';}function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';showLoadingThenPlan();}function showLoadingThenPlan(){
+  const pw=document.getElementById('ob-progress-wrap');
+  const pf=document.getElementById('ob-progress-fill');
+  const pl=document.getElementById('ob-progress-label');
+  if(pw)pw.style.display='block';
+  if(pf)pf.style.width='0%';
+  var pct=0;
+  var labels=["Analysing your niche…","Writing hooks…","Crafting captions…","Building your plan…","Almost ready…"];
+  var li=0;
+  var pInterval=setInterval(function(){
+    pct+=Math.random()*12+3;
+    if(pct>88)pct=88;
+    if(pf)pf.style.width=pct+'%';
+    if(pl&&labels[li]){pl.textContent=labels[Math.min(li,labels.length-1)];li++;}
+  },800);
+  window._luxProgressInterval=pInterval;
   [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
   const ls=document.getElementById('ob-screen-loading');
   if(ls) ls.style.display='block';
@@ -2584,10 +2605,16 @@ function selectObGoalSimple(goal,btn){selectedGoal=goal;document.querySelectorAl
   .then(data=>{
     const plan=Array.isArray(data)?data:(data.plan||data.days||null);
     if(plan&&plan.length>0){window._luxPlanData=plan;}
-    if(ls)ls.style.display='none';
-    renderPlanScreen();
+    clearInterval(window._luxProgressInterval);
+    const pf2=document.getElementById('ob-progress-fill');
+    const pw2=document.getElementById('ob-progress-wrap');
+    if(pf2)pf2.style.width='100%';
+    setTimeout(function(){if(pw2)pw2.style.display='none';if(ls)ls.style.display='none';renderPlanScreen();},400);
   })
   .catch(()=>{
+    clearInterval(window._luxProgressInterval);
+    const pw2=document.getElementById('ob-progress-wrap');
+    if(pw2)pw2.style.display='none';
     if(ls)ls.style.display='none';
     renderPlanScreen();
   });
