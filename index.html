@@ -1826,40 +1826,26 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     </div>
     <div   id="ob-screen-2" style="display:none">
       <div style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;opacity:.8">Step 2 of 3</div>
-      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px" id="ob-s2-title">What do you want to create content about?</div>
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:4px">This helps us personalise your content.</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:6px" id="ob-s2-title">What do you want to create content about?</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:2px">This helps us personalise your content.</div>
       <div style="font-size:.78rem;color:var(--gold);opacity:.8;margin-bottom:24px">Takes 10 seconds</div>
       <div style="margin-bottom:20px">
-        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:14px 16px;font-size:.95rem;width:100%" id="ob-s2-input" placeholder="e.g. fitness tips, startup advice, daily routines…">
-      </div>
-      <div style="margin-bottom:20px">
-        <div style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Your goal</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="ob-goals">
-          <button class="tone-btn" data-goal="followers" onclick="selectGoal(this)">📈 Grow followers</button>
-          <button class="tone-btn" data-goal="clients" onclick="selectGoal(this)">🤝 Get clients</button>
-          <button class="tone-btn" data-goal="authority" onclick="selectGoal(this)">👑 Build authority</button>
-        </div>
+        <input id="ob-niche" class="prompt-textarea" style="height:auto;padding:14px 16px;font-size:.95rem;width:100%" placeholder="e.g. fitness tips, startup advice, daily routines…">
       </div>
       <div style="margin-bottom:24px">
-        <div style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Content tone</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-          <button class="tone-btn" data-tone="educational" onclick="selectObTone(this)">🎓 Educational</button>
-          <button class="tone-btn" data-tone="motivational" onclick="selectObTone(this)">🔥 Motivational</button>
-          <button class="tone-btn" data-tone="bold" onclick="selectObTone(this)">⚡ Bold</button>
-          <button class="tone-btn" data-tone="luxury" onclick="selectObTone(this)">💎 Luxury</button>
-          <button class="tone-btn" data-tone="playful" onclick="selectObTone(this)">🎉 Playful</button>
-          <button class="tone-btn" data-tone="minimal" onclick="selectObTone(this)">◻ Minimal</button>
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Your goal <span style="opacity:.5">(optional)</span></div>
+        <div style="display:flex;gap:8px">
+          <button id="ob-goal-buyers" onclick="selectObGoalSimple('buyers',this)" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--noir3);color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif">Get buyers</button>
+          <button id="ob-goal-brand" onclick="selectObGoalSimple('brand',this)" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--noir3);color:var(--muted);font-size:.82rem;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif">Build brand</button>
         </div>
       </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline btn-md" onclick="goObScreen(1)">← Back</button>
-        <button class="btn btn-gold btn-md" style="flex:1" onclick="showLoadingThenPlan()">Generate My Content Plan →</button>
+        <button class="btn btn-gold btn-md" style="flex:1" onclick="showLoadingThenPlan()">Generate My Plan →</button>
       </div>
       <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
     </div>
-
-    <!-- SCREEN 2.5 — Loading -->
-    <div id="ob-screen-loading" style="display:none;text-align:center;padding:40px 0">
+    id="ob-screen-loading" style="display:none;text-align:center;padding:40px 0">
       <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;margin-bottom:8px;color:var(--text)">Creating your content plan…</div>
       <div style="font-size:.85rem;color:var(--muted);margin-bottom:32px">Personalising for your niche</div>
       <div id="ob-loading-steps" style="display:grid;gap:10px;max-width:280px;margin:0 auto">
