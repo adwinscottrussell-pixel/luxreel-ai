@@ -2604,7 +2604,7 @@ function renderPlanScreen(){
     html+="<div style='font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4'>"+hook+"</div>";
     html+="<div style='font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px'>"+shortCaption+"</div>";
     html+="<div style='display:flex;gap:8px'>";
-    html+="<div style='display:flex;gap:6px'>";html+="<button class='btn btn-ghost btn-sm' style='font-size:.72rem;flex:1' onclick='copyObHook(this,\&quot;\"+hook+\"\&quot;)'>Copy Caption</button>";html+="<button class='btn btn-sm' style='font-size:.72rem;flex:1;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.25);border-radius:6px;cursor:pointer' onclick='showUpgradeModal()'>🔒 Generate Video</button>";html+="</div></div>";";
+    html+="<div style='display:flex;gap:6px'>";html+="<button class='btn btn-ghost btn-sm' style='font-size:.72rem;flex:1' onclick='copyObHook(this)'>Copy Caption</button>";html+="<button class='btn btn-sm' style='font-size:.72rem;flex:1;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.25);border-radius:6px;cursor:pointer' onclick='showUpgradeModal()'>&#128274; Generate Video</button>";html+="</div></div>";";
   });
   container.innerHTML=html;
   for(var n=1;n<=5;n++){var s=document.getElementById("ob-screen-"+n);if(s)s.style.display="none";}
