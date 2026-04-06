@@ -2565,21 +2565,32 @@ function copyObHook(btn){
   else{toast('Copy not supported','error');}
 }
 function selectObGoalSimple(goal,btn){selectedGoal=goal;document.querySelectorAll('#ob-goal-buyers,#ob-goal-brand').forEach(function(b){b.style.borderColor='var(--border)';b.style.color='var(--muted)';b.style.background='var(--noir3)';});btn.style.borderColor='var(--gold)';btn.style.color='var(--gold)';btn.style.background='rgba(201,168,76,.08)';}function obGeneratePlan(){const niche=document.getElementById('ob-niche').value.trim();const err=document.getElementById('ob-error');if(!niche){err.textContent='Please tell us what you want to create content about';err.style.display='block';return;}err.style.display='none';if(!selectedGoal)selectedGoal='followers';if(!selectedObTone)selectedObTone='luxury';showLoadingThenPlan();}function showLoadingThenPlan(){
-  const modal=document.getElementById('onboarding-modal');
   [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
   const ls=document.getElementById('ob-screen-loading');
   if(ls) ls.style.display='block';
   const steps=['ls-1','ls-2','ls-3','ls-4'];
-  steps.forEach((id,i)=>{
-    setTimeout(()=>{
-      const el=document.getElementById(id);
-      if(el) el.style.opacity='1';
-    }, i*600);
-  });
-  setTimeout(()=>{
-    if(ls) ls.style.display='none';
+  steps.forEach((id,i)=>{setTimeout(()=>{const el=document.getElementById(id);if(el)el.style.opacity='1';},i*600);});
+  const nicheEl=document.getElementById('ob-niche');
+  const niche=(nicheEl&&nicheEl.value.trim())?nicheEl.value.trim():'luxury content';
+  const mode=localStorage.getItem('lx_mode')||'personal';
+  const anonKey=window.SUPABASE_ANON_KEY||'';
+  const supabaseUrl=window.SUPABASE_URL||'https://tvshyswdwgwunzzrsqca.supabase.co';
+  fetch(supabaseUrl+'/functions/v1/generate-content-plan',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+anonKey,'apikey':anonKey},
+    body:JSON.stringify({niche:niche,mode:mode,goal:selectedGoal||'followers',tone:selectedObTone||'luxury'})
+  })
+  .then(r=>r.ok?r.json():Promise.reject(r.status))
+  .then(data=>{
+    const plan=Array.isArray(data)?data:(data.plan||data.days||null);
+    if(plan&&plan.length>0){window._luxPlanData=plan;}
+    if(ls)ls.style.display='none';
     renderPlanScreen();
-  }, 3000);
+  })
+  .catch(()=>{
+    if(ls)ls.style.display='none';
+    renderPlanScreen();
+  });
 }
 function renderPlanScreen(){
   var mode=localStorage.getItem("lx_mode")||"personal";
