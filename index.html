@@ -2596,7 +2596,43 @@ function showLoadingThenPlan(){
     renderPlanScreen();
   }, 3000);
 }
+function renderPlanScreen(){
+  var mode=localStorage.getItem("lx_mode")||"personal";
+  var nicheEl=document.getElementById("ob-niche");
+  var niche=(nicheEl&&nicheEl.value.trim())?nicheEl.value.trim():"your niche";
+  var cfg=obModeConfig[mode]||obModeConfig.personal;
+  var sub=document.getElementById("ob-plan-subtitle");
+  if(sub)sub.textContent="Personalised for: "+niche;
+  var container=document.getElementById("ob-plan-cards");
+  if(!container)return;
+  var html="";
+  cfg.days.forEach(function(d){
+    var hook=d.hook.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[property\]/g,niche).replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area").replace(/\[neighbourhood\]/g,"the area").replace(/\[X\]/g,"several").replace(/\[benefit\]/g,"perform").replace(/\[timeframe\]/g,"30 days").replace(/\[offer\]/g,"special offer").replace(/\[location\/hours\]/g,"our location").replace(/\[time\/effort\]/g,"hours").replace(/\[service\]/g,niche).replace(/\[main service\]/g,niche);
+    var caption=d.caption.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[service\]/g,niche).replace(/\[main service\]/g,niche).replace(/\[offer\]/g,"special offer").replace(/\[location\/hours\]/g,"our location").replace(/\[timeframe\]/g,"30 days").replace(/\[benefit\]/g,"perform").replace(/\[time\/effort\]/g,"hours").replace(/\[X\]/g,"several").replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area");
+    var shortCaption=caption.length>90?caption.slice(0,90)+"...":caption;
+    var borderColor=d.best?"rgba(201,168,76,.4)":"var(--border)";
+    var bestBadge=d.best?"<div style='position:absolute;top:-10px;left:16px;background:var(--gold);color:#000;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.08em'>BEST IDEA</div>":"";
+    html+="<div style='background:var(--noir3);border:1px solid "+borderColor+";border-radius:12px;padding:16px;position:relative;margin-bottom:4px'>";
+    html+=bestBadge;
+    html+="<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px'>";
+    html+="<span style='font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase'>Day "+d.day+"</span>";
+    html+="<span style='font-size:.7rem;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:2px 8px;font-weight:600'>"+d.type+"</span>";
+    html+="</div>";
+    html+="<div style='font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4'>"+hook+"</div>";
+    html+="<div style='font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px'>"+shortCaption+"</div>";
+    html+="<div style='display:flex;gap:8px'>";
+    html+="<button class='btn btn-ghost btn-sm' style='font-size:.72rem;flex:1' onclick='showUpgradeModal()'>Generate Video</button>";
+    html+="<button class='btn btn-ghost btn-sm' style='font-size:.72rem;flex:1' onclick='toast(\"Hook copied!\",\"success\")'>Copy Hook</button>";
+    html+="</div></div>";
+  });
+  container.innerHTML=html;
+  for(var n=1;n<=5;n++){var s=document.getElementById("ob-screen-"+n);if(s)s.style.display="none";}
+  var ls=document.getElementById("ob-screen-loading");if(ls)ls.style.display="none";
+  var s3=document.getElementById("ob-screen-3");
+  if(s3)s3.style.display="block";
+}
 function goObScreen(n){
+
   currentObScreen=n;
   document.getElementById('ob-screen-1').style.display=n===1?'block':'none';
   document.getElementById('ob-screen-2').style.display=n===2?'block':'none';
