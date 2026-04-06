@@ -2693,10 +2693,9 @@ function selectMode(mode){ updateStep2ForMode(mode);
   var _mb=document.getElementById('mode-'+mode);
   if(_mb)_mb.classList.add('selected');
   // Update screen 2 for the mode
-  document.getElementById('ob-screen2-title').textContent=
-    mode==='personal'?'Tell us about your brand':
-    mode==='local'?'Tell us about your business':
-    'Tell us about your product';
+  var _t=document.getElementById('ob-screen2-title');
+  if(_t)_t.textContent=mode==='personal'?'Tell us about your brand':mode==='local'?'Tell us about your business':'Tell us about your product';
+  
 
   document.getElementById('ob-niche-label').textContent=
     mode==='personal'?'Your niche':
