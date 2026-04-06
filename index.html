@@ -1796,39 +1796,35 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
 
     <!-- SCREEN 1 — What do you want to grow? -->
     <div id="ob-screen-1">
-      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">What do you want to grow?</div>
-      <div style="font-size:.85rem;color:var(--muted);margin-bottom:32px">Choose your mode and we'll tailor your content strategy.</div>
-
-      <div style="display:grid;gap:12px">
-        <button class="ob-mode-btn" onclick="selectMode('personal')" id="mode-personal">
+      <div style="font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;opacity:.8">Step 1 of 3</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px">Let's create your 7-day content plan</div>
+      <div style="font-size:.85rem;color:var(--muted);margin-bottom:4px">First, tell us what you're building.</div>
+      <div style="font-size:.78rem;color:var(--gold);opacity:.8;margin-bottom:28px">Takes less than 60 seconds</div>
+      <div style="display:grid;gap:10px">
+        <button class="ob-mode-btn" onclick="selectMode('personal')" id="mode-personal" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
           <div class="ob-mode-icon">📈</div>
-          <div>
-            <div class="ob-mode-title">Personal Brand</div>
-            <div class="ob-mode-desc">Coaches, creators, consultants & thought leaders</div>
-          </div>
+          <div><div class="ob-mode-title">Personal Brand</div><div class="ob-mode-desc">Grow your personal brand with consistent, high-quality content</div></div>
           <div class="ob-mode-arrow">→</div>
         </button>
-        <button class="ob-mode-btn" onclick="selectMode('local')" id="mode-local">
+        <button class="ob-mode-btn" onclick="selectMode('local')" id="mode-local" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
           <div class="ob-mode-icon">📍</div>
-          <div>
-            <div class="ob-mode-title">Local Business</div>
-            <div class="ob-mode-desc">Restaurants, salons, gyms & service businesses</div>
-          </div>
+          <div><div class="ob-mode-title">Local Business</div><div class="ob-mode-desc">Get more customers with content that attracts and converts</div></div>
           <div class="ob-mode-arrow">→</div>
         </button>
-        <button class="ob-mode-btn" onclick="selectMode('product')" id="mode-product">
+        <button class="ob-mode-btn" onclick="selectMode('product')" id="mode-product" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
           <div class="ob-mode-icon">🛒</div>
-          <div>
-            <div class="ob-mode-title">Sell a Product</div>
-            <div class="ob-mode-desc">E-commerce, dropshipping & product brands</div>
-          </div>
+          <div><div class="ob-mode-title">Sell a Product</div><div class="ob-mode-desc">Drive more sales with content that stops the scroll and converts</div></div>
+          <div class="ob-mode-arrow">→</div>
+        </button>
+        <button class="ob-mode-btn" onclick="selectMode('realestate')" id="mode-realestate" style="transition:all .18s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+          <div class="ob-mode-icon">🏡</div>
+          <div><div class="ob-mode-title">Real Estate</div><div class="ob-mode-desc">Turn property listings into content that attracts buyers</div></div>
           <div class="ob-mode-arrow">→</div>
         </button>
       </div>
+      <div style="margin-top:20px;font-size:.75rem;color:var(--muted);text-align:center;opacity:.7">Next: we'll generate your 7-day content plan</div>
     </div>
-
-    <!-- SCREEN 2 — Tell us about your brand -->
-    <div id="ob-screen-2" style="display:none">
+    id="ob-screen-2" style="display:none">
       <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:8px" id="ob-screen2-title">Tell us about your brand</div>
       <div style="font-size:.85rem;color:var(--muted);margin-bottom:28px">We use this to craft your content angles, hook styles and CTAs.</div>
 
