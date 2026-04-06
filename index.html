@@ -2573,8 +2573,8 @@ function selectObGoalSimple(goal,btn){selectedGoal=goal;document.querySelectorAl
   const nicheEl=document.getElementById('ob-niche');
   const niche=(nicheEl&&nicheEl.value.trim())?nicheEl.value.trim():'luxury content';
   const mode=localStorage.getItem('lx_mode')||'personal';
-  const anonKey=window.SUPABASE_ANON_KEY||'';
-  const supabaseUrl=window.SUPABASE_URL||'https://tvshyswdwgwunzzrsqca.supabase.co';
+  const anonKey=window.SB_ANON||'';
+  const supabaseUrl=window.SB_URL||'https://tvshyswdwgwunzzrsqca.supabase.co';
   fetch(supabaseUrl+'/functions/v1/generate-content-plan',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+anonKey,'apikey':anonKey},
