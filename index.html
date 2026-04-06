@@ -1853,7 +1853,7 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
       </div>
       <div style="display:flex;gap:10px">
         <button class="btn btn-outline btn-md" onclick="goObScreen(1)">← Back</button>
-        <button class="btn btn-gold btn-md" style="flex:1" onclick="goObScreen(3)">Generate My Content Plan →</button>
+        <button class="btn btn-gold btn-md" style="flex:1" onclick="showLoadingThenPlan()">Generate My Content Plan →</button>
       </div>
       <div id="ob-error" style="color:var(--red);font-size:.8rem;margin-top:12px;text-align:center;display:none"></div>
     </div>
@@ -2565,6 +2565,59 @@ function hideOnboarding(){
   modal.style.display='none';
 }
 
+function updateStep2ForMode(mode){
+  const cfg=obModeConfig[mode]||obModeConfig.personal;
+  const t=document.getElementById('ob-s2-title');
+  const inp=document.getElementById('ob-niche');
+  if(t) t.textContent=cfg.title;
+  if(inp) inp.placeholder=cfg.placeholder;
+}
+function showLoadingThenPlan(){
+  const modal=document.getElementById('onboarding-modal');
+  [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
+  const ls=document.getElementById('ob-screen-loading');
+  if(ls) ls.style.display='block';
+  const steps=['ls-1','ls-2','ls-3','ls-4'];
+  steps.forEach((id,i)=>{
+    setTimeout(()=>{
+      const el=document.getElementById(id);
+      if(el) el.style.opacity='1';
+    }, i*600);
+  });
+  setTimeout(()=>{
+    if(ls) ls.style.display='none';
+    renderPlanScreen();
+  }, 3000);
+}
+function renderPlanScreen(){
+  const mode=localStorage.getItem('lx_mode')||'personal';
+  const niche=document.getElementById('ob-niche')?.value||'your niche';
+  const cfg=obModeConfig[mode]||obModeConfig.personal;
+  const sub=document.getElementById('ob-plan-subtitle');
+  if(sub) sub.textContent='Personalised for: '+niche;
+  const container=document.getElementById('ob-plan-cards');
+  if(!container) return;
+  container.innerHTML=cfg.days.map(d=>{
+    const hook=d.hook.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[property\]/g,niche);
+    const caption=d.caption.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche);
+    return `<div style="background:var(--noir3);border:1px solid ${d.best?'rgba(201,168,76,.4)':'var(--border)'};border-radius:12px;padding:16px;position:relative">
+      ${d.best?`<div style="position:absolute;top:-10px;left:16px;background:var(--gold);color:#000;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.08em">★ BEST IDEA</div>`:""}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase">Day ${d.day}</span>
+        <span style="font-size:.7rem;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:2px 8px;font-weight:600">${d.type}</span>
+      </div>
+      <div style="font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4">"${hook}"</div>
+      <div style="font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px">${caption.slice(0,90)}…</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" style="font-size:.72rem;flex:1" onclick="showUpgradeModal()">▶ Generate Video</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:.72rem;flex:1" onclick="navigator.clipboard.writeText('${hook}');toast('Hook copied!','success')">Copy Hook</button>
+      </div>
+    </div>`;
+  }).join('');
+  [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
+  const s3=document.getElementById('ob-screen-3');
+  if(s3) s3.style.display='block';
+}
 function goObScreen(n){
   currentObScreen=n;
   document.getElementById('ob-screen-1').style.display=n===1?'block':'none';
@@ -2580,7 +2633,46 @@ function goObScreen(n){
   if(n===3) buildProfileSummary();
 }
 
-function selectMode(mode){
+const obModeConfig={
+  personal:{title:"What do you want to create content about?",placeholder:"e.g. fitness tips, startup advice, daily routines…",days:[
+    {day:1,type:"Reel",best:true,hook:"Here's the one thing no one tells you about [niche]…",caption:"Most people get this wrong. After years of [niche], here's what actually works — and why the common advice fails you."},
+    {day:2,type:"Post",best:false,hook:"3 things I wish I knew when I started [niche]",caption:"If I could go back, I'd tell myself these three things. Save this for when you need it most."},
+    {day:3,type:"Reel",best:false,hook:"My honest take on [niche] after [X] years",caption:"No fluff. No highlight reel. Just the real story behind building in this space."},
+    {day:4,type:"Post",best:false,hook:"The [niche] advice everyone gives — and why it's wrong",caption:"Controversial take: the most popular advice in [niche] is holding you back. Here's what to do instead."},
+    {day:5,type:"Reel",best:false,hook:"A day in my life as a [niche] creator",caption:"Behind the scenes of what it actually looks like to build a brand around [niche]."},
+    {day:6,type:"Post",best:false,hook:"What [niche] taught me about discipline",caption:"It's not about motivation. It's about the system you build when motivation runs out."},
+    {day:7,type:"Reel",best:false,hook:"Your questions about [niche] — answered",caption:"I asked you what you wanted to know. Here are the most common questions — answered honestly."}
+  ]},
+  local:{title:"What business or service are you promoting?",placeholder:"e.g. hair salon, restaurant, gym…",days:[
+    {day:1,type:"Reel",best:true,hook:"Why locals keep coming back to [business]",caption:"It's not just the [service]. It's the experience. Here's what makes our customers regulars."},
+    {day:2,type:"Post",best:false,hook:"5 things you didn't know we offer at [business]",caption:"Most people only know us for [main service]. But here's what else we do — and why our customers love it."},
+    {day:3,type:"Reel",best:false,hook:"Behind the scenes at [business]",caption:"Ever wondered what goes into running [business]? Here's a look behind the scenes."},
+    {day:4,type:"Post",best:false,hook:"This week only — [offer] at [business]",caption:"We're running a special this week. Tag someone who needs to know about this."},
+    {day:5,type:"Reel",best:false,hook:"Meet the team at [business]",caption:"The people behind [business] are what make it special. Here's who you'll meet when you visit."},
+    {day:6,type:"Post",best:false,hook:"Customer love for [business] ❤️",caption:"Nothing makes us happier than hearing from happy customers. Here's what people are saying."},
+    {day:7,type:"Reel",best:false,hook:"Visit us this week — [location/hours]",caption:"We'd love to see you. Come in this week and experience [business] for yourself."}
+  ]},
+  product:{title:"What product are you selling?",placeholder:"e.g. skincare product, fitness app, electronics…",days:[
+    {day:1,type:"Reel",best:true,hook:"This [product] changed how I [benefit]",caption:"I wasn't expecting it to work this well. But after [timeframe], here's what I noticed."},
+    {day:2,type:"Post",best:false,hook:"3 reasons [product] is worth every penny",caption:"Before you scroll past — here's exactly what you get and why it's different from everything else out there."},
+    {day:3,type:"Reel",best:false,hook:"Watch what [product] does in 60 seconds",caption:"No long explanation needed. Just watch. Then decide for yourself."},
+    {day:4,type:"Post",best:false,hook:"What customers are saying about [product]",caption:"Real results. Real people. Here's what happened when they tried [product] for the first time."},
+    {day:5,type:"Reel",best:false,hook:"How to get the most out of [product]",caption:"Most people use [product] wrong. Here's the right way — and why it makes all the difference."},
+    {day:6,type:"Post",best:false,hook:"[Product] vs doing it the old way",caption:"Before [product], this took [time/effort]. Now? Here's what changed."},
+    {day:7,type:"Reel",best:false,hook:"Last chance — [offer] ends soon",caption:"We're closing this offer at midnight. Here's everything you get when you order today."}
+  ]},
+  realestate:{title:"What property are you promoting?",placeholder:"e.g. luxury villa, 2-bed apartment, modern home…",days:[
+    {day:1,type:"Reel",best:true,hook:"This home has a feature you won't expect…",caption:"We see a lot of properties. This one stopped us in our tracks. Here's why buyers keep asking about it."},
+    {day:2,type:"Post",best:false,hook:"3 things buyers love about this property",caption:"It's not just the layout. Here are the three details that make this home stand out from everything else on the market."},
+    {day:3,type:"Reel",best:false,hook:"Luxury living at [price] — here's the tour",caption:"Slow down and take a look. This is what [price] gets you right now in [area]."},
+    {day:4,type:"Story",best:false,hook:"Would you buy this home? Swipe to see inside →",caption:"Poll + link sticker. Drive traffic to your listing while keeping followers engaged."},
+    {day:5,type:"Post",best:false,hook:"Why buyers love [neighbourhood]",caption:"Location sells. Here's what makes [area] one of the most sought-after spots for buyers right now."},
+    {day:6,type:"Reel",best:false,hook:"The view from the master suite…",caption:"Golden hour. Perfect light. The kind of view that sells a home before the price is even mentioned."},
+    {day:7,type:"Post",best:false,hook:"Still available — book your private viewing",caption:"This property is attracting serious interest. If you've been watching it, now is the time to act."}
+  ]}
+};
+
+function selectMode(mode){ updateStep2ForMode(mode);
   selectedMode=mode;
   document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
   document.getElementById('mode-'+mode).classList.add('selected');
