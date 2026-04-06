@@ -2688,9 +2688,10 @@ const obModeConfig={
 
 function selectMode(mode){ updateStep2ForMode(mode);
   selectedMode=mode;
+  localStorage.setItem('lx_mode',mode);
   document.querySelectorAll('.ob-mode-btn').forEach(b=>b.classList.remove('selected'));
-  document.getElementById('mode-'+mode).classList.add('selected');
-
+  var _mb=document.getElementById('mode-'+mode);
+  if(_mb)_mb.classList.add('selected');
   // Update screen 2 for the mode
   document.getElementById('ob-screen2-title').textContent=
     mode==='personal'?'Tell us about your brand':
