@@ -2596,34 +2596,69 @@ function renderPlanScreen(){
   var mode=localStorage.getItem("lx_mode")||"personal";
   var nicheEl=document.getElementById("ob-niche");
   var niche=(nicheEl&&nicheEl.value.trim())?nicheEl.value.trim():"your niche";
-  var cfg=obModeConfig[mode]||obModeConfig.personal;
+  var days=window._luxPlanData||(obModeConfig[mode]||obModeConfig.personal).days;
   var sub=document.getElementById("ob-plan-subtitle");
   if(sub)sub.textContent="Personalised for: "+niche;
   var container=document.getElementById("ob-plan-cards");
   if(!container)return;
   var html="";
-  cfg.days.forEach(function(d){
-    var hook=d.hook.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[property\]/g,niche).replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area").replace(/\[neighbourhood\]/g,"the area").replace(/\[X\]/g,"several").replace(/\[benefit\]/g,"perform").replace(/\[timeframe\]/g,"30 days").replace(/\[offer\]/g,"special offer").replace(/\[location\/hours\]/g,"our location").replace(/\[time\/effort\]/g,"hours").replace(/\[service\]/g,niche).replace(/\[main service\]/g,niche);
-    var caption=d.caption.replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[service\]/g,niche).replace(/\[main service\]/g,niche).replace(/\[offer\]/g,"special offer").replace(/\[location\/hours\]/g,"our location").replace(/\[timeframe\]/g,"30 days").replace(/\[benefit\]/g,"perform").replace(/\[time\/effort\]/g,"hours").replace(/\[X\]/g,"several").replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area");
-    var shortCaption=caption.length>90?caption.slice(0,90)+"...":caption;
+  days.forEach(function(d,i){
+    var hook=(d.hook||d.title||"").replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[property\]/g,niche).replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area").replace(/\[service\]/g,niche);
+    var caption=(d.caption||"").replace(/\[niche\]/g,niche).replace(/\[business\]/g,niche).replace(/\[product\]/g,niche).replace(/\[service\]/g,niche).replace(/\[offer\]/g,"special offer").replace(/\[timeframe\]/g,"30 days").replace(/\[price\]/g,"asking price").replace(/\[area\]/g,"the area");
+    var type=d.contentType||d.type||"Reel";
+    var dayNum=d.day||(i+1);
+    var cardId="ob-card-"+dayNum;
+    var bodyId="ob-body-"+dayNum;
     var borderColor=d.best?"rgba(201,168,76,.4)":"var(--border)";
     var bestBadge=d.best?"<div style='position:absolute;top:-10px;left:16px;background:var(--gold);color:#000;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:.08em'>BEST IDEA</div>":"";
-    html+="<div style='background:var(--noir3);border:1px solid "+borderColor+";border-radius:12px;padding:16px;position:relative;margin-bottom:4px'>";
+    html+="<div id='"+cardId+"' style='background:var(--noir3);border:1px solid "+borderColor+";border-radius:12px;overflow:hidden;position:relative;margin-bottom:8px;transition:border-color .2s'>";
     html+=bestBadge;
-    html+="<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:10px'>";
-    html+="<span style='font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase'>Day "+d.day+"</span>";
-    html+="<span style='font-size:.7rem;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:2px 8px;font-weight:600'>"+d.type+"</span>";
+    html+="<div onclick='toggleObCard("+dayNum+")' style='display:flex;justify-content:space-between;align-items:center;padding:16px;cursor:pointer'>";
+    html+="<div style='display:flex;align-items:center;gap:12px'>";
+    html+="<div style='min-width:36px;height:36px;border-radius:8px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--gold)'>"+dayNum+"</div>";
+    html+="<div><div style='font-size:.85rem;font-weight:600;color:var(--text);line-height:1.3'>"+hook+"</div>";
+    html+="<div style='font-size:.7rem;color:var(--gold);margin-top:2px'>"+type+"</div></div></div>";
+    html+="<span id='ob-chev-"+dayNum+"' style='color:var(--muted);font-size:.8rem;transition:transform .25s'>&#9660;</span>";
     html+="</div>";
-    html+="<div style='font-size:.88rem;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4'>"+hook+"</div>";
-    html+="<div style='font-size:.75rem;color:var(--muted);line-height:1.5;margin-bottom:12px'>"+shortCaption+"</div>";
+    html+="<div id='"+bodyId+"' style='max-height:0;overflow:hidden;transition:max-height .35s ease'>";
+    html+="<div style='padding:0 16px 16px;border-top:1px solid var(--border)'>";
+    html+="<div style='font-size:.75rem;color:var(--muted);line-height:1.6;margin:12px 0 16px;white-space:pre-wrap'>"+caption+"</div>";
     html+="<div style='display:flex;gap:8px'>";
-    html+="<div style='display:flex;gap:6px'>";html+="<button class='btn btn-ghost btn-sm' style='font-size:.72rem;flex:1' onclick='copyObHook(this)'>Copy Caption</button>";html+="<button class='btn btn-sm' style='font-size:.72rem;flex:1;background:rgba(201,168,76,.1);color:var(--gold);border:1px solid rgba(201,168,76,.25);border-radius:6px;cursor:pointer' onclick='generateVideoFromPlan(this)'>&#9654; Generate Video</button>";html+="</div></div>";
+    html+="<button style='flex:1;padding:10px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer' onclick='generateVideoFromPlan(this)'>&#9654; Generate Video</button>";
+    html+="<button style='padding:10px 14px;background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:.8rem;cursor:pointer' onclick='copyObCaption(this,"+JSON.stringify(caption)+")'>Copy</button>";
+    html+="</div></div></div></div>";
   });
   container.innerHTML=html;
   for(var n=1;n<=5;n++){var s=document.getElementById("ob-screen-"+n);if(s)s.style.display="none";}
   var ls=document.getElementById("ob-screen-loading");if(ls)ls.style.display="none";
   var s3=document.getElementById("ob-screen-3");
   if(s3)s3.style.display="block";
+}
+function toggleObCard(dayNum){
+  var body=document.getElementById("ob-body-"+dayNum);
+  var chev=document.getElementById("ob-chev-"+dayNum);
+  var card=document.getElementById("ob-card-"+dayNum);
+  var isOpen=body.style.maxHeight!=="0px"&&body.style.maxHeight!=="";
+  document.querySelectorAll("[id^='ob-body-']").forEach(function(el){el.style.maxHeight="0px";});
+  document.querySelectorAll("[id^='ob-chev-']").forEach(function(el){el.style.transform="rotate(0deg)";el.style.color="var(--muted)";});
+  document.querySelectorAll("[id^='ob-card-']").forEach(function(el){el.style.borderColor="var(--border)";});
+  if(!isOpen){
+    body.style.maxHeight="400px";
+    chev.style.transform="rotate(180deg)";
+    chev.style.color="var(--gold)";
+    card.style.borderColor="rgba(201,168,76,.5)";
+    setTimeout(function(){body.scrollIntoView({behavior:"smooth",block:"nearest"});},50);
+  }
+}
+function copyObCaption(btn,text){
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent="Copied!";
+    btn.style.color="var(--gold)";
+    setTimeout(function(){btn.textContent="Copy";btn.style.color="var(--muted)";},2000);
+  }).catch(function(){
+    var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);
+    btn.textContent="Copied!";setTimeout(function(){btn.textContent="Copy";},2000);
+  });
 }
 function goObScreen(n){
 
