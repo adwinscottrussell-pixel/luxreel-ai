@@ -2565,6 +2565,13 @@ function copyObHook(btn){
   if(navigator.clipboard){navigator.clipboard.writeText(text).then(function(){toast('Hook copied!','success');});}
   else{toast('Copy not supported','error');}
 }
+function selectObGoalSimple(goal,btn){
+  localStorage.setItem('lx_goal',goal);
+  document.querySelectorAll('#ob-goal-buyers,#ob-goal-brand').forEach(function(b){
+    b.style.borderColor='var(--border)';b.style.color='var(--muted)';b.style.background='var(--noir3)';
+  });
+  btn.style.borderColor='var(--gold)';btn.style.color='var(--gold)';btn.style.background='rgba(201,168,76,.08)';
+}
 function showLoadingThenPlan(){
   const modal=document.getElementById('onboarding-modal');
   [1,2,3,4,5].forEach(n=>{const s=document.getElementById('ob-screen-'+n);if(s)s.style.display='none';});
