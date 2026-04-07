@@ -2562,14 +2562,14 @@ const MODE_GOAL_OPTIONS={
   product:[{val:'sales',label:'💰 Drive sales'},{val:'brand',label:'✨ Build brand'},{val:'viral',label:'🚀 Go viral'}],
 }
 
-function showOnboarding(){
+function showOnboarding(){localStorage.removeItem('lx_plan_done');
   const modal=document.getElementById('onboarding-modal');
   modal.classList.add('open');
   modal.style.display='flex';
   goObScreen(1);
 }
 
-function hideOnboarding(){
+function hideOnboarding(){localStorage.setItem('lx_plan_done','1');
   const modal=document.getElementById('onboarding-modal');
   modal.classList.remove('open');
   modal.style.display='none';
@@ -3035,11 +3035,11 @@ async function loadContentPlan(){
     }else{
       // No plan yet — show onboarding automatically
       document.getElementById('calendar-empty').style.display='block';
-      setTimeout(()=>showOnboarding(), 600);
+      setTimeout(()=>{if(!localStorage.getItem('lx_plan_done'))showOnboarding();}, 600);
     }
   }catch(e){
     document.getElementById('calendar-empty').style.display='block';
-    setTimeout(()=>showOnboarding(), 600);
+    setTimeout(()=>{if(!localStorage.getItem('lx_plan_done'))showOnboarding();}, 600);
   }
 }
 const PROMPTS=[
