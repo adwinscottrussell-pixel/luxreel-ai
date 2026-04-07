@@ -3564,7 +3564,7 @@ function initFaceGate(){
   });
 }
 function clearRefUpload(){refImageBase64='';refImageMime='';const input=document.getElementById('ref-image-input');if(input)input.value='';document.getElementById('ref-upload-placeholder').style.display='block';document.getElementById('ref-upload-preview').style.display='none';document.getElementById('ref-upload-area')?.classList.remove('has-image');document.getElementById('ref-style-profile').style.display='none';}
-async async function generateThumbnail(){
+async function generateThumbnail(){
   const niche   = document.getElementById('thumb-niche')?.value.trim();
   const title   = document.getElementById('thumb-title')?.value.trim();
   const subject = document.getElementById('thumb-subject')?.value.trim();
@@ -3583,7 +3583,7 @@ async async function generateThumbnail(){
   btn.disabled = true; btn.textContent = 'Generating…';
   loading.style.display = 'block'; result.style.display = 'none';
 
-  try{
+  (async()=>{try{
     const session = await sb.auth.getSession();
     const token   = session?.data?.session?.access_token;
     if(!token) throw new Error('Not logged in');
@@ -3620,6 +3620,7 @@ async async function generateThumbnail(){
     toast('Generation failed — please try again','error');
   }
 
+  })();
   btn.disabled = false; btn.textContent = '✨ Generate Thumbnail';
   loading.style.display = 'none';
 }
