@@ -1713,6 +1713,25 @@ input,textarea,select{font-family:'DM Sans',sans-serif}
     <div id="ref-style-profile-text" style="font-size:.78rem;color:var(--muted);line-height:1.7"></div>
   </div>
 </div>
+<div style="margin-bottom:14px;margin-top:4px">
+  <div class="prompt-label" style="margin-bottom:6px">Face Injection <span style="background:var(--gold);color:#000;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:100px;margin-left:6px;letter-spacing:.06em">PRO</span> <span style="color:var(--muted);font-weight:400">(optional — inject your face into the thumbnail)</span></div>
+  <div id="face-pro-gate" style="display:none;padding:10px 14px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:8px;font-size:.78rem;color:var(--muted)">🔒 Face injection is a <strong style="color:var(--gold)">Pro feature</strong>. <a href="#" onclick="showUpgradeModal();return false;" style="color:var(--gold);text-decoration:underline">Upgrade to unlock</a></div>
+  <div id="face-upload-wrap">
+    <div class="upload-area" id="face-upload-area" onclick="document.getElementById('face-image-input').click()" style="padding:14px;margin-bottom:0">
+      <input type="file" id="face-image-input" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handleFaceImageUpload(this)">
+      <div id="face-upload-placeholder">
+        <div class="upload-icon" style="font-size:1.2rem">👤</div>
+        <div class="upload-title" style="font-size:.82rem">Upload a face photo</div>
+        <div class="upload-sub">Clear, front-facing photo · JPG, PNG or WEBP</div>
+      </div>
+      <div id="face-upload-preview" style="display:none;text-align:center">
+        <img id="face-upload-img" style="max-height:80px;max-width:100%;border-radius:8px;object-fit:contain;margin-bottom:6px">
+        <div style="font-size:.72rem;color:var(--gold)" id="face-upload-name"></div>
+        <button class="btn btn-ghost btn-sm" style="font-size:.65rem;margin-top:4px" onclick="event.stopPropagation();clearFaceUpload()">Remove ✕</button>
+      </div>
+    </div>
+  </div>
+</div>
 <button class="btn btn-gold btn-md" id="thumb-gen-btn" style="width:100%" onclick="generateThumbnail()">✨ Generate Thumbnail</button>
 
     <div id="thumb-gen-loading" style="display:none;text-align:center;padding:24px">
@@ -3364,7 +3383,7 @@ function showDashSection(section){
   if(tmpl) tmpl.style.display = section==='templates' ? 'block' : 'none';
   if(section==='image-library') renderAdLibraryPage();
   if(section==='video-library') renderVideoLibraryPage();
-  if(section==='thumbnail-gen'){ initThumbnailSection(); }
+  if(section==='thumbnail-gen'){ initThumbnailSection(); if(currentUser) initFaceGate(); }
   if(section==='templates') renderTemplates();   const avatarStudio=document.getElementById('dash-section-avatar-studio');   if(avatarStudio) avatarStudio.style.display=section==='avatar-studio'?'block':'none';
 }
 
@@ -3514,6 +3533,36 @@ let selectedThumbPlatform = 'youtube';
 let refImageBase64='';let refImageMime='';
 function switchRefTab(tab){const isUrl=tab==='url';document.getElementById('ref-pane-url').style.display=isUrl?'block':'none';document.getElementById('ref-pane-upload').style.display=isUrl?'none':'block';const tu=document.getElementById('ref-tab-url');const tup=document.getElementById('ref-tab-upload');tu.style.background=isUrl?'var(--gold)':'transparent';tu.style.color=isUrl?'#000':'var(--muted)';tup.style.background=isUrl?'transparent':'var(--gold)';tup.style.color=isUrl?'var(--muted)':'#000';if(isUrl)clearRefUpload();}
 function handleRefImageUpload(input){const file=input.files[0];if(!file)return;if(file.size>10*1024*1024){toast('Image too large — max 10MB','error');return;}const reader=new FileReader();reader.onload=(e)=>{refImageBase64=e.target.result.split(',')[1];refImageMime=file.type;document.getElementById('ref-upload-placeholder').style.display='none';document.getElementById('ref-upload-preview').style.display='block';document.getElementById('ref-upload-img').src=e.target.result;document.getElementById('ref-upload-name').textContent=file.name;document.getElementById('ref-upload-area').classList.add('has-image');const urlInput=document.getElementById('thumb-reference-url');if(urlInput)urlInput.value='';toast('Reference image ready ✦','success');};reader.readAsDataURL(file);}
+function handleFaceImageUpload(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    window._thumbFaceImage=e.target.result;
+    document.getElementById('face-upload-placeholder').style.display='none';
+    document.getElementById('face-upload-preview').style.display='block';
+    document.getElementById('face-upload-img').src=e.target.result;
+    document.getElementById('face-upload-name').textContent=file.name;
+  };
+  reader.readAsDataURL(file);
+}
+function clearFaceUpload(){
+  window._thumbFaceImage=null;
+  document.getElementById('face-image-input').value='';
+  document.getElementById('face-upload-placeholder').style.display='block';
+  document.getElementById('face-upload-preview').style.display='none';
+  document.getElementById('face-upload-img').src='';
+  document.getElementById('face-upload-name').textContent='';
+}
+function initFaceGate(){
+  sb.from('profiles').select('plan,is_admin').eq('id',currentUser.id).single().then(function(res){
+    var profile=res.data;
+    var isPro=profile&&(profile.plan==='pro'||profile.is_admin===true);
+    if(!isPro){
+      document.getElementById('face-upload-wrap').style.display='none';
+      document.getElementById('face-pro-gate').style.display='block';
+    }
+  });
+}
 function clearRefUpload(){refImageBase64='';refImageMime='';const input=document.getElementById('ref-image-input');if(input)input.value='';document.getElementById('ref-upload-placeholder').style.display='block';document.getElementById('ref-upload-preview').style.display='none';document.getElementById('ref-upload-area')?.classList.remove('has-image');document.getElementById('ref-style-profile').style.display='none';}
 async function generateThumbnail(){
   const niche   = document.getElementById('thumb-niche')?.value.trim();
@@ -3545,7 +3594,7 @@ async function generateThumbnail(){
         'Content-Type':  'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ niche, title, subject, style, platform, tone, referenceImage: window._thumbReferenceImage || document.getElementById('thumb-reference-url')?.value.trim() || null })
+      body: JSON.stringify({ niche, title, subject, style, platform, tone, referenceImage: window._thumbReferenceImage || document.getElementById('thumb-reference-url')?.value.trim() || null, faceImage: window._thumbFaceImage || null })
     });
 
     const data = await res.json();
