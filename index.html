@@ -3564,7 +3564,7 @@ function initFaceGate(){
   });
 }
 function clearRefUpload(){refImageBase64='';refImageMime='';const input=document.getElementById('ref-image-input');if(input)input.value='';document.getElementById('ref-upload-placeholder').style.display='block';document.getElementById('ref-upload-preview').style.display='none';document.getElementById('ref-upload-area')?.classList.remove('has-image');document.getElementById('ref-style-profile').style.display='none';}
-async function generateThumbnail(){
+function generateThumbnail(){
   const niche   = document.getElementById('thumb-niche')?.value.trim();
   const title   = document.getElementById('thumb-title')?.value.trim();
   const subject = document.getElementById('thumb-subject')?.value.trim();
