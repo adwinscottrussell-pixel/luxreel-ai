@@ -2276,6 +2276,7 @@ async function bootApp(){
     updateUserUI();
     go('dashboard');
     loadVideos(); // non-blocking — page shows immediately
+    try{var sp=localStorage.getItem('lx_saved_plan');if(sp){renderCalendar(JSON.parse(sp));}}catch(e){}
   } else {
     go('landing');
   }
@@ -2570,6 +2571,13 @@ function showOnboarding(){localStorage.removeItem('lx_plan_done');
 }
 
 function hideOnboarding(){localStorage.setItem('lx_plan_done','1');
+  if(window._luxPlanData&&window._luxPlanData.length>0){
+    var mapped=window._luxPlanData.map(function(d,i){
+      return {day:d.day||(i+1),date:'',postType:d.contentType||d.type||'Reel',hook:d.hook||'',topic:d.caption||'',caption:d.caption||'',videoPrompt:d.videoPrompt||''};
+    });
+    localStorage.setItem('lx_saved_plan',JSON.stringify(mapped));
+    try{renderCalendar(mapped);}catch(e){}
+  }
   const modal=document.getElementById('onboarding-modal');
   modal.classList.remove('open');
   modal.style.display='none';
