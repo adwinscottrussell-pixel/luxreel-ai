@@ -3629,7 +3629,7 @@ async function generateTextHooks(title){/* v2 */try{const t=(title||'').toUpperC
     if(!data.imageUrl) throw new Error(data.error || 'No image returned');
 
     generatedThumbUrl = data.imageUrl;
-    const thumbTitle = document.getElementById('thumb-title')?.value || '';const imgUrl=data.imageUrl;if(imgUrl&&imgUrl.startsWith('http')){fetch(SB_URL+'/functions/v1/start-video',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_ANON},body:JSON.stringify({action:'proxy-image',prompt:imgUrl})}).then(r=>r.json()).then(pd=>{const b64Url='data:'+(pd.contentType||'image/png')+';base64,'+pd.base64;renderThumbVariations(b64Url,thumbTitle);}).catch(()=>renderThumbVariations(imgUrl,thumbTitle));}else{renderThumbVariations(imgUrl,thumbTitle);}
+    const thumbTitle = document.getElementById('thumb-title')?.value || '';console.log('[Thumb] imageUrl to overlay:',data.imageUrl?data.imageUrl.substring(0,80):'EMPTY');if(data.imageUrl&&data.imageUrl.length>50)renderThumbVariations(data.imageUrl,thumbTitle);
     document.getElementById('thumb-result-img').src = data.imageUrl;
     document.getElementById('thumb-usage-count').textContent = data.used;
     document.getElementById('thumb-usage-label').textContent = `/ ${data.limit} this month`;
