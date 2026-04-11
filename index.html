@@ -2982,7 +2982,7 @@ function showVideoGenModal(prompt,plan,variationIndex){
     if(taskId){pollVideoJob(taskId,plan,variationIndex,ticker);return;}
     document.getElementById('vgm-icon').textContent='❌';
     document.getElementById('vgm-title').textContent='No video returned';
-    document.getElementById('vgm-sub').textContent='Please try again.';
+    document.getElementById('vgm-sub').textContent='Debug: '+JSON.stringify(data).substring(0,200);
   }).catch(e=>{
     clearInterval(ticker);
     document.getElementById('vgm-icon').textContent='❌';
