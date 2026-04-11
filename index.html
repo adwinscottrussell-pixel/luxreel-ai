@@ -2824,6 +2824,7 @@ async function generateContentPlan(){
   const errEl=document.getElementById('ob-error');
   if(!niche){errEl.textContent='Please enter your niche';errEl.style.display='block';goObScreen(2);return}
   errEl.style.display='none';
+  if(_propertyImgBase64.length){window._lastPropertyData=await analyzePropertyImages(_propertyImgBase64);}
 
   if(!selectedGoal)selectedGoal='followers';
   if(!selectedObTone)selectedObTone='educational';
@@ -2850,6 +2851,7 @@ async function generateContentPlan(){
           body:JSON.stringify({
             action:'plan',
             niche,
+            propertyData:window._lastPropertyData||null,
             audience:selectedAudience,
             mode:selectedMode,
             goal:selectedGoal,
