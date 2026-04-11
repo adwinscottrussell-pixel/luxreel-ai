@@ -518,12 +518,50 @@ footer {
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s, transform 0.6s; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   nav { padding: 1rem 1.25rem; }
   .nav-links { display: none; }
-  section { padding: 4rem 1.25rem; }
-  .steps { border-radius: 1rem; }
-  footer { flex-direction: column; text-align: center; }
+  .nav-logo { font-size: 1.2rem; }
+
+  .hero { padding: 6rem 1.25rem 3rem; min-height: auto; }
+  .hero-ring:nth-child(1) { width: 280px; height: 280px; }
+  .hero-ring:nth-child(2) { width: 400px; height: 400px; }
+  .hero-ring:nth-child(3) { width: 520px; height: 520px; }
+  h1 { font-size: 2.6rem; }
+  .hero-sub { font-size: 0.95rem; }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+  .btn-primary, .btn-secondary { text-align: center; justify-content: center; width: 100%; padding: 1rem; font-size: 0.95rem; }
+  .hero-note { font-size: 0.72rem; }
+
+  .phone-card { padding: 1.25rem; max-width: 100%; }
+  .msg { font-size: 0.8rem; }
+
+  .stats { flex-direction: column; }
+  .stat { border-right: none; border-bottom: 1px solid var(--border); padding: 1.75rem 1.25rem; }
+  .stat:last-child { border-bottom: none; }
+  .stat-num { font-size: 2.4rem; }
+
+  section { padding: 3.5rem 1.25rem; }
+  .section-title { font-size: 1.9rem; }
+  .section-sub { font-size: 0.9rem; }
+
+  .steps { border-radius: 1rem; grid-template-columns: 1fr; }
+  .step { padding: 1.75rem 1.5rem; }
+  .step-num { font-size: 2.5rem; margin-bottom: 1rem; }
+
+  .features-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .feature-card { padding: 1.5rem; }
+
+  .pricing-grid { grid-template-columns: 1fr; max-width: 100%; }
+  .pricing-card { padding: 2rem 1.5rem; }
+  .pricing-card.featured { margin-top: 0.5rem; }
+
+  .waitlist-form { flex-direction: column; align-items: stretch; }
+  .waitlist-input { width: 100%; }
+  .cta-section .btn-primary { width: 100%; justify-content: center; }
+
+  footer { flex-direction: column; text-align: center; padding: 2rem 1.25rem; gap: 1.25rem; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 1rem; }
 }
 </style>
 </head>
