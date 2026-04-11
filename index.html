@@ -3000,7 +3000,7 @@ function showVideoGenModal(prompt,plan,variationIndex,propertyImg){
   fetch(SB_URL+'/functions/v1/start-video',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_ANON},
-    body:JSON.stringify({action:'video',prompt,niche:localStorage.getItem('lx_niche')||'',imageBase64:propertyImg?propertyImg.split(',')[1]||'':null,imageType:propertyImg?'image/jpeg':null})
+    body:JSON.stringify({action:'video',prompt:propertyImg?'Cinematic property tour. Smooth camera movement through the space, golden hour lighting, luxury real estate aesthetic. No text overlays.':prompt,niche:localStorage.getItem('lx_niche')||'',imageBase64:propertyImg?propertyImg.split(',')[1]||'':null,imageType:propertyImg?'image/jpeg':null})
   }).then(r=>r.json()).then(data=>{
     clearInterval(ticker);
     if(data.error){
