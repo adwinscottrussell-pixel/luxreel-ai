@@ -2280,7 +2280,9 @@ async function bootApp(){
   // Listen for auth state changes (login/logout)
   sb.auth.onAuthStateChange(async(_event,session)=>{
     if(session){
+      const prevUser=currentUser;
       currentUser=session.user;
+      if(!prevUser||prevUser.id!==session.user.id){localStorage.removeItem('lx_plan_done');localStorage.removeItem('lx_profile');}
       updateUserUI();
       loadVideos(); // non-blocking
     } else {
