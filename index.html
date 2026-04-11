@@ -2984,7 +2984,7 @@ function showVideoGenModal(prompt,plan,variationIndex,propertyImg){
     if(taskId){pollVideoJob(taskId,plan,variationIndex,ticker);return;}
     document.getElementById('vgm-icon').textContent='❌';
     document.getElementById('vgm-title').textContent='No video returned';
-    document.getElementById('vgm-sub').textContent='Debug: '+JSON.stringify(data).substring(0,200);
+    document.getElementById('vgm-sub').textContent='tId:'+data.taskId+'|vUrl:'+data.videoUrl+'|err:'+data.falError+'|'+JSON.stringify(data).slice(-100);
   }).catch(e=>{
     clearInterval(ticker);
     document.getElementById('vgm-icon').textContent='❌';
