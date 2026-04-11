@@ -2925,6 +2925,103 @@ function renderCalendar(plan){
     </div>`).join('');
 }
 
+const CAMERA_MOVES=["slow cinematic pan","smooth dolly shot","aerial drone shot","steady tracking shot","gentle handheld zoom"];
+const LIGHTING_STYLES=["golden hour warm light","soft diffused natural light","dramatic studio lighting","cool blue twilight","bright airy daylight"];
+function buildVideoPrompt(hook,topic,niche,variationIndex){
+  const cam=CAMERA_MOVES[(variationIndex||0)%CAMERA_MOVES.length];
+  const light=LIGHTING_STYLES[(variationIndex||0)%LIGHTING_STYLES.length];
+  const subject=niche||"luxury lifestyle";
+  return `Cinematic ${subject} video. ${topic||hook}. ${cam}, ${light}, ultra high definition, professional production quality, smooth motion, vibrant colors. No text overlays.`;
+}
+async function generateVideoFromPlan(btnEl,variationIndex){
+  const card=btnEl?btnEl.closest('[id^="cal-card-"]'):null;
+  const day=card?parseInt(card.id.replace('cal-card-','')):null;
+  const plan=day?contentPlan.find(p=>p.day===day):activeCalDay;
+  if(!plan){toast('Could not find day data','error');return;}
+  const hook=plan.hook||'';
+  const topic=plan.topic||plan.videoPrompt||hook;
+  const niche=localStorage.getItem('lx_niche')||'';
+  const prompt=buildVideoPrompt(hook,topic,niche,variationIndex||0);
+  showVideoGenModal(prompt,plan,variationIndex||0);
+}
+function showVideoGenModal(prompt,plan,variationIndex){
+  let modal=document.getElementById('vid-gen-modal');
+  if(!modal){
+    modal=document.createElement('div');
+    modal.id='vid-gen-modal';
+    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    modal.innerHTML='<div style="background:var(--noir2);border:1px solid var(--border);border-radius:16px;padding:32px;max-width:480px;width:100%;text-align:center"><div id="vgm-icon" style="font-size:2.5rem;margin-bottom:12px">🎬</div><div id="vgm-title" style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:8px">Creating your video…</div><div id="vgm-sub" style="font-size:.82rem;color:var(--muted);margin-bottom:24px;line-height:1.5"></div><div id="vgm-progress" style="width:100%;height:4px;background:var(--noir3);border-radius:4px;overflow:hidden;margin-bottom:20px"><div id="vgm-bar" style="height:100%;background:var(--gold);width:0%;transition:width .5s;border-radius:4px"></div></div><div id="vgm-video-wrap" style="display:none;margin-bottom:20px"><video id="vgm-video" controls autoplay style="width:100%;border-radius:10px;max-height:240px"></video></div><div id="vgm-actions" style="display:flex;gap:10px;justify-content:center"><button id="vgm-cancel" onclick="closeVideoGenModal()" style="padding:10px 20px;background:var(--noir3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.85rem">Cancel</button></div></div>';
+    document.body.appendChild(modal);
+  }
+  document.getElementById('vgm-icon').textContent='🎬';
+  document.getElementById('vgm-title').textContent='Creating your video…';
+  document.getElementById('vgm-sub').textContent=prompt.substring(0,120)+'…';
+  document.getElementById('vgm-bar').style.width='0%';
+  document.getElementById('vgm-video-wrap').style.display='none';
+  document.getElementById('vgm-actions').innerHTML='<button onclick="closeVideoGenModal()" style="padding:10px 20px;background:var(--noir3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.85rem">Cancel</button>';
+  modal.style.display='flex';
+  let progress=0;
+  const ticker=setInterval(()=>{progress=Math.min(progress+2,85);document.getElementById('vgm-bar').style.width=progress+'%';},1200);
+  fetch(SB_URL+'/functions/v1/start-video',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_ANON},
+    body:JSON.stringify({action:'video',prompt,niche:localStorage.getItem('lx_niche')||''})
+  }).then(r=>r.json()).then(data=>{
+    clearInterval(ticker);
+    if(data.error){
+      document.getElementById('vgm-icon').textContent='❌';
+      document.getElementById('vgm-title').textContent='Generation failed';
+      document.getElementById('vgm-sub').textContent=data.error;
+      document.getElementById('vgm-bar').style.width='0%';
+      document.getElementById('vgm-actions').innerHTML='<button onclick="retryVideoGen('+JSON.stringify(prompt)+','+JSON.stringify(plan)+','+(variationIndex||0)+')" style="padding:10px 20px;background:var(--gold);color:#000;border:none;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700">↺ Retry</button><button onclick="closeVideoGenModal()" style="padding:10px 20px;background:var(--noir3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.85rem">Close</button>';
+      return;
+    }
+    const taskId=data.taskId||data.requestId||'';
+    const videoUrl=data.videoUrl||'';
+    if(videoUrl){showVideoResult(videoUrl,plan,variationIndex);return;}
+    if(taskId){pollVideoJob(taskId,plan,variationIndex,ticker);return;}
+    document.getElementById('vgm-icon').textContent='❌';
+    document.getElementById('vgm-title').textContent='No video returned';
+    document.getElementById('vgm-sub').textContent='Please try again.';
+  }).catch(e=>{
+    clearInterval(ticker);
+    document.getElementById('vgm-icon').textContent='❌';
+    document.getElementById('vgm-title').textContent='Connection error';
+    document.getElementById('vgm-sub').textContent=e.message||'Please check your connection and retry.';
+    document.getElementById('vgm-actions').innerHTML='<button onclick="closeVideoGenModal()" style="padding:10px 20px;background:var(--noir3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.85rem">Close</button>';
+  });
+}
+function pollVideoJob(taskId,plan,variationIndex,ticker){
+  let attempts=0;
+  const poll=setInterval(async()=>{
+    attempts++;
+    if(attempts>40){clearInterval(poll);clearInterval(ticker);document.getElementById('vgm-title').textContent='Timed out — please retry';return;}
+    try{
+      const r=await fetch(SB_URL+'/functions/v1/start-video',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_ANON},body:JSON.stringify({action:'check',taskId})});
+      const d=await r.json();
+      if(d.videoUrl){clearInterval(poll);clearInterval(ticker);showVideoResult(d.videoUrl,plan,variationIndex);}
+    }catch(e){}
+  },4000);
+}
+function showVideoResult(videoUrl,plan,variationIndex){
+  document.getElementById('vgm-bar').style.width='100%';
+  document.getElementById('vgm-icon').textContent='✦';
+  document.getElementById('vgm-title').textContent='Your video is ready!';
+  document.getElementById('vgm-sub').textContent='';
+  document.getElementById('vgm-video-wrap').style.display='block';
+  document.getElementById('vgm-video').src=videoUrl;
+  if(plan&&plan.day){
+    const card=document.getElementById('cal-card-'+plan.day);
+    if(card)card.classList.add('has-video');
+  }
+  const nextVar=((variationIndex||0)+1);
+  document.getElementById('vgm-actions').innerHTML=
+    '<a href="'+videoUrl+'" download style="padding:10px 20px;background:var(--gold);color:#000;border:none;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:700;text-decoration:none">↓ Download</a>'+
+    '<button onclick="showVideoGenModal(buildVideoPrompt(\''+esc(plan.hook||'')+'\',\''+esc(plan.topic||'')+'\',\''+esc(localStorage.getItem('lx_niche')||'')+'\','+nextVar+'),'+JSON.stringify(plan)+','+nextVar+')" style="padding:10px 20px;background:var(--noir3);color:var(--text);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.85rem">↺ Regenerate</button>'+
+    '<button onclick="closeVideoGenModal()" style="padding:10px 20px;background:var(--noir3);color:var(--muted);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.85rem">Close</button>';
+}
+function retryVideoGen(prompt,plan,variationIndex){showVideoGenModal(prompt,plan,variationIndex);}
+function closeVideoGenModal(){const m=document.getElementById('vid-gen-modal');if(m)m.style.display='none';}
 function openCalDay(day){
   const plan=contentPlan.find(p=>p.day===day);
   if(!plan)return;
