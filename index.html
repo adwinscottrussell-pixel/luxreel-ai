@@ -2970,7 +2970,7 @@ function showImagePicker(prompt,plan,variationIndex){
 }
 function selectPropertyImg(idx){
   document.querySelectorAll('[id^="prop-pick-"]').forEach(d=>d.style.borderColor='var(--border)');
-  el.style.borderColor='var(--gold)';
+  const target=document.getElementById('prop-pick-'+idx);if(target)target.style.borderColor='var(--gold)';
   window._pickerState.selectedImg=_propertyImgBase64[idx]||null;
   const btn=document.getElementById('picker-generate-btn');
   if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';}
