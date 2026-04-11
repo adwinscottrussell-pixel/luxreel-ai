@@ -2980,7 +2980,7 @@ function spick(idx){
   if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';}
 }
 function confirmImagePick(){
-  if(!window._pickerState)return;
+  if(!window._pickerState){showVideoGenModal("Cinematic luxury property video",null,0,null);return;}
   const {prompt,plan,variationIndex,selectedImg}=window._pickerState;
   showVideoGenModal(prompt,plan,variationIndex,selectedImg);
 }
