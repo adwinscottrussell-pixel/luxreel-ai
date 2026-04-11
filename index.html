@@ -4507,6 +4507,7 @@ function switchSettings(section,el){
   el.classList.add('active');
 }
 
+function loadSettingsData(){const emailEl=document.getElementById('s-email');const firstEl=document.getElementById('s-first');const brandEl=document.getElementById('s-brand');if(emailEl&&currentUser)emailEl.value=currentUser.email||'';if(firstEl)firstEl.value=localStorage.getItem('lx_first_name')||'';if(brandEl)brandEl.value=localStorage.getItem('lx_brand')||'';}
 function saveProfile(){
   const firstName = document.getElementById('s-first')?.value.trim();
   const lastName = document.getElementById('s-last')?.value.trim();
