@@ -2999,7 +2999,7 @@ function pollVideoJob(taskId,plan,variationIndex,ticker){
     try{
       const r=await fetch(SB_URL+'/functions/v1/start-video',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_ANON},body:JSON.stringify({action:'check',taskId})});
       const d=await r.json();
-      if(d.videoUrl){clearInterval(poll);clearInterval(ticker);showVideoResult(d.videoUrl,plan,variationIndex);}
+      const vUrl=d.videoUrl||d.output?.video?.url||'';if(vUrl){clearInterval(poll);clearInterval(ticker);showVideoResult(vUrl,plan,variationIndex);}else if(d.status==='error'){clearInterval(poll);clearInterval(ticker);document.getElementById('vgm-title').textContent='Generation failed';document.getElementById('vgm-sub').textContent=d.error||'Please try again';}
     }catch(e){}
   },4000);
 }
