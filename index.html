@@ -2997,7 +2997,7 @@ function pollVideoJob(taskId,plan,variationIndex,ticker){
   let attempts=0;
   const poll=setInterval(async()=>{
     attempts++;
-    if(attempts>40){clearInterval(poll);clearInterval(ticker);document.getElementById('vgm-title').textContent='Timed out — please retry';return;}
+    if(attempts>75){clearInterval(poll);clearInterval(ticker);document.getElementById('vgm-title').textContent='Timed out — please retry';return;}
     try{
       const r=await fetch(SB_URL+'/functions/v1/start-video',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_ANON},body:JSON.stringify({action:'check',taskId})});
       const d=await r.json();
