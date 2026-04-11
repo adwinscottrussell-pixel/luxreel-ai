@@ -2935,7 +2935,8 @@ function buildVideoPrompt(hook,topic,niche,variationIndex){
 }
 async function generateVideoFromPlan(btnEl,variationIndex,dayNum){
   const day=dayNum||null;
-  const plan=day?contentPlan.find(p=>p.day===day):activeCalDay;
+  const planSource=(contentPlan&&contentPlan.length)?contentPlan:(window._luxPlanData||[]);
+  const plan=day?planSource.find(p=>(p.day||0)===(day)):activeCalDay;
   if(!plan){toast('Could not find day data','error');return;}
   const hook=plan.hook||'';
   const topic=plan.topic||plan.videoPrompt||hook;
