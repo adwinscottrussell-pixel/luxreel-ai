@@ -2942,9 +2942,11 @@ async function generateVideoFromPlan(btnEl,variationIndex,dayNum){
   const topic=plan.topic||plan.videoPrompt||hook;
   const niche=localStorage.getItem('lx_niche')||'';
   const prompt=buildVideoPrompt(hook,topic,niche,variationIndex||0);
-  showVideoGenModal(prompt,plan,variationIndex||0);
+  const imgIndex=(variationIndex||0)%Math.max(1,_propertyImgBase64.length);
+  const propertyImg=_propertyImgBase64[imgIndex]||null;
+  showVideoGenModal(prompt,plan,variationIndex||0,propertyImg);
 }
-function showVideoGenModal(prompt,plan,variationIndex){
+function showVideoGenModal(prompt,plan,variationIndex,propertyImg){
   let modal=document.getElementById('vid-gen-modal');
   if(!modal){
     modal=document.createElement('div');
@@ -2965,7 +2967,7 @@ function showVideoGenModal(prompt,plan,variationIndex){
   fetch(SB_URL+'/functions/v1/start-video',{
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_ANON},
-    body:JSON.stringify({action:'video',prompt,niche:localStorage.getItem('lx_niche')||''})
+    body:JSON.stringify({action:'video',prompt,niche:localStorage.getItem('lx_niche')||'',imageBase64:propertyImg?propertyImg.split(',')[1]||'':null,imageType:propertyImg?'image/jpeg':null})
   }).then(r=>r.json()).then(data=>{
     clearInterval(ticker);
     if(data.error){
