@@ -2674,7 +2674,7 @@ function renderPlanScreen(){
     html+="<div style='padding:0 16px 16px;border-top:1px solid var(--border)'>";
     html+="<div style='font-size:.75rem;color:var(--muted);line-height:1.6;margin:12px 0 16px;white-space:pre-wrap'>"+caption+"</div>";
     html+="<div style='display:flex;gap:8px'>";
-    html+="<button style='flex:1;padding:10px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer' onclick='generateVideoFromPlan(null,0,dayNum)'>&#9654; Generate Video</button>";
+    html+="<button style='flex:1;padding:10px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer' onclick='generateVideoFromPlan(null,0,"+dayNum+")'>&#9654; Generate Video</button>";
     html+="<button style='padding:10px 14px;background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:.8rem;cursor:pointer' onclick='copyObCaption(this,"+JSON.stringify(caption)+")'>Copy</button>";
     html+="</div></div></div></div>";
   });
